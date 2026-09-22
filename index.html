@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALGOFINDER + REKAP 2D - 47 PASARAN + DRIVE SYNC</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+    body { background:#0a0a0b; margin:0; padding:10px; font-family:'Segoe UI',sans-serif; color:#e0e0e0; }
+    .topnav { max-width:1100px; margin:0 auto 10px; display:flex; gap:8px; flex-wrap:wrap; }
+    .topnav button { flex:1; min-width:140px; padding:14px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; background:#222; color:#888; text-transform:uppercase; font-size:13px; letter-spacing:1px; }
+    .topnav button.on { background:linear-gradient(45deg,#00ffcc,#0088ff); color:#000; }
+    .topnav button.sync-btn { background:linear-gradient(45deg,#4285f4,#34a853); color:#fff; }
+    .tab-page { display:none; }
+    .tab-page.on { display:block; }
+
+    .rekap-page { background:linear-gradient(135deg,#e8c3c3 0%,#d4a5a5 100%); padding:10px; border-radius:12px; }
+    .rekap, .rekap * { margin:0; padding:0; box-sizing:border-box; }
+    .rekap { max-width:600px; margin:0 auto; background:white; border-radius:10px; padding:15px; box-shadow:0 4px 6px rgba(0,0,0,0.1); color:#333; }
+    .rekap h2 { text-align:center; color:#333; margin-bottom:5px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; padding:10px; }
+    .rekap .section { margin-bottom:15px; border:2px solid #ddd; border-radius:8px; overflow:hidden; }
+    .rekap .section-header { background:#1a1a1a; color:white; padding:10px 15px; font-weight:bold; display:flex; justify-content:space-between; align-items:center; }
+    .rekap .section-content { padding:15px; background:#fffef0; }
+    .rekap .filter-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+    .rekap .filter-item { display:flex; flex-direction:column; }
+    .rekap .filter-item label { font-size:12px; color:#555; margin-bottom:3px; font-weight:600; }
+    .rekap input[type="text"], .rekap input[type="number"], .rekap select, .rekap textarea { padding:8px; border:1px solid #ccc; border-radius:4px; font-size:14px; width:100%; }
+    .rekap textarea { resize:vertical; min-height:60px; font-family:monospace; }
+    .rekap .number-grid { display:grid; grid-template-columns:repeat(10,1fr); gap:3px; margin:10px 0; }
+    .rekap .grid-cell { aspect-ratio:1; display:flex; align-items:center; justify-content:center; background:#f0f0f0; border:1px solid #ddd; border-radius:3px; font-size:12px; cursor:pointer; transition:all 0.2s; font-weight:600; }
+    .rekap .grid-cell:hover { transform:scale(1.1); box-shadow:0 2px 4px rgba(0,0,0,0.2); }
+    .rekap .grid-cell.active { background:#4a90e2; color:white; border-color:#357abd; }
+    .rekap .grid-cell.off { background:#e74c3c; color:white; opacity:0.6; }
+    .rekap .grid-cell.pruned { background:#cfd8dc !important; color:#607d8b !important; opacity:0.45; text-decoration:line-through; border-color:#b0bec5; }
+    .rekap .btn { padding:12px 24px; border:none; border-radius:5px; font-size:14px; font-weight:bold; cursor:pointer; transition:all 0.3s; text-transform:uppercase; margin:5px; }
+    .rekap .btn-primary { background:linear-gradient(135deg,#e91e63 0%,#c2185b 100%); color:white; }
+    .rekap .btn-danger { background:linear-gradient(135deg,#f44336 0%,#d32f2f 100%); color:white; }
+    .rekap .btn-copy { background:#0097a7; color:white; padding:8px 16px; font-size:12px; }
+    .rekap .btn-wa { background:#25d366; color:white; padding:8px 16px; font-size:12px; border:none; border-radius:5px; font-weight:bold; cursor:pointer; }
+    .rekap .btn:hover { transform:translateY(-2px); box-shadow:0 4px 8px rgba(0,0,0,0.2); }
+    .rekap .button-group { display:flex; gap:10px; justify-content:center; margin:15px 0; }
+    .rekap .vote-section { background:#1a237e; color:white; padding:15px; border-radius:5px; margin-top:10px; }
+    .rekap .vote-item { padding:3px 0; font-size:14px; }
+    .rekap .angka-main { background:#2e7d32; color:white; padding:15px; text-align:center; font-size:24px; font-weight:bold; border-radius:5px; margin:10px 0; letter-spacing:3px; }
+    .rekap .result-box { background:#fffef0; border:1px solid #ddd; padding:10px; border-radius:4px; font-family:monospace; font-size:13px; line-height:1.6; margin:10px 0; word-break:break-all; }
+    .rekap .header-top { display:flex; justify-content:space-between; align-items:center; }
+    .rekap .ln-count { font-size:16px; }
+    .rekap .info-text { font-size:12px; color:#666; font-style:italic; margin-top:5px; }
+    .rekap .status-bar { background:#ffecb3; border:1px solid #ffd54f; border-radius:5px; padding:8px; text-align:center; font-size:13px; font-weight:bold; color:#5d4037; margin:10px 0; }
+    @media (max-width:600px){ .rekap .filter-grid{grid-template-columns:1fr;} .rekap .number-grid{gap:2px;} .rekap .grid-cell{font-size:10px;} }
+
+    .algo { --neon:#00ffcc; --warna1:#ffa500; --warna2:#ff6b6b; max-width:1100px; margin:auto; background:#16161a; border:1px solid #333; border-radius:15px; padding:20px; }
+    .algo h2 { text-align:center; color:var(--neon); letter-spacing:2px; text-transform:uppercase; margin:0 0 5px; }
+    .algo p.sub { text-align:center; font-size:11px; color:#888; margin:0 0 15px; }
+    .algo .pasaran-selector { display:flex; justify-content:center; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap; padding:12px; background:#111; border-radius:10px; border:1px dashed var(--warna1); }
+    .algo .pasaran-selector label { font-size:12px; color:#aaa; font-weight:bold; }
+    .algo .pasaran-selector select { background:#000; border:2px solid var(--warna1); color:var(--warna1); padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px; min-width:180px; }
+    .algo .locked-badge { background:linear-gradient(45deg,var(--warna1),var(--warna2)); color:#000; padding:8px 16px; border-radius:6px; font-weight:bold; font-size:13px; }
+    .algo .controls { display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom:15px; flex-wrap:wrap; }
+    .algo .controls label { font-size:12px; color:#aaa; }
+    .algo .controls select { background:#000; border:1px solid #444; color:var(--neon); padding:6px 8px; border-radius:5px; font-weight:bold; cursor:pointer; }
+    .algo .table-container { overflow-x:auto; }
+    .algo table { width:100%; border-collapse:collapse; min-width:950px; }
+    .algo th { font-size:11px; color:var(--neon); padding:8px 4px; border-bottom:2px solid #333; text-transform:uppercase; }
+    .algo td { padding:6px 4px; border-bottom:1px solid #222; text-align:center; }
+    .algo input { background:#000; border:1px solid #444; color:#fff; padding:6px; width:35px; border-radius:5px; text-align:center; font-weight:bold; font-size:13px; }
+    .algo input:focus { border-color:var(--neon); outline:none; }
+    .algo input.res-input { color:var(--neon); border-color:#555; }
+    .algo input.hasil-input { color:#fff; border-color:#00ffcc; width:70px; letter-spacing:3px; }
+    .algo input.nama-input { width:90px; font-size:11px; text-align:left; padding-left:8px; }
+    .algo input.pasaran-input { width:110px; font-size:10px; color:var(--warna1); border-color:var(--warna1); background:#1a1a1f; cursor:not-allowed; }
+    .algo select.rumus-select { background:#000; border:1px solid #444; color:#ffa500; padding:6px 2px; border-radius:5px; font-size:10px; width:88px; cursor:pointer; }
+    .algo .pred-box { font-family:'Courier New',monospace; font-size:12px; color:#ffeb3b; background:#1a1a1f; padding:6px; border-radius:4px; display:inline-block; min-width:100px; letter-spacing:1px; border:1px solid #ffa500; font-weight:bold; }
+    .algo .pred-box.bbfs { color:#00ffff; border-color:#00bcd4; }
+    .algo .pred-box.ai { color:#ff00ff; border-color:#ff00ff; }
+    .algo .pred-box.gg { color:#76ff03; border-color:#76ff03; }
+    .algo .pred-box.kb { color:#ffab40; border-color:#ff6d00; }
+    .algo .missing-digit { display:inline-block; background:#ff3333; color:#fff; padding:2px 8px; border-radius:4px; font-size:12px; font-weight:bold; min-width:28px; }
+    .algo .actual-val { display:inline-block; background:#333; color:#76ff03; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold; border:1px solid #76ff03; }
+    .algo .status-jp { color:#00ff00; font-weight:bold; text-shadow:0 0 5px #00ff00; }
+    .algo .status-zonk { color:#ff3333; font-weight:bold; opacity:0.7; }
+    .algo .stat-pending { color:#888; }
+    .algo .ix-value { font-weight:bold; color:#ffa500; }
+    .algo .mistik-value { font-weight:bold; color:#00ffcc; }
+
+    .scan-section { margin-top:15px; border:1px dashed var(--warna1); border-radius:10px; padding:10px; background:#111; }
+    .scan-toggle { width:100%; padding:13px; border:none; border-radius:8px; background:linear-gradient(45deg,#ffa500,#ff6b6b); color:#000; font-weight:bold; cursor:pointer; text-transform:uppercase; font-size:13px; letter-spacing:1px; }
+    #scanPanel { display:none; margin-top:10px; }
+    #scanPanel.show { display:block; }
+    .scan-hint { font-size:11px; color:#aaa; margin:0 0 8px; line-height:1.5; }
+    .scan-focus { display:flex; gap:8px; align-items:center; margin-bottom:8px; flex-wrap:wrap; }
+    .scan-focus label { font-size:11px; color:#aaa; font-weight:bold; }
+    .scan-focus select { background:#000; border:1px solid #444; color:#00ffcc; padding:7px 8px; border-radius:5px; font-weight:bold; font-size:12px; cursor:pointer; }
+    #scanInput { display:block; width:100%; background:#000; color:#00ffcc; border:1px solid #444; border-radius:6px; font-family:monospace; font-size:12px; padding:8px; min-height:90px; }
+    .scan-btns { margin:8px 0; }
+    .scan-btns button { width:100%; padding:13px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; background:linear-gradient(45deg,#00ffcc,#0088ff); color:#000; text-transform:uppercase; font-size:12px; }
+    .scan-row { display:flex; align-items:center; gap:6px; background:#1a1a1f; border:1px solid #333; border-radius:6px; padding:7px 8px; margin-bottom:6px; font-size:11px; flex-wrap:wrap; }
+    .scan-rank { color:#00ffcc; font-weight:bold; min-width:26px; }
+    .scan-info { flex:1; color:#fff; min-width:150px; }
+    .scan-pct { color:#ffeb3b; font-weight:bold; }
+    .scan-use { border:none; background:#25d366; color:#fff; font-weight:bold; border-radius:5px; padding:7px 12px; cursor:pointer; font-size:11px; }
+
+    .algo .btn-container { display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
+    .algo .btn-container button { flex:1; min-width:130px; padding:14px; border:none; border-radius:8px; color:#000; font-weight:bold; cursor:pointer; text-transform:uppercase; font-size:13px; }
+    .algo .btn-gen { background:linear-gradient(45deg,#00ffcc,#0088ff); }
+    .algo .btn-copy { background:linear-gradient(45deg,#ff6b6b,#ffa502); color:#fff; }
+    .algo .btn-clear { background:linear-gradient(45deg,#636e72,#b2bec3); color:#fff; }
+    .algo .btn-send { background:linear-gradient(45deg,#e91e63,#764ba2); color:#fff; }
+    .algo .btn-wa { background:linear-gradient(45deg,#25d366,#128c7e); color:#fff; }
+    .algo .btn-backup { background:linear-gradient(45deg,#ffd54f,#ff8f00); color:#000; }
+    .algo .btn-backup2 { background:linear-gradient(45deg,#4fc3f7,#0288d1); color:#000; }
+    .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#00ffcc; color:#000; padding:12px 24px; border-radius:8px; font-weight:bold; opacity:0; transition:opacity 0.3s; z-index:1000; }
+    .toast.show { opacity:1; }
+
+    #copyModal, #importModal, #syncModal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.92); z-index:9999; overflow:auto; padding:15px; }
+    #copyModal.show, #importModal.show, #syncModal.show { display:block; }
+    .copy-modal-box { max-width:520px; margin:20px auto; background:#16161a; border:2px solid #00ffcc; border-radius:12px; padding:15px; }
+    .copy-modal-box h3 { color:#00ffcc; margin:0 0 8px; font-size:16px; }
+    .copy-modal-box p { font-size:12px; color:#ddd; margin:0 0 10px; line-height:1.5; }
+    #copyModalText, #importText { display:block; width:100%; min-height:220px; background:#000; color:#00ffcc; border:1px solid #444; border-radius:6px; font-family:monospace; font-size:13px; padding:10px; -webkit-user-select:text; user-select:text; }
+    .cm-btns { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+    .cm-btns button { flex:1; min-width:100px; padding:14px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; text-transform:uppercase; font-size:12px; }
+    .cm-select { background:linear-gradient(45deg,#00ffcc,#0088ff); color:#000; }
+    .cm-close { background:#444; color:#fff; }
+    .cm-btns button:disabled { opacity:0.4; cursor:not-allowed; }
+    #syncModal .copy-modal-box { border-color:#4285f4; }
+    #syncModal h3 { color:#4285f4; }
+</style>
+</head>
+<body>
+
+<div class="topnav">
+    <button id="navRekap" class="on" onclick="showTab('rekap')">📊 REKAP 2D</button>
+    <button id="navAlgo" onclick="showTab('algo')">🎯 ALGOFINDER</button>
+    <button id="navSync" class="sync-btn" onclick="openSyncModal()">☁️ DRIVE SYNC</button>
+</div>
+
+<div id="tabAlgo" class="tab-page">
+<div class="algo">
+    <h2>ALGOFINDER ⚡</h2>
+    <p class="sub">V.10.0 - 47 PASARAN • AUTO-FINDER ADIL + FOKUS MODE + CLOUD SYNC</p>
+
+    <div class="pasaran-selector">
+        <label>🎯 PASARAN:</label>
+        <select id="pasaranSelector" onchange="pindahPasaran(this.value)"></select>
+        <span class="locked-badge" id="pasaranBadge">🔒 -</span>
+    </div>
+
+    <div class="controls">
+        <label>MODE:</label>
+        <select id="modeSelect" onchange="generateData(); saveData();">
+            <option value="CT">CT 7D</option>
+            <option value="KEPALA">KEPALA 9D</option>
+            <option value="EKOR">EKOR 9D</option>
+            <option value="BIJI">BIJI ON 9D</option>
+            <option value="SELISIH">SELISIH KE 9D</option>
+            <option value="SHIO">SHIO 11</option>
+            <option value="BBFS">BBFS 8D</option>
+            <option value="GG">GANJIL/GENAP 5D</option>
+            <option value="KB">KECIL/BESAR 5D</option>
+            <option value="AI1">AI 1 (2D)</option>
+            <option value="AI2">AI 2 (2D)</option>
+        </select>
+        <label>MISTIK:</label>
+        <select id="globalMistikType" onchange="generateData(); saveData();">
+            <option value="IX">IX</option><option value="Mistik Lama">Mistik Lama</option>
+            <option value="Mistik Baru">Mistik Baru</option><option value="Tysen">Tysen</option>
+            <option value="Mistik 0">Mistik 0</option><option value="Mistik 1">Mistik 1</option>
+            <option value="Mistik 2">Mistik 2</option><option value="Mistik 3">Mistik 3</option>
+            <option value="Mistik 4">Mistik 4</option><option value="Mistik 5">Mistik 5</option>
+            <option value="Mistik 6">Mistik 6</option><option value="Mistik 7">Mistik 7</option>
+            <option value="Mistik 8">Mistik 8</option><option value="Mistik 9">Mistik 9</option>
+            <option value="Mistik 10">Mistik 10</option><option value="Mistik 11">Mistik 11</option>
+            <option value="Mistik 12">Mistik 12</option><option value="Mistik 13">Mistik 13</option>
+            <option value="Mistik 14">Mistik 14</option><option value="Mistik 15">Mistik 15</option>
+            <option value="Mistik 16">Mistik 16</option><option value="Mistik 17">Mistik 17</option>
+            <option value="Mistik 18">Mistik 18</option><option value="Mistik 19">Mistik 19</option>
+        </select>
+        <label>SELISIH:</label>
+        <select id="selisihMode" onchange="generateData(); saveData();">
+            <option value="absolut">Absolut |K-E|</option>
+            <option value="minus">(K-E+10)%10</option>
+        </select>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead><tr>
+                <th>NAMA</th><th>PASARAN</th><th>HASIL 4D</th><th>A</th><th>C</th><th>K</th><th>E</th>
+                <th>RUMUS</th><th>IX</th><th>MISTIK</th><th>PREDIKSI</th><th>X</th><th>AKTUAL K/E</th><th>STAT</th>
+            </tr></thead>
+            <tbody id="mainBody"></tbody>
+        </table>
+    </div>
+    <p style="font-size:11px;color:#888;text-align:center;margin-top:10px;">
+        ℹ️ <b style="color:#00ffff;">BBFS 8D</b>: JP jika <b>KEPALA & EKOR</b> hasil N+1 keduanya masuk prediksi 8D.<br>
+        <b style="color:#76ff03;">GANJIL/GENAP</b> & <b style="color:#ffab40;">KECIL/BESAR 5D</b> (angka ikut): JP jika <b>salah satu digit pola</b> ada di posisi <b>KEPALA atau EKOR</b> hasil N+1 (twin = 1 angka masuk tetap JP). ZONK jika keduanya di luar pola.<br>
+        <b style="color:#ff00ff;">AI 1/AI 2</b>: JP jika <b>salah satu digit prediksi</b> menempati posisi <b>KEPALA atau EKOR</b>.
+    </p>
+
+    <div class="scan-section">
+        <button class="scan-toggle" onclick="toggleScan()">🔍 AUTO-FINDER RUMUS ▾</button>
+        <div id="scanPanel">
+            <p class="scan-hint">Paste riwayat result 4D <b style="color:#00ffcc;">urutan lama → baru</b> (minimal 5 baris). Sistem menguji <b>1.584 kombinasi</b> (11 mode × 6 rumus × 24 mistik).<br>
+            ⚖️ <b>SEMUA MODE</b> = peringkat <b>ADIL</b>: diurutkan berdasarkan <b>kelebihan JP vs rata-rata mode itu sendiri</b> (➕x.x).<br>
+            🎯 <b>FOKUS MODE</b> = scan satu mode saja untuk cari rumus+mistik terbaiknya.</p>
+            <div class="scan-focus">
+                <label>FOKUS MODE:</label>
+                <select id="scanMode">
+                    <option value="ALL">⚖️ SEMUA MODE (PERINGKAT ADIL)</option>
+                    <option value="CT">CT 7D</option>
+                    <option value="KEPALA">KEPALA 9D</option>
+                    <option value="EKOR">EKOR 9D</option>
+                    <option value="BIJI">BIJI ON 9D</option>
+                    <option value="SELISIH">SELISIH KE 9D</option>
+                    <option value="SHIO">SHIO 11</option>
+                    <option value="BBFS">BBFS 8D</option>
+                    <option value="GG">GANJIL/GENAP 5D</option>
+                    <option value="KB">KECIL/BESAR 5D</option>
+                    <option value="AI1">AI 1 (2D)</option>
+                    <option value="AI2">AI 2 (2D)</option>
+                </select>
+            </div>
+            <textarea id="scanInput" placeholder="Contoh (lama → baru):&#10;1234&#10;5678&#10;9012&#10;3456&#10;7890"></textarea>
+            <div class="scan-btns"><button onclick="scanRumus()">🔍 Scan Rumus Terbaik</button></div>
+            <div id="scanResult"></div>
+        </div>
+    </div>
+
+    <div class="btn-container">
+        <button class="btn-gen" onclick="generateData()">Generate & Cek JP</button>
+        <button class="btn-send" onclick="kirimKeRekap()">📤 Kirim ke Rekap 2D</button>
+        <button class="btn-copy" onclick="copyResults()">📋 Salin</button>
+        <button class="btn-wa" onclick="shareWA()">📲 Share WA</button>
+        <button class="btn-backup" onclick="exportBackup()">💾 Export</button>
+        <button class="btn-backup2" onclick="openImportModal()">📥 Import</button>
+        <button class="btn-clear" onclick="clearAll()">🗑️ Clear</button>
+    </div>
+</div>
+</div>
+
+<div id="tabRekap" class="tab-page on">
+<div class="rekap-page"><div class="rekap">
+    <h2>🎯 REKAP 2D PRO</h2>
+    <div class="info-text" style="text-align:center;margin-bottom:10px;">v6-COMBINED 47 PASARAN + BBFS 8D + AI + POLA + DRIVE SYNC</div>
+
+    <div class="section"><div class="section-content">
+        <div class="filter-grid">
+            <div class="filter-item"><label>Kepala Off</label><input type="text" id="kepalaOff" placeholder="123"></div>
+            <div class="filter-item"><label>Ekor Off</label><input type="text" id="ekorOff" placeholder="456"></div>
+            <div class="filter-item"><label>Jarak Lemah Dari</label><input type="text" id="jarakDari" placeholder="50"></div>
+            <div class="filter-item"><label>Jarak Lemah Sampai</label><input type="text" id="jarakSampai" placeholder="65"></div>
+            <div class="filter-item" style="grid-column:1/-1;"><label>Shio Off</label><input type="text" id="shioOff" placeholder="1-12"></div>
+            <div class="filter-item"><label>Jumlah Off</label><input type="text" id="jumlahOff" placeholder="5,10,17"></div>
+            <div class="filter-item"><label>Selisih Off (0-5)</label><input type="text" id="selisihOff" placeholder="0,1"></div>
+        </div>
+        <div class="filter-grid">
+            <div class="filter-item"><label>K Besar/Kecil</label><select id="kBesarKecil"><option value="">Semua</option><option value="besar">Besar (5-9)</option><option value="kecil">Kecil (0-4)</option></select></div>
+            <div class="filter-item"><label>E Besar/Kecil</label><select id="eBesarKecil"><option value="">Semua</option><option value="besar">Besar (5-9)</option><option value="kecil">Kecil (0-4)</option></select></div>
+            <div class="filter-item"><label>K Ganjil/Genap</label><select id="kGanjilGenap"><option value="">Semua</option><option value="ganjil">Ganjil</option><option value="genap">Genap</option></select></div>
+            <div class="filter-item"><label>E Ganjil/Genap</label><select id="eGanjilGenap"><option value="">Semua</option><option value="ganjil">Ganjil</option><option value="genap">Genap</option></select></div>
+            <div class="filter-item"><label>Silang/Home</label><select id="silangHome"><option value="">Semua</option><option value="silang">Silang</option><option value="home">Home</option></select></div>
+            <div class="filter-item"><label>Tengah/Tepi</label><select id="tengahTepi"><option value="">Semua</option><option value="tengah">Tengah</option><option value="tepi">Tepi</option></select></div>
+            <div class="filter-item"><label>Jbesar/Jkecil</label><select id="jBesarKecil"><option value="">Semua</option><option value="besar">Besar (10-18)</option><option value="kecil">Kecil (0-9)</option></select></div>
+            <div class="filter-item"><label>Jgenap/Jganjil</label><select id="jGenapGanjil"><option value="">Semua</option><option value="genap">Genap</option><option value="ganjil">Ganjil</option></select></div>
+            <div class="filter-item"><label>Kembang/Kempis</label><select id="kembangKempis"><option value="">Semua</option><option value="kembang">Kembang (K&lt;E)</option><option value="kempis">Kempis (K&gt;E)</option></select></div>
+            <div class="filter-item"><label>* Index</label><select id="indexFilter"><option value="">Semua</option><option value="0">0 (0,5)</option><option value="1">1 (1,6)</option><option value="2">2 (2,7)</option><option value="3">3 (3,8)</option><option value="4">4 (4,9)</option></select></div>
+        </div>
+    </div></div>
+
+    <div class="section"><div class="section-header"><span>LN OFF</span></div>
+        <div class="section-content"><textarea id="lnOff" placeholder="12*34*56*78"></textarea></div>
+    </div>
+
+    <div class="section"><div class="section-header"><span>AI/AK/CT (MAX 100)</span></div>
+        <div class="section-content">
+            <textarea id="aiAkCt" placeholder="13579&#10;56790&#10;02567" rows="3"></textarea>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="generateNumbers()">Generate</button>
+                <button class="btn btn-danger" onclick="resetAll()">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section"><div class="section-header"><span>LN DASAR</span></div>
+        <div class="section-content"><textarea id="lnDasar" placeholder="Kosongkan jika 100 LN" rows="2"></textarea></div>
+    </div>
+
+    <div class="section"><div class="section-content"><div class="number-grid" id="numberGrid"></div></div></div>
+    <div class="status-bar" id="filterStatus">Seleksi CT: 0 LN → setelah pangkas: 0 LN</div>
+    <div class="angka-main" id="angkaMain">angka main -</div>
+    <div class="vote-section"><div id="voteList"></div></div>
+
+    <div class="section"><div class="section-header"><div class="header-top"><span class="ln-count">LN TOP = <span id="lnTopCount">0</span> LN</span><span><button class="btn btn-copy" onclick="copyBox('lnTopResult')">Copy</button> <button class="btn-wa" onclick="shareBox('lnTopResult')">WA</button></span></div></div>
+        <div class="section-content"><div class="result-box" id="lnTopResult">-</div></div></div>
+    <div class="section"><div class="section-header"><div class="header-top"><span class="ln-count">Patah 1 = <span id="patah1Count">0</span> LN</span><button class="btn btn-copy" onclick="copyBox('patah1Result')">Copy</button></div></div>
+        <div class="section-content"><div class="result-box" id="patah1Result">-</div></div></div>
+    <div class="section"><div class="section-header"><div class="header-top"><span class="ln-count">Patah 2 = <span id="patah2Count">0</span> LN</span><button class="btn btn-copy" onclick="copyBox('patah2Result')">Copy</button></div></div>
+        <div class="section-content"><div class="result-box" id="patah2Result">-</div></div></div>
+    <div class="section"><div class="section-header"><div class="header-top"><span class="ln-count">Patah 3 = <span id="patah3Count">0</span> LN</span><button class="btn btn-copy" onclick="copyBox('patah3Result')">Copy</button></div></div>
+        <div class="section-content"><div class="result-box" id="patah3Result">-</div></div></div>
+    <div class="section"><div class="section-header"><div class="header-top"><span class="ln-count">Patah 4 = <span id="patah4Count">0</span> LN</span><button class="btn btn-copy" onclick="copyBox('patah4Result')">Copy</button></div></div>
+        <div class="section-content"><div class="result-box" id="patah4Result">-</div></div></div>
+</div></div>
+</div>
+
+<!-- MODAL SALIN -->
+<div id="copyModal">
+    <div class="copy-modal-box">
+        <h3>📋 HASIL SALIN</h3>
+        <p id="copyModalStatus"></p>
+        <textarea id="copyModalText" readonly onclick="selectAllModal()"></textarea>
+        <div class="cm-btns">
+            <button class="cm-select" onclick="selectAllModal()">✂️ Pilih Semua</button>
+            <button class="cm-close" onclick="closeCopyModal()">✅ Selesai / Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL IMPORT -->
+<div id="importModal">
+    <div class="copy-modal-box">
+        <h3>📥 IMPORT BACKUP</h3>
+        <p>Pilih file backup atau tempel teks JSON backup, lalu tekan <b>TERAPKAN</b>. Data pasaran yang cocok akan dipulihkan.</p>
+        <textarea id="importText" placeholder='{"app":"ALGOFINDER","data":{...}}'></textarea>
+        <div class="cm-btns">
+            <button class="cm-select" onclick="document.getElementById('importFile').click()">📂 Pilih File</button>
+            <button class="cm-select" onclick="applyImport()">✅ Terapkan</button>
+            <button class="cm-close" onclick="closeImportModal()">Tutup</button>
+        </div>
+    </div>
+</div>
+<input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="readImportFile(this)">
+
+<!-- MODAL GOOGLE DRIVE SYNC -->
+<div id="syncModal">
+    <div class="copy-modal-box">
+        <h3>☁️ GOOGLE DRIVE SYNC</h3>
+        <p>Backup & restore <b>semua pasaran</b> langsung ke Google Drive pribadi Anda. Data disimpan di folder tersembunyi <b>appDataFolder</b> yang hanya bisa diakses oleh aplikasi ini.</p>
+
+        <div id="gdriveSetup">
+            <label style="display:block;font-size:11px;color:#aaa;margin-bottom:4px;font-weight:bold;">GOOGLE OAUTH CLIENT ID:</label>
+            <input type="text" id="gdriveClientId" placeholder="xxxxx.apps.googleusercontent.com" style="display:block;width:100%;background:#000;color:#00ffcc;border:1px solid #444;border-radius:6px;padding:9px;font-family:monospace;font-size:11px;box-sizing:border-box;">
+            <p style="font-size:10px;color:#888;margin:6px 0 0;line-height:1.5;">
+                📖 <b>Cara dapat Client ID:</b><br>
+                1. Buka <b style="color:#4fc3f7">console.cloud.google.com</b><br>
+                2. Buat project → Enable <b>Google Drive API</b><br>
+                3. <b>APIs &amp; Services → OAuth consent screen</b> → isi form<br>
+                4. <b>Credentials → Create OAuth Client ID</b><br>
+                5. Type: <b>Web application</b><br>
+                6. <b>Authorized JavaScript origins</b>: tempel URL halaman ini<br>
+                7. Copy Client ID ke kolom di atas → tekan <b>Login Google</b>
+            </p>
+        </div>
+
+        <div id="syncStatus" style="margin:12px 0;padding:10px;border-radius:6px;background:#1a1a1f;border:1px solid #444;color:#ddd;font-size:12px;text-align:center;">⚠️ Belum login</div>
+
+        <div class="cm-btns">
+            <button class="cm-select" id="syncLoginBtn" onclick="gdriveLogin()">🔐 Login Google</button>
+        </div>
+        <div class="cm-btns">
+            <button class="cm-select" id="syncUploadBtn" onclick="gdriveUpload()" disabled style="background:linear-gradient(45deg,#4285f4,#34a853);color:#fff;">⬆️ Upload ke Drive</button>
+            <button class="cm-select" id="syncDownloadBtn" onclick="gdriveDownload()" disabled style="background:linear-gradient(45deg,#fbbc04,#ea4335);color:#fff;">⬇️ Download dari Drive</button>
+        </div>
+        <div class="cm-btns">
+            <button class="cm-close" onclick="closeSyncModal()">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">Berhasil!</div>
+
+<script>
+/* =================================================================
+   DAFTAR PASARAN (GABUNGAN 20 + 28 = 47 UNIK)
+================================================================= */
+const DAFTAR_PASARAN = {
+    /* === FILE 1 (20 PASARAN) === */
+    cambodia:   { nama: "CAMBODIA",      emoji: "🇰", warna1: "#ffa500", warna2: "#ff6b6b" },
+    bullseye:   { nama: "BULLSEYE",      emoji: "🎯", warna1: "#e91e63", warna2: "#f44336" },
+    macau13:    { nama: "MACAU 13:00",   emoji: "🇲🇴", warna1: "#ff5722", warna2: "#ff9800" },
+    sdpools:    { nama: "SD POOLS",      emoji: "🇦", warna1: "#00bcd4", warna2: "#03a9f4" },
+    sdlotto:    { nama: "SD LOTTO",      emoji: "🦘", warna1: "#009688", warna2: "#4caf50" },
+    chinapools: { nama: "CHINA POOLS",   emoji: "🇨", warna1: "#f44336", warna2: "#ffc107" },
+    macau16:    { nama: "MACAU 16:00",   emoji: "🇲🇴", warna1: "#e64a19", warna2: "#ff5722" },
+    japan:      { nama: "JAPAN",         emoji: "🇯🇵", warna1: "#ff4081", warna2: "#f50057" },
+    sgp:        { nama: "SINGAPORE",     emoji: "🇸", warna1: "#d32f2f", warna2: "#ff1744" },
+    macau19:    { nama: "MACAU 19:00",   emoji: "🇲🇴", warna1: "#bf360c", warna2: "#dd2c00" },
+    pcso:       { nama: "PCSO",          emoji: "🇵", warna1: "#1976d2", warna2: "#ffc107" },
+    taiwan:     { nama: "TAIWAN",        emoji: "🇹", warna1: "#1565c0", warna2: "#0d47a1" },
+    macau22:    { nama: "MACAU 22:00",   emoji: "🇲🇴", warna1: "#8d6e63", warna2: "#5d4037" },
+    hkpools:    { nama: "HK POOLS",      emoji: "🇭", warna1: "#c62828", warna2: "#ff5252" },
+    hklotto:    { nama: "HK LOTTO",      emoji: "🏮", warna1: "#b71c1c", warna2: "#d50000" },
+    macau23:    { nama: "MACAU 23:00",   emoji: "🇲🇴", warna1: "#6d4c41", warna2: "#4e342e" },
+    macau00:    { nama: "MACAU 00:00",   emoji: "🌙", warna1: "#3f51b5", warna2: "#304ffe" },
+    germanyp5:  { nama: "GERMANY P5",    emoji: "🇩🇪", warna1: "#fbc02d", warna2: "#ff6f00" },
+    california: { nama: "CALIFORNIA",    emoji: "🌴", warna1: "#fbc531", warna2: "#e1b12c" },
+    kingkong:   { nama: "KINGKONG",      emoji: "🦍", warna1: "#6a1b9a", warna2: "#880e4f" },
+
+    /* === FILE 2 (28 PASARAN) === */
+    morocco1:      { nama: "MOROCCO 1",          emoji: "🇲", warna1: "#c1272d", warna2: "#006233" },
+    morocco2:      { nama: "MOROCCO 2",          emoji: "🇲", warna1: "#d32f2f", warna2: "#388e3c" },
+    morocco3:      { nama: "MOROCCO 3",          emoji: "🇲", warna1: "#e53935", warna2: "#43a047" },
+    morocco4:      { nama: "MOROCCO 4",          emoji: "🇲", warna1: "#f44336", warna2: "#4caf50" },
+    oregon1:       { nama: "OREGON 1",           emoji: "🌲", warna1: "#00897b", warna2: "#004d40" },
+    oregon2:       { nama: "OREGON 2",           emoji: "🌲", warna1: "#009688", warna2: "#00695c" },
+    oregon3:       { nama: "OREGON 3",           emoji: "🌲", warna1: "#26a69a", warna2: "#00796b" },
+    oregon4:       { nama: "OREGON 4",           emoji: "🌲", warna1: "#4db6ac", warna2: "#00897b" },
+    kentuckymid:   { nama: "KENTUCKY MIDDAY",    emoji: "🐎", warna1: "#1565c0", warna2: "#0d47a1" },
+    floridamid:    { nama: "FLORIDA MIDDAY",     emoji: "☀️", warna1: "#ff9800", warna2: "#f57c00" },
+    virginiaday:   { nama: "VIRGINIA DAY",       emoji: "🏛️", warna1: "#3f51b5", warna2: "#303f9f" },
+    newyorkmid:    { nama: "NEW YORK MIDDAY",    emoji: "🗽", warna1: "#0288d1", warna2: "#01579b" },
+    northcarolinaday:{ nama: "NORTHCAROLINA DAY",emoji: "✈️", warna1: "#00a8ff", warna2: "#0097e6" },
+    georgiaeve:    { nama: "GEORGIA EVENING",    emoji: "🍑", warna1: "#e84118", warna2: "#c23616" },
+    floridaeve:    { nama: "FLORIDA EVENING",    emoji: "🌅", warna1: "#e67e22", warna2: "#d35400" },
+    newyorkeve:    { nama: "NEW YORK EVENING",   emoji: "🌃", warna1: "#192a56", warna2: "#273c75" },
+    newjerseyeve:  { nama: "NEW JERSEY EVENING", emoji: "🎰", warna1: "#8c7ae6", warna2: "#9c88ff" },
+    kentuckyeve:   { nama: "KENTUCKY EVENING",   emoji: "🌙", warna1: "#2f3640", warna2: "#353b48" },
+    virginianight: { nama: "VIRGINIA NIGHT",     emoji: "🌌", warna1: "#487eb0", warna2: "#40739e" },
+    northcarolinaeve:{ nama: "NORTH CAROLINA EVE",emoji: "🌃", warna1: "#00d2d3", warna2: "#01a3a4" },
+    wuhan:         { nama: "WUHAN",              emoji: "🏮", warna1: "#ea2027", warna2: "#ee5253" },
+    latolato:      { nama: "LATO LATO",          emoji: "⚽", warna1: "#009432", warna2: "#2ed573" },
+    jowo4d:        { nama: "JOWO 4D",            emoji: "🌾", warna1: "#ffa801", warna2: "#ffd32a" },
+    magnum4d:      { nama: "4D MAGNUM",          emoji: "🇲", warna1: "#ff3f34", warna2: "#ef5777" },
+    santafe4d:     { nama: "4D SANTA FE",        emoji: "🌶️", warna1: "#ff5e57", warna2: "#d2dae2" },
+    delaware4d:    { nama: "4D DELAWARE",        emoji: "🌊", warna1: "#0fbcf9", warna2: "#38ada9" },
+    hokidraw4d:{ nama: "HOKIDRAW 4D",  emoji: "🏛️", warna1: "#575fcf", warna2: "#3c40c6" }
+};
+
+const urlParams = new URLSearchParams(window.location.search);
+let kodePasaran = urlParams.get('pasaran') || 'cambodia';
+if (!DAFTAR_PASARAN[kodePasaran]) kodePasaran = 'cambodia';
+const PASARAN_AKTIF = DAFTAR_PASARAN[kodePasaran];
+const STORAGE_KEY = `algofinder_v9_${kodePasaran}`;
+
+const mistikTables = {
+    "IX":{"0":"5","1":"6","2":"7","3":"8","4":"9","5":"0","6":"1","7":"2","8":"3","9":"4"},
+    "Mistik Lama":{"0":"1","1":"0","2":"5","3":"8","4":"7","5":"2","6":"9","7":"4","8":"3","9":"6"},
+    "Mistik Baru":{"0":"8","1":"7","2":"6","3":"9","4":"5","5":"4","6":"2","7":"1","8":"0","9":"3"},
+    "Tysen":{"0":"7","1":"4","2":"9","3":"6","4":"1","5":"8","6":"3","7":"0","8":"5","9":"2"},
+    "Mistik 0":{"0":"6","1":"5","2":"8","3":"7","4":"9","5":"1","6":"0","7":"3","8":"2","9":"4"},
+    "Mistik 1":{"0":"1","1":"0","2":"9","3":"8","4":"7","5":"6","6":"5","7":"4","8":"3","9":"2"},
+    "Mistik 2":{"0":"2","1":"8","2":"0","3":"9","4":"7","5":"6","6":"5","7":"4","8":"1","9":"3"},
+    "Mistik 3":{"0":"3","1":"2","2":"1","3":"0","4":"9","5":"8","6":"7","7":"6","8":"5","9":"4"},
+    "Mistik 4":{"0":"6","1":"5","2":"3","3":"2","4":"7","5":"1","6":"0","7":"4","8":"9","9":"8"},
+    "Mistik 5":{"0":"5","1":"4","2":"3","3":"2","4":"1","5":"0","6":"9","7":"8","8":"7","9":"6"},
+    "Mistik 6":{"0":"6","1":"8","2":"4","3":"5","4":"2","5":"3","6":"0","7":"9","8":"1","9":"7"},
+    "Mistik 7":{"0":"7","1":"6","2":"5","3":"4","4":"3","5":"2","6":"1","7":"0","8":"9","9":"8"},
+    "Mistik 8":{"0":"8","1":"7","2":"6","3":"5","4":"9","5":"3","6":"2","7":"1","8":"0","9":"4"},
+    "Mistik 9":{"0":"9","1":"8","2":"7","3":"6","4":"5","5":"4","6":"3","7":"2","8":"1","9":"0"},
+    "Mistik 10":{"0":"4","1":"2","2":"1","3":"8","4":"0","5":"6","6":"5","7":"9","8":"3","9":"7"},
+    "Mistik 11":{"0":"1","1":"0","2":"5","3":"4","4":"3","5":"2","6":"8","7":"9","8":"6","9":"7"},
+    "Mistik 12":{"0":"2","1":"7","2":"0","3":"8","4":"6","5":"9","6":"4","7":"1","8":"3","9":"5"},
+    "Mistik 13":{"0":"3","1":"9","2":"7","3":"0","4":"6","5":"8","6":"4","7":"2","8":"5","9":"1"},
+    "Mistik 14":{"0":"6","1":"5","2":"4","3":"7","4":"2","5":"1","6":"0","7":"3","8":"9","9":"8"},
+    "Mistik 15":{"0":"5","1":"6","2":"4","3":"9","4":"2","5":"0","6":"1","7":"8","8":"7","9":"3"},
+    "Mistik 16":{"0":"3","1":"8","2":"7","3":"0","4":"9","5":"6","6":"5","7":"2","8":"1","9":"4"},
+    "Mistik 17":{"0":"9","1":"4","2":"8","3":"6","4":"1","5":"7","6":"3","7":"5","8":"2","9":"0"},
+    "Mistik 18":{"0":"8","1":"9","2":"7","3":"4","4":"3","5":"6","6":"5","7":"2","8":"0","9":"1"},
+    "Mistik 19":{"0":"7","1":"8","2":"3","3":"2","4":"9","5":"6","6":"5","7":"0","8":"1","9":"4"}
+};
+
+const TABLES = {
+    CT:     {0:"0235678",1:"1346789",2:"2457890",3:"3568901",4:"4679012",5:"5780123",6:"6891234",7:"7902345",8:"8013456",9:"9124567"},
+    KEPALA: {0:"123456789",1:"234567890",2:"345678901",3:"456789012",4:"567890123",5:"678901234",6:"789012345",7:"890123456",8:"901234567",9:"012345678"},
+    EKOR:   {0:"012345789",1:"123456890",2:"234567901",3:"345678012",4:"456789123",5:"567890234",6:"678901345",7:"789012456",8:"890123567",9:"901234678"},
+    BIJI:   {0:"012345678",1:"123456789",2:"234567890",3:"345678901",4:"456789012",5:"567890123",6:"678901234",7:"789012345",8:"890123456",9:"901234567"},
+    SELISIH:{0:"012345689",1:"012356789",2:"012345678",3:"012345789",4:"023456789",5:"012345679",6:"012456789",7:"012356789",8:"012346789",9:"013456789"},
+    SHIO:   {0:[12,1,2,3,4,5,6,7,8,9,10],1:[1,2,3,4,5,6,7,8,9,10,11],2:[2,3,4,5,6,7,8,9,10,11,12],3:[3,4,5,6,7,8,9,10,11,12,1],4:[4,5,6,7,8,9,10,11,12,1,2],5:[5,6,7,8,9,10,11,12,1,2,3],6:[6,7,8,9,10,11,12,1,2,3,4],7:[7,8,9,10,11,12,1,2,3,4,5],8:[8,9,10,11,12,1,2,3,4,5,6],9:[9,10,11,12,1,2,3,4,5,6,7]},
+    BBFS:   {0:"01235678",1:"12346789",2:"23457890",3:"34568901",4:"45679012",5:"56780123",6:"67891234",7:"78902345",8:"34568901",9:"90124567"},
+    GG:     {0:"02468",1:"13579",2:"02468",3:"13579",4:"02468",5:"13579",6:"02468",7:"13579",8:"02468",9:"13579"},
+    KB:     {0:"01234",1:"01234",2:"01234",3:"01234",4:"01234",5:"56789",6:"56789",7:"56789",8:"56789",9:"56789"},
+    AI1:    {0:"85",1:"92",2:"07",3:"14",4:"25",5:"38",6:"49",7:"50",8:"61",9:"72"},
+    AI2:    {0:"52",1:"69",2:"74",3:"83",4:"96",5:"08",6:"17",7:"26",8:"39",9:"45"}
+};
+
+function missingDigits(s){ let m=[]; for(let d=0;d<=9;d++) if(!s.includes(d+'')) m.push(d); return m.length?m.join(','):'-'; }
+function missingDigit(s){ for(let d=0;d<=9;d++) if(!s.includes(d+'')) return d+''; return '-'; }
+function missingShio(a){ for(let s=1;s<=12;s++) if(!a.includes(s)) return s; return '-'; }
+function reduksi(n){ while(n>9) n=String(n).split('').reduce((a,b)=>a+ +b,0); return n; }
+function getShioAlgo(v){ if(v===0) return 4; const r=v%12; return r===0?12:r; }
+function hitungSelisih(k,e,mode){ return mode==='minus' ? ((k-e)%10+10)%10 : Math.abs(k-e); }
+
+function applyPasaranTheme(){
+    document.querySelector('.algo').style.setProperty('--warna1',PASARAN_AKTIF.warna1);
+    document.querySelector('.algo').style.setProperty('--warna2',PASARAN_AKTIF.warna2);
+    document.getElementById('pasaranBadge').innerHTML = `${PASARAN_AKTIF.emoji} ${PASARAN_AKTIF.nama}`;
+}
+function populatePasaranDropdown(){
+    const s=document.getElementById('pasaranSelector'); s.innerHTML='';
+    for(const [k,d] of Object.entries(DAFTAR_PASARAN)){
+        const o=document.createElement('option'); o.value=k; o.textContent=`${d.emoji} ${d.nama}`;
+        if(k===kodePasaran) o.selected=true; s.appendChild(o);
+    }
+}
+function pindahPasaran(k){ window.location.href=`?pasaran=${k}`; }
+
+const mainBody = document.getElementById('mainBody');
+for(let i=1;i<=10;i++){
+    mainBody.innerHTML += `
+    <tr>
+        <td><input type="text" id="nama${i}" class="nama-input" placeholder="Nama" oninput="saveData()"></td>
+        <td><input type="text" id="pasaran${i}" class="pasaran-input" value="${PASARAN_AKTIF.nama}" readonly></td>
+        <td><input type="text" id="hasil${i}" class="hasil-input" maxlength="4" placeholder="0000" oninput="this.value=this.value.replace(/[^0-9]/g,'');autoFillACKE(${i});saveData()"></td>
+        <td><input type="text" id="a${i}" class="res-input" maxlength="1" placeholder="A" oninput="this.value=this.value.replace(/[^0-9]/g,'');updateHasil(${i});saveData()"></td>
+        <td><input type="text" id="cop${i}" class="res-input" maxlength="1" placeholder="C" oninput="this.value=this.value.replace(/[^0-9]/g,'');updateHasil(${i});saveData()"></td>
+        <td><input type="text" id="k${i}" class="res-input" maxlength="1" placeholder="K" oninput="this.value=this.value.replace(/[^0-9]/g,'');updateHasil(${i});saveData()"></td>
+        <td><input type="text" id="eRes${i}" class="res-input" maxlength="1" placeholder="E" oninput="this.value=this.value.replace(/[^0-9]/g,'');updateHasil(${i});saveData()"></td>
+        <td><select id="rumus${i}" class="rumus-select" onchange="generateData();saveData();">
+            <option value="As+Kop">As+Kop</option><option value="As+Kepala">As+Kepala</option>
+            <option value="As+Ekor">As+Ekor</option><option value="Kop+Kepala">Kop+Kepala</option>
+            <option value="Kop+Ekor">Kop+Ekor</option><option value="Kepala+Ekor">Kepala+Ekor</option>
+        </select></td>
+        <td id="ix${i}" class="ix-value">-</td>
+        <td id="mistik${i}" class="mistik-value">-</td>
+        <td><span class="pred-box" id="pred${i}">-</span></td>
+        <td id="miss${i}">-</td>
+        <td id="act${i}">-</td>
+        <td id="stat${i}">-</td>
+    </tr>`;
+}
+
+function autoFillACKE(r){ const h=document.getElementById(`hasil${r}`).value;
+    if(h.length===4){ document.getElementById(`a${r}`).value=h[0]; document.getElementById(`cop${r}`).value=h[1];
+    document.getElementById(`k${r}`).value=h[2]; document.getElementById(`eRes${r}`).value=h[3]; generateData(); } }
+function updateHasil(r){ const a=document.getElementById(`a${r}`).value||'0',c=document.getElementById(`cop${r}`).value||'0',
+    k=document.getElementById(`k${r}`).value||'0',e=document.getElementById(`eRes${r}`).value||'0';
+    document.getElementById(`hasil${r}`).value=a+c+k+e; generateData(); }
+
+function rowData(i){
+    const a=parseInt(document.getElementById(`a${i}`).value)||0, c=parseInt(document.getElementById(`cop${i}`).value)||0,
+          k=parseInt(document.getElementById(`k${i}`).value)||0, e=parseInt(document.getElementById(`eRes${i}`).value)||0;
+    const rt=document.getElementById(`rumus${i}`).value; let s=0;
+    switch(rt){ case 'As+Kop':s=a+c;break; case 'As+Kepala':s=a+k;break; case 'As+Ekor':s=a+e;break;
+        case 'Kop+Kepala':s=c+k;break; case 'Kop+Ekor':s=c+e;break; case 'Kepala+Ekor':s=k+e;break; }
+    const h=document.getElementById(`hasil${i}`).value;
+    return {a,c,k,e,ix:s%10,hasil:h,has:h.length===4};
+}
+
+function rumusSum(rt,r){
+    switch(rt){ case 'As+Kop':return r.a+r.c; case 'As+Kepala':return r.a+r.k; case 'As+Ekor':return r.a+r.e;
+        case 'Kop+Kepala':return r.c+r.k; case 'Kop+Ekor':return r.c+r.e; default:return r.k+r.e; }
+}
+
+function getPrediksi(mistikIdx, mode){
+    if(mode==='SHIO') return TABLES.SHIO[mistikIdx];
+    return TABLES[mode][mistikIdx];
+}
+function getMissing(mode, pred){
+    if(mode==='SHIO') return missingShio(pred);
+    if(mode==='BBFS' || mode==='AI1' || mode==='AI2' || mode==='GG' || mode==='KB') return missingDigits(pred);
+    return missingDigit(pred);
+}
+function getActual(mode, nxt, selMode){
+    if(!nxt || !nxt.has) return null;
+    switch(mode){
+        case 'CT': return nxt.k+'/'+nxt.e;
+        case 'KEPALA': return nxt.k;
+        case 'EKOR': return nxt.e;
+        case 'BIJI': return reduksi(nxt.k+nxt.e);
+        case 'SELISIH': return hitungSelisih(nxt.k,nxt.e,selMode);
+        case 'SHIO': return getShioAlgo(parseInt(nxt.hasil.slice(2),10));
+        case 'BBFS': return nxt.k+'/'+nxt.e;
+        case 'GG': case 'KB': return nxt.k+'/'+nxt.e;
+        case 'AI1': case 'AI2': return nxt.k+'/'+nxt.e;
+    }
+}
+function cekJP(mode, pred, actual){
+    if(actual===null) return null;
+    if(mode==='CT'){ const p=actual.split('/'); return pred.includes(p[0])||pred.includes(p[1]); }
+    if(mode==='BBFS'){ const p=actual.split('/'); return pred.includes(p[0])&&pred.includes(p[1]); }
+    if(mode==='GG' || mode==='KB'){ const p=actual.split('/'); return pred.includes(p[0])||pred.includes(p[1]); }
+    if(mode==='AI1' || mode==='AI2'){ const p=actual.split('/'); return pred.includes(p[0])||pred.includes(p[1]); }
+    if(mode==='SHIO') return pred.includes(actual);
+    return pred.includes(String(actual));
+}
+
+function generateData(){
+    const mode=document.getElementById('modeSelect').value;
+    const mistikType=document.getElementById('globalMistikType').value;
+    const selMode=document.getElementById('selisihMode').value;
+    const rows=[]; for(let i=1;i<=10;i++) rows.push(rowData(i));
+
+    for(let i=0;i<10;i++){
+        const idx=i+1, r=rows[i], nxt=rows[i+1];
+        document.getElementById(`ix${idx}`).innerText=r.ix;
+        const mIdx=mistikTables[mistikType][r.ix]||r.ix;
+        document.getElementById(`mistik${idx}`).innerText=mIdx;
+        const pred=getPrediksi(mIdx,mode);
+        const predEl=document.getElementById(`pred${idx}`);
+        predEl.innerText = mode==='SHIO' ? pred.join('*') : pred;
+        predEl.classList.remove('bbfs','ai','gg','kb');
+        if(mode==='BBFS') predEl.classList.add('bbfs');
+        if(mode==='AI1' || mode==='AI2') predEl.classList.add('ai');
+        if(mode==='GG') predEl.classList.add('gg');
+        if(mode==='KB') predEl.classList.add('kb');
+        const miss=getMissing(mode,pred);
+        document.getElementById(`miss${idx}`).innerHTML = miss!=='-'?`<span class="missing-digit">${miss}</span>`:'-';
+        const actual=getActual(mode,nxt,selMode);
+        document.getElementById(`act${idx}`).innerHTML = actual!==null?`<span class="actual-val">${actual}</span>`:'-';
+        const jp=cekJP(mode,pred,actual);
+        document.getElementById(`stat${idx}`).innerHTML = jp===null?'<span class="stat-pending">-</span>':(jp?'<span class="status-jp">JP</span>':'<span class="status-zonk">ZONK</span>');
+    }
+}
+
+/* ====== AUTO-FINDER RUMUS ====== */
+function toggleScan(){ document.getElementById('scanPanel').classList.toggle('show'); }
+function scanRumus(){
+    const raw=document.getElementById('scanInput').value.split('\n');
+    const draws=[];
+    raw.forEach(l=>{ const m=l.match(/\d{4}/); if(m) draws.push(m[0]); });
+    if(draws.length<5){ showToast('⚠️ Minimal 5 baris result 4D!'); return; }
+    const rows=draws.map(h=>({a:+h[0],c:+h[1],k:+h[2],e:+h[3],hasil:h,has:true}));
+    const total=rows.length-1;
+    const selMode=document.getElementById('selisihMode').value;
+    const fokus=document.getElementById('scanMode').value;
+    const rumusList=['As+Kop','As+Kepala','As+Ekor','Kop+Kepala','Kop+Ekor','Kepala+Ekor'];
+    const allModes=['CT','KEPALA','EKOR','BIJI','SELISIH','SHIO','BBFS','GG','KB','AI1','AI2'];
+    const modes = fokus==='ALL' ? allModes : [fokus];
+    const mistiks=Object.keys(mistikTables);
+    const res=[];
+    for(const mode of modes){
+        for(const rt of rumusList){
+            for(const mk of mistiks){
+                let jp=0;
+                for(let i=0;i<total;i++){
+                    const r=rows[i], nxt=rows[i+1];
+                    const ix=rumusSum(rt,r)%10;
+                    const mIdx=mistikTables[mk][ix]||ix;
+                    const pred=getPrediksi(mIdx,mode);
+                    const actual=getActual(mode,nxt,selMode);
+                    if(cekJP(mode,pred,actual)) jp++;
+                }
+                if(jp>0) res.push({mode:mode,rt:rt,mk:mk,jp:jp,total:total,pct:Math.round(jp/total*100)});
+            }
+        }
+    }
+    if(fokus==='ALL'){
+        const sum={},cnt={};
+        res.forEach(r=>{ sum[r.mode]=(sum[r.mode]||0)+r.jp; cnt[r.mode]=(cnt[r.mode]||0)+1; });
+        res.forEach(r=>{ r.excess = r.jp - (sum[r.mode]/cnt[r.mode]); });
+        res.sort(function(a,b){ return b.excess-a.excess || b.jp-a.jp; });
+    } else {
+        res.sort(function(a,b){ return b.jp-a.jp || b.pct-a.pct; });
+    }
+    renderScan(res.slice(0,10), total, fokus==='ALL');
+    showToast('🔍 Scan selesai: '+draws.length+' draw diuji');
+}
+function renderScan(top,total,fair){
+    const el=document.getElementById('scanResult');
+    if(!top.length){ el.innerHTML='<p class="scan-hint">Tidak ada kombinasi JP sama sekali.</p>'; return; }
+    const head = fair
+        ? '⚖️ PERINGKAT ADIL → diurutkan dari kelebihan JP vs rata-rata mode (➕x.x):'
+        : '📊 '+total+' pasangan draw diuji → TOP 10 JP tertinggi mode ini:';
+    el.innerHTML='<p class="scan-hint">'+head+'</p>'+top.map(function(r,i){
+        const score = fair ? '➕'+r.excess.toFixed(1)+' | ' : '';
+        return '<div class="scan-row"><span class="scan-rank">#'+(i+1)+'</span>'+
+            '<span class="scan-info"><b style="color:#00ffcc">'+r.mode+'</b> • '+r.rt+' • '+r.mk+'</span>'+
+            '<span class="scan-pct">'+score+r.jp+'/'+r.total+' ('+r.pct+'%)</span>'+
+            '<button class="scan-use" onclick="pakaiCombo(\''+r.mode+'\',\''+r.rt+'\',\''+r.mk+'\')">✅ Pakai</button></div>';
+    }).join('');
+}
+function pakaiCombo(mode,rt,mk){
+    document.getElementById('modeSelect').value=mode;
+    document.getElementById('globalMistikType').value=mk;
+    for(let i=1;i<=10;i++) document.getElementById('rumus'+i).value=rt;
+    generateData(); saveData();
+    showToast('✅ Diterapkan: '+mode+' + '+rt+' + '+mk);
+}
+
+/* ====== BRIDGE KE REKAP ====== */
+function kirimKeRekap(){
+    let last=null; for(let i=10;i>=1;i--){ if(rowData(i).has){ last=i; break; } }
+    if(!last){ alert('Isi minimal satu hasil 4D di Algofinder dulu!'); return; }
+    const r=rowData(last);
+    const mode=document.getElementById('modeSelect').value;
+    const mIdx=mistikTables[document.getElementById('globalMistikType').value][r.ix]||r.ix;
+
+    document.getElementById('kepalaOff').value = '';
+    document.getElementById('ekorOff').value = '';
+    document.getElementById('jumlahOff').value = '';
+
+    if(mode==='BBFS'){
+        const missStr = missingDigits(TABLES.BBFS[mIdx]).replace(/,/g,'');
+        document.getElementById('kepalaOff').value = missStr;
+        document.getElementById('ekorOff').value = missStr;
+        updateResults(); showTab('rekap');
+        showToast(`📤 BBFS → K-Off & E-Off: ${missStr.split('').join(',')}`);
+    } else if(mode==='GG' || mode==='KB' || mode==='AI1' || mode==='AI2'){
+        const pred = TABLES[mode][mIdx];
+        document.getElementById('lnDasar').value = '';
+        document.getElementById('aiAkCt').value = pred;
+        generateNumbers();
+        showTab('rekap');
+        showToast(`📤 ${mode} → Angka ikut: ${pred.split('').join(',')} (masuk AI/AK/CT)`);
+    } else {
+        const xKep=missingDigit(TABLES.KEPALA[mIdx]);
+        const xEkor=missingDigit(TABLES.EKOR[mIdx]);
+        const xBiji=missingDigit(TABLES.BIJI[mIdx]);
+        document.getElementById('kepalaOff').value = xKep!=='-'?xKep:'';
+        document.getElementById('ekorOff').value = xEkor!=='-'?xEkor:'';
+        document.getElementById('jumlahOff').value = xBiji==='-'?'':(xBiji==='0'?'0':`${xBiji},${+xBiji+9}`);
+        updateResults(); showTab('rekap');
+        showToast(`📤 ${PASARAN_AKTIF.nama} → K-Off:${xKep} E-Off:${xEkor} Jml-Off:${xBiji}`);
+    }
+}
+
+/* ====== COPY ====== */
+function execCopy(text){
+    let ok=false;
+    try{
+        const ta=document.createElement('textarea');
+        ta.value=text;
+        ta.setAttribute('readonly','');
+        ta.style.position='fixed';
+        ta.style.top='0'; ta.style.left='0';
+        ta.style.width='100%'; ta.style.height='120px';
+        ta.style.opacity='0.01';
+        ta.style.zIndex='1';
+        document.body.appendChild(ta);
+        ta.focus(); ta.select();
+        try{ ta.setSelectionRange(0, ta.value.length); }catch(e){}
+        try{ ok=document.execCommand('copy'); }catch(e){ ok=false; }
+        document.body.removeChild(ta);
+    }catch(e){ ok=false; }
+    return ok;
+}
+function copyToClipboard(text){
+    if(!text || text==='-'){ showToast('⚠️ Tidak ada teks untuk disalin'); return; }
+    const autoOk = execCopy(text);
+    try{
+        if(navigator.clipboard && window.isSecureContext){
+            navigator.clipboard.writeText(text).catch(function(){});
+        }
+    }catch(e){}
+    openCopyModal(text, autoOk);
+}
+function openCopyModal(text, autoOk){
+    document.getElementById('copyModalStatus').innerHTML = autoOk
+        ? '✅ Salin otomatis <b>BERHASIL</b> → langsung <b>tempel/paste</b>. Jika tempel kosong, tekan <b>✂️ PILIH SEMUA</b> lalu <b>Salin</b> dari menu teks HP.'
+        : '⚠️ Salin otomatis <b>DIBLOKIR</b> perangkat ini → tekan <b>✂️ PILIH SEMUA</b> lalu pilih <b>Salin/Copy</b> dari menu teks HP.';
+    document.getElementById('copyModalText').value = text;
+    document.getElementById('copyModal').classList.add('show');
+    setTimeout(selectAllModal, 80);
+}
+function selectAllModal(){
+    const ta=document.getElementById('copyModalText');
+    try{ ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length); }catch(e){}
+}
+function closeCopyModal(){ document.getElementById('copyModal').classList.remove('show'); }
+function copyBox(id){ copyToClipboard(document.getElementById(id).textContent); }
+
+function buildResultText(){
+    const mode=document.getElementById('modeSelect').value;
+    let t=`⚡ *ALGOFINDER ${mode} - HASIL*\n${PASARAN_AKTIF.emoji} PASARAN: ${PASARAN_AKTIF.nama}\n\n`, has=false;
+    for(let i=1;i<=10;i++){
+        const h=document.getElementById(`hasil${i}`).value; if(!h||h.length!==4) continue; has=true;
+        t+=`📊 ${document.getElementById(`nama${i}`).value||'Baris '+i} - ${h}\n`;
+        t+=`   IX:${document.getElementById(`ix${i}`).innerText} M:${document.getElementById(`mistik${i}`).innerText} | ${mode}:${document.getElementById(`pred${i}`).innerText}\n`;
+        t+=`   X:${document.getElementById(`miss${i}`).innerText} Stat:${document.getElementById(`stat${i}`).innerText}\n\n`;
+    }
+    if(!has) t+='Belum ada data.\n';
+    return t;
+}
+function copyResults(){ copyToClipboard(buildResultText()); }
+
+/* ====== SHARE WA ====== */
+function shareTextWA(t){
+    if(!t||t==='-'){ showToast('⚠️ Tidak ada teks untuk dibagikan'); return; }
+    const url='https://wa.me/?text='+encodeURIComponent(t);
+    try{
+        const a=document.createElement('a');
+        a.href=url; a.target='_blank'; a.rel='noopener';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        showToast('📲 Membuka WhatsApp...');
+    }catch(e){ window.location.href=url; }
+}
+function shareWA(){ shareTextWA(buildResultText()); }
+function shareBox(id){ shareTextWA(document.getElementById(id).textContent); }
+
+/* ====== EXPORT / IMPORT BACKUP ====== */
+function exportBackup(){
+    const data={};
+    for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        if(k && k.indexOf('algofinder_v9_')===0){
+            try{ data[k]=JSON.parse(localStorage.getItem(k)); }catch(e){}
+        }
+    }
+    if(!Object.keys(data).length){ showToast('⚠️ Belum ada data untuk dibackup'); return; }
+    const json=JSON.stringify({app:'ALGOFINDER',versi:'10.0',tanggal:new Date().toLocaleString(),data:data});
+    try{
+        const blob=new Blob([json],{type:'application/json'});
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);
+        a.download='backup_algofinder.json';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(a.href); },2000);
+    }catch(e){}
+    copyToClipboard(json);
+}
+function openImportModal(){ document.getElementById('importModal').classList.add('show'); }
+function closeImportModal(){ document.getElementById('importModal').classList.remove('show'); }
+function readImportFile(inp){
+    const f=inp.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=function(){ document.getElementById('importText').value=r.result; showToast('📂 File dimuat → tekan TERAPKAN'); };
+    r.readAsText(f);
+    inp.value='';
+}
+function applyImport(){
+    const txt=document.getElementById('importText').value.trim();
+    if(!txt){ showToast('⚠️ Tempel JSON backup dulu'); return; }
+    try{
+        const obj=JSON.parse(txt);
+        const data=obj.data||obj;
+        let n=0;
+        for(const k in data){
+            if(k.indexOf('algofinder_v9_')===0){
+                localStorage.setItem(k, JSON.stringify(data[k])); n++;
+            }
+        }
+        if(!n){ showToast('⚠️ Format backup tidak dikenali'); return; }
+        closeImportModal();
+        showToast('✅ '+n+' pasaran dipulihkan! Memuat ulang...');
+        setTimeout(function(){ location.reload(); },1000);
+    }catch(e){ showToast('❌ JSON tidak valid'); }
+}
+
+function showToast(m){ const t=document.getElementById('toast'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+
+function saveData(){
+    const data={ mistikType:document.getElementById('globalMistikType').value, mode:document.getElementById('modeSelect').value,
+        selMode:document.getElementById('selisihMode').value, rows:[] };
+    for(let i=1;i<=10;i++) data.rows.push({ nama:document.getElementById(`nama${i}`).value, hasil:document.getElementById(`hasil${i}`).value,
+        a:document.getElementById(`a${i}`).value, cop:document.getElementById(`cop${i}`).value, k:document.getElementById(`k${i}`).value,
+        e:document.getElementById(`eRes${i}`).value, rumus:document.getElementById(`rumus${i}`).value });
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+}
+function loadData(){
+    const s=localStorage.getItem(STORAGE_KEY); if(!s) return; const d=JSON.parse(s);
+    if(d.mistikType) document.getElementById('globalMistikType').value=d.mistikType;
+    if(d.mode) document.getElementById('modeSelect').value=d.mode;
+    if(d.selMode) document.getElementById('selisihMode').value=d.selMode;
+    if(d.rows) d.rows.forEach((r,idx)=>{ const i=idx+1;
+        document.getElementById(`nama${i}`).value=r.nama||''; document.getElementById(`hasil${i}`).value=r.hasil||'';
+        document.getElementById(`a${i}`).value=r.a||''; document.getElementById(`cop${i}`).value=r.cop||'';
+        document.getElementById(`k${i}`).value=r.k||''; document.getElementById(`eRes${i}`).value=r.e||'';
+        if(r.rumus) document.getElementById(`rumus${i}`).value=r.rumus; });
+    generateData();
+}
+function clearAll(){
+    if(!confirm(`Hapus semua data ${PASARAN_AKTIF.nama}?`)) return;
+    localStorage.removeItem(STORAGE_KEY);
+    for(let i=1;i<=10;i++){ ['nama','hasil','a','cop','k','eRes'].forEach(f=>document.getElementById(f+i).value='');
+        document.getElementById(`rumus${i}`).value='As+Kop'; document.getElementById(`ix${i}`).innerText='-';
+        document.getElementById(`mistik${i}`).innerText='-'; document.getElementById(`pred${i}`).innerText='-';
+        document.getElementById(`miss${i}`).innerHTML='-'; document.getElementById(`act${i}`).innerHTML='-';
+        document.getElementById(`stat${i}`).innerHTML='-'; }
+    showToast('Data dibersihkan!');
+}
+
+function showTab(t){
+    document.getElementById('tabRekap').classList.toggle('on',t==='rekap');
+    document.getElementById('tabAlgo').classList.toggle('on',t==='algo');
+    document.getElementById('navRekap').classList.toggle('on',t==='rekap');
+    document.getElementById('navAlgo').classList.toggle('on',t==='algo');
+}
+
+/* =================================================================
+   REKAP 2D ENGINE
+================================================================= */
+let selectedNumbers=new Set(); let offNumbers=new Set();
+function shioOf(n){ const r=n%12; return r===0?12:r; }
+function parseDigits(id){ return ((document.getElementById(id).value||'').match(/\d/g)||[]).map(Number); }
+function parseNums(id){ return ((document.getElementById(id).value||'').match(/\d{1,2}/g)||[]).map(Number); }
+function gv(id){ return document.getElementById(id).value; }
+
+function initGrid(){ const g=document.getElementById('numberGrid'); g.innerHTML='';
+    for(let i=0;i<=99;i++){ const c=document.createElement('div'); c.className='grid-cell';
+        c.textContent=i.toString().padStart(2,'0'); c.dataset.number=i.toString().padStart(2,'0');
+        c.onclick=()=>toggleNumber(c); g.appendChild(c); } }
+function toggleNumber(c){ const n=c.dataset.number;
+    if(c.classList.contains('off')){ c.classList.remove('off'); offNumbers.delete(n); }
+    else if(c.classList.contains('active')){ c.classList.remove('active'); selectedNumbers.delete(n); }
+    else { c.classList.add('active'); selectedNumbers.add(n); }
+    updateResults(); }
+function markOffNumbers(){ const off=gv('lnOff').split('*').map(n=>n.trim()).filter(n=>n); offNumbers=new Set(off);
+    document.querySelectorAll('.rekap .grid-cell').forEach(c=>{ const n=c.dataset.number;
+        if(offNumbers.has(n)){ c.classList.add('off'); c.classList.remove('active'); selectedNumbers.delete(n); } }); }
+
+function applyFilters(numbers){
+    const kepalaOff=parseDigits('kepalaOff'),ekorOff=parseDigits('ekorOff'),shioOff=parseNums('shioOff'),
+    jumlahOff=parseNums('jumlahOff'),selisihOff=parseDigits('selisihOff'),
+    kBK=gv('kBesarKecil'),eBK=gv('eBesarKecil'),kGG=gv('kGanjilGenap'),eGG=gv('eGanjilGenap'),
+    sh=gv('silangHome'),tt=gv('tengahTepi'),jBK=gv('jBesarKecil'),jGG=gv('jGenapGanjil'),kk=gv('kembangKempis'),idxF=gv('indexFilter');
+    const jv=[]; const dR=gv('jarakDari').match(/\d{1,3}/g); if(dR) jv.push(...dR.map(Number));
+    const sR=gv('jarakSampai').match(/\d{1,3}/g); if(sR) jv.push(...sR.map(Number));
+    let lo=null,hi=null; if(jv.length===1){lo=jv[0];hi=jv[0];} else if(jv.length>=2){lo=Math.min(...jv);hi=Math.max(...jv);}
+    return numbers.filter(num=>{
+        const k=+num[0],e=+num[1],n2d=+num, sel=Math.min(Math.abs(k-e),10-Math.abs(k-e)), jml=k+e;
+        if(lo!==null&&n2d>=lo&&n2d<=hi) return false;
+        if(kepalaOff.includes(k)) return false; if(ekorOff.includes(e)) return false;
+        if(shioOff.length&&shioOff.includes(shioOf(n2d))) return false;
+        if(jumlahOff.includes(jml)) return false; if(selisihOff.includes(sel)) return false;
+        if(kBK==='besar'&&k<5) return false; if(kBK==='kecil'&&k>=5) return false;
+        if(eBK==='besar'&&e<5) return false; if(eBK==='kecil'&&e>=5) return false;
+        if(kGG==='ganjil'&&k%2===0) return false; if(kGG==='genap'&&k%2!==0) return false;
+        if(eGG==='ganjil'&&e%2===0) return false; if(eGG==='genap'&&e%2!==0) return false;
+        const sp=(k%2)===(e%2); if(sh==='silang'&&sp) return false; if(sh==='home'&&!sp) return false;
+        const it=n2d>=25&&n2d<=74; if(tt==='tengah'&&!it) return false; if(tt==='tepi'&&it) return false;
+        if(jBK==='besar'&&jml<10) return false; if(jBK==='kecil'&&jml>=10) return false;
+        if(jGG==='genap'&&jml%2!==0) return false; if(jGG==='ganjil'&&jml%2===0) return false;
+        if(kk==='kembang'&&!(k<e)) return false; if(kk==='kempis'&&!(k>e)) return false;
+        if(idxF!==''){ const ix=+idxF; if(k%5!==ix&&e%5!==ix) return false; }
+        return true; });
+}
+function calculateVotes(n){ const v={}; for(let i=0;i<=9;i++)v[i]=0;
+    n.forEach(x=>{v[+x[0]]++;v[+x[1]]++;}); return v; }
+function findAngkaMain(n){ if(!n.length)return '-'; const v=calculateVotes(n),vals=Object.values(v),
+    tot=vals.reduce((a,b)=>a+b,0),avg=tot/10; let m=[]; for(let i=0;i<=9;i++)if(v[i]>avg)m.push(i);
+    if(!m.length){ const mx=Math.max(...vals); for(let i=0;i<=9;i++)if(v[i]===mx)m.push(i); } return m.join(''); }
+function updateVotes(ms,n){ const v=calculateVotes(n),vl=document.getElementById('voteList'); vl.innerHTML='';
+    for(let i=0;i<=9;i++){ const d=document.createElement('div'); d.className='vote-item';
+        d.textContent=`${i} - ${v[i]} votes${ms.includes(String(i))?' ⭐':''}`; vl.appendChild(d); } }
+function distributeToPatah(n){ const p=[[],[],[],[]]; n.forEach((x,i)=>p[i%4].push(x)); return p; }
+
+function updateResults(){
+    const numbers=Array.from(selectedNumbers).sort(), filtered=applyFilters(numbers), fSet=new Set(filtered),
+        patah=distributeToPatah(filtered), am=findAngkaMain(filtered);
+    document.getElementById('filterStatus').textContent=`Seleksi CT: ${numbers.length} LN → setelah pangkas: ${filtered.length} LN`;
+    document.querySelectorAll('.rekap .grid-cell').forEach(c=>{ const n=c.dataset.number;
+        if(offNumbers.has(n)){ c.classList.remove('pruned'); return; }
+        if(selectedNumbers.has(n)) c.classList.toggle('pruned',!fSet.has(n)); else c.classList.remove('pruned'); });
+    document.getElementById('angkaMain').textContent=`angka main ${am}`;
+    document.getElementById('lnTopCount').textContent=filtered.length;
+    document.getElementById('lnTopResult').textContent=filtered.join('*')||'-';
+    for(let i=0;i<4;i++){ document.getElementById(`patah${i+1}Count`).textContent=patah[i].length;
+        document.getElementById(`patah${i+1}Result`).textContent=patah[i].join('*')||'-'; }
+    updateVotes(am,filtered);
+}
+function generateNumbers(){
+    const lines=gv('aiAkCt').split('\n').map(l=>l.trim()).filter(l=>l); let base=[];
+    if(gv('lnDasar').trim()) base=gv('lnDasar').split(/[\n*\s]+/).map(n=>n.trim()).filter(n=>n.length===2&&/^\d+$/.test(n));
+    else for(let i=0;i<=99;i++) base.push(i.toString().padStart(2,'0'));
+    let cur=base.slice();
+    lines.forEach(line=>{ const ds=new Set(line.split('').filter(d=>/^\d$/.test(d))); if(!ds.size)return;
+        cur=cur.filter(n=>ds.has(n[0])||ds.has(n[1])); });
+    selectedNumbers=new Set(cur);
+    document.querySelectorAll('.rekap .grid-cell').forEach(c=>{ const n=c.dataset.number;
+        if(offNumbers.has(n)) c.classList.remove('active'); else c.classList.toggle('active',selectedNumbers.has(n)); });
+    markOffNumbers(); updateResults();
+}
+function resetAll(){ selectedNumbers.clear(); offNumbers.clear();
+    document.querySelectorAll('.rekap .grid-cell').forEach(c=>c.classList.remove('active','off','pruned'));
+    ['lnOff','aiAkCt','lnDasar','kepalaOff','ekorOff','jarakDari','jarakSampai','shioOff','jumlahOff','selisihOff'].forEach(id=>document.getElementById(id).value='');
+    document.querySelectorAll('.rekap select').forEach(s=>s.selectedIndex=0); updateResults(); }
+
+document.querySelectorAll('.rekap input, .rekap select, .rekap textarea').forEach(el=>{
+    el.addEventListener('change',updateResults); el.addEventListener('input',updateResults); });
+
+/* =================================================================
+   GOOGLE DRIVE SYNC
+================================================================= */
+const GDRIVE_CLIENT_KEY = 'algofinder_gdrive_client';
+const GDRIVE_FILE_NAME = 'algofinder_backup.json';
+let gdriveTokenClient = null;
+let gdriveAccessToken = null;
+
+function openSyncModal() {
+    document.getElementById('syncModal').classList.add('show');
+    const saved = localStorage.getItem(GDRIVE_CLIENT_KEY);
+    if (saved && !document.getElementById('gdriveClientId').value) {
+        document.getElementById('gdriveClientId').value = saved;
+    }
+    updateSyncUI();
+}
+function closeSyncModal() { document.getElementById('syncModal').classList.remove('show'); }
+
+function updateSyncUI() {
+    const status = document.getElementById('syncStatus');
+    if (gdriveAccessToken) {
+        status.innerHTML = '✅ <b style="color:#25d366">Terhubung ke Google Drive</b>';
+        document.getElementById('syncUploadBtn').disabled = false;
+        document.getElementById('syncDownloadBtn').disabled = false;
+        document.getElementById('syncLoginBtn').textContent = '🔓 Logout Google';
+    } else {
+        status.innerHTML = '⚠️ Belum login ke Google';
+        document.getElementById('syncUploadBtn').disabled = true;
+        document.getElementById('syncDownloadBtn').disabled = true;
+        document.getElementById('syncLoginBtn').textContent = '🔐 Login Google';
+    }
+}
+
+function gdriveLogin() {
+    if (gdriveAccessToken) {
+        try { google.accounts.oauth2.revoke(gdriveAccessToken, ()=>{}); } catch(e){}
+        gdriveAccessToken = null;
+        updateSyncUI();
+        showToast('🔓 Logout dari Google');
+        return;
+    }
+    const clientId = document.getElementById('gdriveClientId').value.trim();
+    if (!clientId) { showToast('⚠️ Masukkan Client ID dulu'); return; }
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+        showToast('⚠️ Google API belum siap, tunggu sebentar lalu coba lagi');
+        return;
+    }
+    localStorage.setItem(GDRIVE_CLIENT_KEY, clientId);
+    try {
+        gdriveTokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: clientId,
+            scope: 'https://www.googleapis.com/auth/drive.appdata',
+            callback: (resp) => {
+                if (resp.error) { showToast('❌ ' + resp.error); return; }
+                gdriveAccessToken = resp.access_token;
+                updateSyncUI();
+                showToast('✅ Berhasil login Google');
+            }
+        });
+        gdriveTokenClient.requestAccessToken({ prompt: '' });
+    } catch(e) { showToast('❌ Error: ' + e.message); }
+}
+
+async function gdriveFindFile() {
+    const res = await fetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='" + GDRIVE_FILE_NAME + "'&fields=files(id,name,modifiedTime)", {
+        headers: { Authorization: 'Bearer ' + gdriveAccessToken }
+    });
+    if (!res.ok) {
+        if (res.status === 401) { gdriveAccessToken = null; updateSyncUI(); }
+        throw new Error('Gagal cari file (' + res.status + ')');
+    }
+    const data = await res.json();
+    return (data.files && data.files[0]) ? data.files[0] : null;
+}
+
+function buildBackupJson() {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.indexOf('algofinder_v9_') === 0) {
+            try { data[k] = JSON.parse(localStorage.getItem(k)); } catch(e){}
+        }
+    }
+    return JSON.stringify({ app:'ALGOFINDER', versi:'10.0', tanggal:new Date().toLocaleString(), data:data });
+}
+
+async function gdriveUpload() {
+    if (!gdriveAccessToken) return;
+    try {
+        showToast('⏳ Mengunggah ke Drive...');
+        const json = buildBackupJson();
+        const existing = await gdriveFindFile();
+        const metadata = { name: GDRIVE_FILE_NAME, mimeType: 'application/json' };
+        if (!existing) metadata.parents = ['appDataFolder'];
+
+        const boundary = '-------314159265358979323846';
+        const delimiter = "\r\n--" + boundary + "\r\n";
+        const closeDelim = "\r\n--" + boundary + "--";
+        const multipartBody =
+            delimiter +
+            'Content-Type: application/json\r\n\r\n' +
+            JSON.stringify(metadata) +
+            delimiter +
+            'Content-Type: application/json\r\n\r\n' +
+            json +
+            closeDelim;
+
+        let url, method;
+        if (existing) {
+            url = 'https://www.googleapis.com/upload/drive/v3/files/' + existing.id + '?uploadType=multipart';
+            method = 'PATCH';
+        } else {
+            url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+            method = 'POST';
+        }
+        const res = await fetch(url, {
+            method: method,
+            headers: {
+                Authorization: 'Bearer ' + gdriveAccessToken,
+                'Content-Type': 'multipart/related; boundary="' + boundary + '"'
+            },
+            body: multipartBody
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error('Upload gagal (' + res.status + ')');
+        }
+        showToast('✅ Berhasil diupload ke Google Drive!');
+    } catch(e) { showToast('❌ ' + e.message); }
+}
+
+async function gdriveDownload() {
+    if (!gdriveAccessToken) return;
+    if (!confirm('Timpa data lokal dengan data dari Google Drive?')) return;
+    try {
+        showToast('⏳ Mengunduh dari Drive...');
+        const file = await gdriveFindFile();
+        if (!file) { showToast('⚠️ Belum ada backup di Drive'); return; }
+        const res = await fetch('https://www.googleapis.com/drive/v3/files/' + file.id + '?alt=media', {
+            headers: { Authorization: 'Bearer ' + gdriveAccessToken }
+        });
+        if (!res.ok) throw new Error('Download gagal (' + res.status + ')');
+        const obj = await res.json();
+        const data = obj.data || obj;
+        let n = 0;
+        for (const k in data) {
+            if (k.indexOf('algofinder_v9_') === 0) {
+                localStorage.setItem(k, JSON.stringify(data[k]));
+                n++;
+            }
+        }
+        if (!n) { showToast('⚠️ Backup kosong / format tidak dikenali'); return; }
+        showToast('✅ ' + n + ' pasaran dipulihkan! Reload...');
+        setTimeout(() => location.reload(), 1200);
+    } catch(e) { showToast('❌ ' + e.message); }
+}
+
+/* =================================================================
+   INIT
+================================================================= */
+applyPasaranTheme();
+populatePasaranDropdown();
+loadData();
+initGrid();
+updateResults();
+setInterval(saveData, 5000);
+</script>
+</body>
+</html>
