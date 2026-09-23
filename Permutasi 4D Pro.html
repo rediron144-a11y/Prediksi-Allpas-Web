@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#06b6d4" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="P4D Pro" />
+<title>Permutasi 4D Pro + Pemangkas 2D + Drive Sync</title>
+<style>
+    :root {
+        --bg-dark: #0f172a;
+        --card-bg: #1e293b;
+        --card-border: #334155;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+
+        --color-4d: #06b6d4;
+        --color-3d: #f59e0b;
+        --color-2d-depan: #f43f5e;
+        --color-2d-tengah: #10b981;
+        --color-2d-belakang: #a855f7;
+        --color-my: #38bdf8;
+        --color-off: #475569;
+        --color-danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        background: var(--bg-dark);
+        color: var(--text-primary);
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        padding: 20px;
+        min-height: 100vh;
+        line-height: 1.5;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    .header {
+        text-align: center;
+        padding: 24px 0 20px 0;
+        border-bottom: 2px solid var(--card-border);
+        margin-bottom: 20px;
+    }
+    .header h1 {
+        font-size: 28px;
+        font-weight: 800;
+        background: linear-gradient(90deg, var(--color-4d), var(--color-2d-tengah));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
+    }
+    .header p { font-size: 14px; color: var(--text-secondary); margin-top: 8px; }
+
+    /* Toolbar atas */
+    .topbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 16px;
+    }
+    .topbar .btn { flex: 0 1 auto; min-width: 0; padding: 8px 16px; min-height: 40px; font-size: 13px; }
+
+    .card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2); }
+
+    .card-mylines {
+        border-color: rgba(56, 189, 248, 0.45);
+        background: linear-gradient(180deg, rgba(56,189,248,0.06), rgba(30,41,59,1) 60%);
+    }
+
+    .card-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .card-subtitle {
+        font-size: 13px;
+        color: var(--text-secondary);
+        font-weight: 400;
+        margin-left: 4px;
+    }
+
+    textarea {
+        width: 100%;
+        background: #0f172a;
+        border: 1px solid var(--card-border);
+        border-radius: 10px;
+        color: var(--text-primary);
+        font-size: 16px;
+        padding: 14px;
+        font-family: 'Courier New', monospace;
+        resize: vertical;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    textarea:focus {
+        outline: none;
+        border-color: var(--color-4d);
+        box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+    }
+    .input-control { min-height: 100px; letter-spacing: 1px; }
+    .input-mylines { min-height: 150px; letter-spacing: 1px; border-color: rgba(56, 189, 248, 0.4); }
+    .input-mylines:focus { border-color: var(--color-my); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18); }
+    .input-control-3d { min-height: 80px; letter-spacing: 2px; border-color: rgba(245, 158, 11, 0.3); }
+    .input-control-3d:focus { border-color: var(--color-3d); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15); }
+    .input-control-2d { min-height: 80px; letter-spacing: 2px; border-color: rgba(16, 185, 129, 0.3); }
+    .input-control-2d:focus { border-color: var(--color-2d-tengah); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); }
+
+    .info-box {
+        background: rgba(15, 23, 42, 0.6);
+        border-left: 4px solid var(--color-4d);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-top: 12px;
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+    .info-box strong { color: var(--text-primary); }
+
+    .btn-group { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        color: #fff;
+        background: transparent;
+        border: 1px solid var(--card-border);
+        min-height: 48px;
+        flex: 1;
+        min-width: 120px;
+        transition: all 0.2s;
+        font-family: inherit;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--color-4d); border-color: var(--color-4d); color: #0f172a; }
+    .btn-primary:hover { background: #0891b2; }
+    .btn-danger { border-color: var(--color-danger); color: var(--color-danger); }
+    .btn-danger:hover { background: var(--color-danger); color: #fff; }
+    .btn-copy { border-color: var(--color-2d-tengah); color: var(--color-2d-tengah); }
+    .btn-copy:hover { background: var(--color-2d-tengah); color: #0f172a; }
+    .btn-my { border-color: var(--color-my); color: var(--color-my); }
+    .btn-my:hover { background: var(--color-my); color: #0f172a; }
+    .btn-drive { border-color: #60a5fa; color: #60a5fa; }
+    .btn-drive:hover { background: #60a5fa; color: #0f172a; }
+    .btn-install { border-color: #facc15; color: #facc15; }
+    .btn-install:hover { background: #facc15; color: #0f172a; }
+
+    /* ===== POSISI ON/OFF ===== */
+    .posisi-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 12px;
+    }
+    .posisi-box {
+        background: #0f172a;
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 16px;
+    }
+    .posisi-label {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--text-primary);
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .off-count { font-size: 12px; color: var(--color-danger); font-weight: 600; }
+
+    .digit-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
+    }
+    .digit-btn {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-size: 16px;
+        font-weight: 700;
+        font-family: 'Courier New', monospace;
+        padding: 8px 0;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: center;
+        user-select: none;
+    }
+    .digit-btn:hover { background: var(--card-border); }
+    .digit-btn.off {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: var(--color-danger);
+        color: var(--color-danger);
+        opacity: 0.5;
+        text-decoration: line-through;
+    }
+    .digit-btn.off:hover { opacity: 0.8; }
+
+    .posisi-all-btn {
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        border: 1px solid var(--card-border);
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        margin-left: 4px;
+        transition: all 0.2s;
+        font-family: inherit;
+    }
+    .posisi-all-btn:hover { background: var(--card-border); color: var(--text-primary); }
+    .posisi-all-btn.on { border-color: var(--color-2d-tengah); color: var(--color-2d-tengah); }
+    .posisi-all-btn.off { border-color: var(--color-danger); color: var(--color-danger); }
+
+    /* ===== TRIMMER ===== */
+    .trimmer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+    }
+    .trimmer-item {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        background: #0f172a;
+        border: 1px solid var(--card-border);
+        border-radius: 10px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+    }
+    .trimmer-item:hover { border-color: var(--color-2d-belakang); }
+    .trimmer-item input[type="checkbox"] {
+        width: 20px; height: 20px;
+        accent-color: var(--color-2d-belakang);
+        margin-top: 2px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .trimmer-title { font-weight: 700; font-size: 14px; }
+    .trimmer-sub { font-size: 12px; color: var(--text-secondary); }
+
+    /* ===== HASIL & STATS ===== */
+    .filter-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 16px;
+        background: #0f172a;
+        border-radius: 12px;
+        margin: 16px 0;
+        font-size: 13px;
+        border: 1px solid var(--card-border);
+    }
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 8px 16px;
+        background: var(--card-bg);
+        border-radius: 8px;
+        border: 1px solid var(--card-border);
+        min-width: 100px;
+        flex: 1;
+    }
+    .stat-item .label { color: var(--text-secondary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; text-align: center; }
+    .stat-item .value { font-weight: 800; font-size: 18px; color: var(--text-primary); }
+
+    .grid-container {
+        display: grid;
+        gap: 6px;
+        margin-top: 12px;
+        background: #0f172a;
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid var(--card-border);
+        max-height: 350px;
+        overflow-y: auto;
+    }
+    .grid-4d { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); border-color: rgba(6, 182, 212, 0.3); }
+    .grid-3d { grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); border-color: rgba(245, 158, 11, 0.3); }
+    .grid-2d { grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)); }
+
+    .item-4d { background: rgba(6, 182, 212, 0.1); color: var(--color-4d); border: 1px solid rgba(6, 182, 212, 0.2); }
+    .item-3d { background: rgba(245, 158, 11, 0.1); color: var(--color-3d); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .item-2d-depan { background: rgba(244, 63, 94, 0.1); color: var(--color-2d-depan); border: 1px solid rgba(244, 63, 94, 0.2); }
+    .item-2d-tengah { background: rgba(16, 185, 129, 0.1); color: var(--color-2d-tengah); border: 1px solid rgba(16, 185, 129, 0.2); }
+    .item-2d-belakang { background: rgba(168, 85, 247, 0.1); color: var(--color-2d-belakang); border: 1px solid rgba(168, 85, 247, 0.2); }
+    .item-my { background: rgba(56, 189, 248, 0.1); color: var(--color-my); border: 1px solid rgba(56, 189, 248, 0.25); }
+
+    .item-4d, .item-3d, .item-2d-depan, .item-2d-tengah, .item-2d-belakang, .item-my {
+        padding: 6px 4px;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: 700;
+        text-align: center;
+        font-family: 'Courier New', monospace;
+        transition: transform 0.1s;
+    }
+    .item-4d:hover, .item-3d:hover, .item-2d-depan:hover, .item-2d-tengah:hover, .item-2d-belakang:hover, .item-my:hover {
+        transform: scale(1.05);
+        filter: brightness(1.2);
+    }
+
+    .label-daftar {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-top: 24px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--card-border);
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .count-badge {
+        font-size: 13px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+    }
+    .count-4d { background: rgba(6, 182, 212, 0.15); color: var(--color-4d); }
+    .count-3d { background: rgba(245, 158, 11, 0.15); color: var(--color-3d); }
+    .count-2d-depan { background: rgba(244, 63, 94, 0.15); color: var(--color-2d-depan); }
+    .count-2d-tengah { background: rgba(16, 185, 129, 0.15); color: var(--color-2d-tengah); }
+    .count-2d-belakang { background: rgba(168, 85, 247, 0.15); color: var(--color-2d-belakang); }
+    .count-my { background: rgba(56, 189, 248, 0.15); color: var(--color-my); }
+
+    .row-control {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        background: #0f172a;
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border-left: 4px solid var(--color-4d);
+    }
+    .row-control .idx { color: var(--text-secondary); font-weight: 700; font-size: 13px; min-width: 30px; }
+    .row-control .digits { font-family: 'Courier New', monospace; font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: 3px; }
+
+    .divider { border: none; border-top: 1px solid var(--card-border); margin: 24px 0; }
+
+    .result-section { margin-top: 24px; }
+
+    .grid-2d-wrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    .grid-2d-box {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 16px;
+    }
+
+    .hidden { display: none !important; }
+
+    .footer { text-align: center; padding: 32px 0 16px 0; font-size: 13px; color: var(--text-secondary); border-top: 1px solid var(--card-border); margin-top: 40px; }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    /* ===== CLOUD / DRIVE ===== */
+    .cloud-status {
+        font-size: 13px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        background: #0f172a;
+        border: 1px solid var(--card-border);
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+    }
+    .cloud-status.ok { border-color: var(--color-2d-tengah); color: var(--color-2d-tengah); }
+    .cloud-status.err { border-color: var(--color-danger); color: var(--color-danger); }
+    .cloud-status.info { border-color: #60a5fa; color: #60a5fa; }
+
+    details.cloud-settings {
+        margin-top: 14px;
+        border: 1px solid var(--card-border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        background: #0f172a;
+    }
+    details.cloud-settings summary {
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        user-select: none;
+    }
+    details.cloud-settings summary:hover { color: var(--text-primary); }
+    details.cloud-settings input[type="text"] {
+        width: 100%;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        color: var(--text-primary);
+        padding: 10px 12px;
+        font-size: 13px;
+        font-family: 'Courier New', monospace;
+        margin-top: 6px;
+        margin-bottom: 10px;
+    }
+    details.cloud-settings input[type="text"]:focus {
+        outline: none;
+        border-color: var(--color-4d);
+    }
+    details.cloud-settings label {
+        display: block;
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 600;
+        margin-top: 8px;
+    }
+
+    details.ref-details {
+        margin-top: 14px;
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        background: rgba(15, 23, 42, 0.5);
+    }
+    details.ref-details > summary {
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        user-select: none;
+        list-style: none;
+    }
+    details.ref-details > summary::-webkit-details-marker { display: none; }
+    details.ref-details > summary::before { content: '▸ '; display: inline-block; transition: transform 0.2s; }
+    details.ref-details[open] > summary::before { transform: rotate(90deg); }
+    details.ref-details > summary:hover { color: var(--text-primary); }
+
+    .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: var(--card-bg);
+        border: 1px solid var(--color-2d-tengah);
+        color: var(--text-primary);
+        padding: 12px 22px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 9999;
+        pointer-events: none;
+        max-width: 90vw;
+        text-align: center;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.err { border-color: var(--color-danger); }
+
+    .notice {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        color: var(--color-3d);
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+
+    @media (max-width: 600px) {
+        .posisi-container { grid-template-columns: 1fr 1fr; }
+        .grid-2d-wrapper { grid-template-columns: 1fr; }
+        .header h1 { font-size: 22px; }
+        .stat-item { min-width: 80px; padding: 6px 10px; }
+        .stat-item .value { font-size: 15px; }
+        body { padding: 12px; }
+        .card { padding: 18px; }
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧩 Permutasi 4D Pro + Pemangkas 2D</h1>
+            <p>Muat daftar 4D Anda → dipangkas oleh referensi 2D Depan / Tengah / Belakang dari kontrol → turunan 3D & 2D otomatis</p>
+            <div class="topbar">
+                <button class="btn btn-install hidden" id="btnInstall">📲 Install App</button>
+                <button class="btn btn-drive" id="btnQuickSave">☁️ Simpan ke Drive</button>
+                <button class="btn btn-drive" id="btnQuickLoad">⬇️ Muat dari Drive</button>
+            </div>
+        </div>
+
+        <!-- ================= INPUT DAFTAR 4D SAYA ================= -->
+        <div class="card card-mylines">
+            <div class="card-title" style="color: var(--color-my);">
+                📥 Daftar 4D Saya
+                <span class="card-subtitle">(Tempel daftar LN 4D di sini — akan dipangkas oleh referensi 2D)</span>
+            </div>
+            <textarea id="inputMyLines" class="input-mylines" placeholder="Contoh:&#10;1234 5678 9012 3456&#10;atau pisah baris:&#10;1234&#10;5678&#10;atau pakai bintang: 1234*5678*9012"></textarea>
+            <div class="info-box" style="border-left-color: var(--color-my);">
+                <strong>✏️ Format bebas:</strong> pisah dengan spasi, koma, tanda bintang (<code>*</code>), baris baru, atau gabung sekaligus.
+                Hanya deret <strong>4 digit</strong> yang diambil. Duplikat otomatis dihapus.
+                <br><strong>📊 Terdeteksi:</strong> <span id="myLinesCount" style="color: var(--color-my); font-weight: 700;">0 LN</span>
+            </div>
+        </div>
+
+        <!-- ================= KONTROL 4D (REFERENSI) ================= -->
+        <div class="card">
+            <div class="card-title">🎛️ Kontrol Referensi 4D <span class="card-subtitle">(Sumber pemangkas 2D — semua posisi WAJIB muncul minimal 1 digit dari setiap baris)</span></div>
+            <textarea id="inputControl" class="input-control" placeholder="01234&#10;56789">01234
+56789</textarea>
+            <div class="info-box">
+                <strong>✏️ Cara:</strong> Tulis setiap baris kontrol di baris baru. Referensi 4D harus memuat minimal 1 digit dari setiap baris.
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title" style="color: var(--color-3d);">🎯 CT 3D <span class="card-subtitle">(Posisi Cop-Kepala-Ekor — multi-baris, semua harus dipenuhi)</span></div>
+            <textarea id="inputControl3D" class="input-control-3d" placeholder="1235">1235</textarea>
+            <div class="info-box" style="border-left-color: var(--color-3d);">
+                <strong style="color: var(--color-3d);">✏️ CT 3D:</strong> Filter berdasarkan posisi <strong>Cop (ke-2), Kepala (ke-3), Ekor (ke-4)</strong>.
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title" style="color: var(--color-2d-tengah);">🎯 CT 2D <span class="card-subtitle">(Posisi Kepala-Ekor — multi-baris, semua harus dipenuhi)</span></div>
+            <textarea id="inputControl2D" class="input-control-2d" placeholder="1246">1246</textarea>
+            <div class="info-box" style="border-left-color: var(--color-2d-tengah);">
+                <strong style="color: var(--color-2d-tengah);">✏️ CT 2D:</strong> Filter berdasarkan posisi <strong>Kepala (ke-3) & Ekor (ke-4)</strong>.
+            </div>
+        </div>
+
+        <!-- FILTER POSISI ON/OFF -->
+        <div class="card">
+            <div class="card-title" style="color: var(--color-2d-depan);">🔘 Filter Posisi (ON/OFF per digit)</div>
+            <div class="posisi-container" id="posisiContainer">
+                <div class="posisi-box" data-posisi="0">
+                    <div class="posisi-label">
+                        <span>As <span style="color:var(--text-secondary);font-weight:400;font-size:12px;">(Pos 1)</span></span>
+                        <span><span class="off-count" id="offCount0">0 OFF</span>
+                            <button class="posisi-all-btn on" data-posisi="0" data-action="all-on">All ON</button>
+                            <button class="posisi-all-btn off" data-posisi="0" data-action="all-off">All OFF</button>
+                        </span>
+                    </div>
+                    <div class="digit-grid" id="grid0"></div>
+                </div>
+                <div class="posisi-box" data-posisi="1">
+                    <div class="posisi-label">
+                        <span>Cop <span style="color:var(--text-secondary);font-weight:400;font-size:12px;">(Pos 2)</span></span>
+                        <span><span class="off-count" id="offCount1">0 OFF</span>
+                            <button class="posisi-all-btn on" data-posisi="1" data-action="all-on">All ON</button>
+                            <button class="posisi-all-btn off" data-posisi="1" data-action="all-off">All OFF</button>
+                        </span>
+                    </div>
+                    <div class="digit-grid" id="grid1"></div>
+                </div>
+                <div class="posisi-box" data-posisi="2">
+                    <div class="posisi-label">
+                        <span>Kepala <span style="color:var(--text-secondary);font-weight:400;font-size:12px;">(Pos 3)</span></span>
+                        <span><span class="off-count" id="offCount2">0 OFF</span>
+                            <button class="posisi-all-btn on" data-posisi="2" data-action="all-on">All ON</button>
+                            <button class="posisi-all-btn off" data-posisi="2" data-action="all-off">All OFF</button>
+                        </span>
+                    </div>
+                    <div class="digit-grid" id="grid2"></div>
+                </div>
+                <div class="posisi-box" data-posisi="3">
+                    <div class="posisi-label">
+                        <span>Ekor <span style="color:var(--text-secondary);font-weight:400;font-size:12px;">(Pos 4)</span></span>
+                        <span><span class="off-count" id="offCount3">0 OFF</span>
+                            <button class="posisi-all-btn on" data-posisi="3" data-action="all-on">All ON</button>
+                            <button class="posisi-all-btn off" data-posisi="3" data-action="all-off">All OFF</button>
+                        </span>
+                    </div>
+                    <div class="digit-grid" id="grid3"></div>
+                </div>
+            </div>
+            <div class="info-box" style="margin-top:16px; border-left-color: var(--color-2d-depan);">
+                <strong>💡 Cara:</strong> Klik digit untuk toggle. <span style="color:var(--color-2d-tengah);">Terang = ON (Diizinkan)</span>, <span style="color:var(--color-danger);">Gelap + Coret = OFF (Dieliminasi)</span>.
+            </div>
+        </div>
+
+        <!-- ================= PEMANGKAS 2D ================= -->
+        <div class="card">
+            <div class="card-title" style="color: var(--color-2d-belakang);">✂️ Pemangkas 2D <span class="card-subtitle">(Gunakan referensi 2D hasil kontrol untuk menyaring Daftar 4D Saya)</span></div>
+            <div class="trimmer-grid">
+                <label class="trimmer-item">
+                    <input type="checkbox" id="trimDepan" checked>
+                    <div>
+                        <div class="trimmer-title" style="color: var(--color-2d-depan);">2D Depan</div>
+                        <div class="trimmer-sub">As + Cop (pos 1-2)</div>
+                    </div>
+                </label>
+                <label class="trimmer-item">
+                    <input type="checkbox" id="trimTengah" checked>
+                    <div>
+                        <div class="trimmer-title" style="color: var(--color-2d-tengah);">2D Tengah</div>
+                        <div class="trimmer-sub">Cop + Kepala (pos 2-3)</div>
+                    </div>
+                </label>
+                <label class="trimmer-item">
+                    <input type="checkbox" id="trimBelakang" checked>
+                    <div>
+                        <div class="trimmer-title" style="color: var(--color-2d-belakang);">2D Belakang</div>
+                        <div class="trimmer-sub">Kepala + Ekor (pos 3-4)</div>
+                    </div>
+                </label>
+            </div>
+            <label class="trimmer-item" style="margin-top:12px;">
+                <input type="checkbox" id="applyPosisiMyLines">
+                <div>
+                    <div class="trimmer-title" style="color: var(--color-2d-depan);">Terapkan Filter Posisi ke Daftar Saya</div>
+                    <div class="trimmer-sub">Selain pemangkas 2D, tombol ON/OFF digit juga menyaring Daftar 4D Saya</div>
+                </div>
+            </label>
+            <div class="info-box" style="border-left-color: var(--color-2d-belakang); margin-top:14px;">
+                <strong>💡 Cara kerja:</strong> Kontrol di atas menghasilkan referensi 4D → diturunkan menjadi set 2D Depan/Tengah/Belakang.
+                Daftar 4D Saya hanya lolos jika potongan 2D-nya ada di dalam set referensi (sesuai pemangkas yang aktif).
+            </div>
+        </div>
+
+        <!-- TOMBOL GENERATE / RESET -->
+        <div class="card">
+            <div class="btn-group">
+                <button class="btn btn-primary" id="btnGenerate">⚡ Proses &amp; Pangkas</button>
+                <button class="btn btn-danger" id="btnReset">🗑️ Reset Semua</button>
+            </div>
+        </div>
+
+        <!-- ================= HASIL ================= -->
+        <div id="hasilArea" class="hidden">
+            <div class="card">
+                <div class="card-title">📊 HASIL</div>
+
+                <div class="filter-stats">
+                    <div class="stat-item"><span class="label">Daftar Saya</span><span class="value" id="statMyInput" style="color: var(--color-my);">0</span></div>
+                    <div class="stat-item"><span class="label">Ref 4D</span><span class="value" id="statAwal" style="color: var(--color-4d);">0</span></div>
+                    <div class="stat-item"><span class="label">Ref 2D Set</span><span class="value" id="statRef2D" style="color: var(--color-2d-belakang);">0</span></div>
+                    <div class="stat-item"><span class="label">Setelah Pemangkas</span><span class="value" id="statPosisi" style="color: var(--color-2d-depan);">0</span></div>
+                    <div class="stat-item"><span class="label">✅ Akhir 4D</span><span class="value" id="statAkhir" style="color: #fff;">0</span></div>
+                </div>
+
+                <div id="emptyNotice" class="notice hidden">
+                    ⚠️ Daftar 4D Saya masih kosong — hasil di bawah memakai <strong>Referensi 4D</strong> dari kontrol sebagai output. Tempel daftar LN Anda di kolom atas untuk memakai fitur pemangkas.
+                </div>
+
+                <!-- ============ REFERENSI (COLLAPSIBLE) ============ -->
+                <details class="ref-details">
+                    <summary>🎛️ Detail Referensi dari Kontrol (klik untuk buka)</summary>
+
+                    <div class="label-daftar" style="margin-top:16px;">
+                        <span>📋 Daftar Kontrol 4D Aktif</span>
+                        <span class="count-badge count-4d" id="jumlahKontrol">0 baris</span>
+                    </div>
+                    <div id="daftarKontrol"></div>
+
+                    <div class="label-daftar">
+                        <span>🎯 Referensi 4D (sebelum dipakai memangkas)</span>
+                        <span class="count-badge count-4d" id="countRef4D">0 angka</span>
+                    </div>
+                    <div id="gridRef4D" class="grid-container grid-4d"></div>
+
+                    <div class="label-daftar">
+                        <span>✂️ Set Pemangkas 2D (dari referensi 4D)</span>
+                    </div>
+                    <div class="grid-2d-wrapper">
+                        <div class="grid-2d-box">
+                            <div class="label-daftar" style="margin-top:0;">
+                                <span style="color: var(--color-2d-depan);">2D Depan</span>
+                                <span class="count-badge count-2d-depan" id="countRef2DDepan">0</span>
+                            </div>
+                            <div id="gridRef2DDepan" class="grid-container grid-2d" style="max-height:200px; padding:10px;"></div>
+                        </div>
+                        <div class="grid-2d-box">
+                            <div class="label-daftar" style="margin-top:0;">
+                                <span style="color: var(--color-2d-tengah);">2D Tengah</span>
+                                <span class="count-badge count-2d-tengah" id="countRef2DTengah">0</span>
+                            </div>
+                            <div id="gridRef2DTengah" class="grid-container grid-2d" style="max-height:200px; padding:10px;"></div>
+                        </div>
+                        <div class="grid-2d-box">
+                            <div class="label-daftar" style="margin-top:0;">
+                                <span style="color: var(--color-2d-belakang);">2D Belakang</span>
+                                <span class="count-badge count-2d-belakang" id="countRef2DBelakang">0</span>
+                            </div>
+                            <div id="gridRef2DBelakang" class="grid-container grid-2d" style="max-height:200px; padding:10px;"></div>
+                        </div>
+                    </div>
+                </details>
+
+                <hr class="divider" />
+
+                <!-- ============ HASIL AKHIR 4D ============ -->
+                <div class="label-daftar">
+                    <span>✅ Hasil 4D Akhir <span id="hasilSourceLabel" style="color:var(--text-secondary); font-weight:400; font-size:13px;"></span></span>
+                    <span class="count-badge count-4d" id="count4D">0 angka</span>
+                </div>
+                <div id="grid4D" class="grid-container grid-4d">
+                    <span style="color:var(--text-secondary); grid-column:1/-1; text-align:center;">(belum ada hasil)</span>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-copy" id="btnCopy4D">📋 Salin 4D</button>
+                    <button class="btn btn-copy" id="btnCopySplit" style="border-color: var(--color-2d-belakang); color: var(--color-2d-belakang);">📦 Salin Split 4D (400 LN)</button>
+                </div>
+
+                <div id="splitArea" class="hidden" style="margin-top: 16px;">
+                    <div class="label-daftar" style="margin-top:0;">
+                        <span>Split 4D (400 LN per bagian)</span>
+                        <span class="count-badge count-4d" id="splitCount">0 bagian</span>
+                    </div>
+                    <div id="splitContainer"></div>
+                </div>
+
+                <hr class="divider" />
+
+                <!-- ============ TURUNAN 3D ============ -->
+                <div class="result-section">
+                    <div class="label-daftar" style="margin-top:0;">
+                        <span>🔽 Turunan 3D (Buang As) — dari 4D akhir</span>
+                        <span class="count-badge count-3d" id="count3D">0 angka</span>
+                    </div>
+                    <div id="grid3D" class="grid-container grid-3d">
+                        <span style="color:var(--text-secondary); grid-column:1/-1; text-align:center;">(belum ada)</span>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-copy" id="btnCopy3D" style="border-color: var(--color-3d); color: var(--color-3d);">📋 Salin 3D</button>
+                    </div>
+                </div>
+
+                <hr class="divider" />
+
+                <!-- ============ TURUNAN 2D ============ -->
+                <div class="result-section">
+                    <div class="label-daftar" style="margin-top:0; border-bottom: none; margin-bottom: 16px;">
+                        <span>🔽 Turunan 2D (Unik, tanpa duplikat)</span>
+                    </div>
+
+                    <div class="grid-2d-wrapper">
+                        <div class="grid-2d-box">
+                            <div class="label-daftar" style="margin-top:0;">
+                                <span style="color: var(--color-2d-depan);">2D Depan</span>
+                                <span class="count-badge count-2d-depan" id="count2DDepan">0</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">Posisi As + Cop</div>
+                            <div id="grid2DDepan" class="grid-container grid-2d" style="max-height: 300px; padding: 10px;"></div>
+                            <button class="btn btn-copy" id="btnCopy2DDepan" style="width:100%; margin-top:10px; border-color: var(--color-2d-depan); color: var(--color-2d-depan);">📋 Salin 2D Depan</button>
+                        </div>
+
+                        <div class="grid-2d-box">
+                            <div class="label-daftar" style="margin-top:0;">
+                                <span style="color: var(--color-2d-tengah);">2D Tengah</span>
+                                <span class="count-badge count-2d-tengah" id="count2DTengah">0</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">Posisi Cop + Kepala</div>
+                            <div id="grid2DTengah" class="grid-container grid-2d" style="max-height: 300px; padding: 10px;"></div>
+                            <button class="btn btn-copy" id="btnCopy2DTengah" style="width:100%; margin-top:10px; border-color: var(--color-2d-tengah); color: var(--color-2d-tengah);">📋 Salin 2D Tengah</button>
+                        </div>
+
+                        <div class="grid-2d-box">
+                            <div class="label-daftar" style="margin-top:0;">
+                                <span style="color: var(--color-2d-belakang);">2D Belakang</span>
+                                <span class="count-badge count-2d-belakang" id="count2DBelakang">0</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">Posisi Kepala + Ekor</div>
+                            <div id="grid2DBelakang" class="grid-container grid-2d" style="max-height: 300px; padding: 10px;"></div>
+                            <button class="btn btn-copy" id="btnCopy2DBelakang" style="width:100%; margin-top:10px; border-color: var(--color-2d-belakang); color: var(--color-2d-belakang);">📋 Salin 2D Belakang</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= CLOUD / BACKUP ================= -->
+        <div class="card">
+            <div class="card-title" style="color:#60a5fa;">☁️ Cloud Sync &amp; Backup</div>
+            <div class="cloud-status" id="cloudStatus">Status: belum terhubung ke Google Drive.</div>
+            <div class="btn-group">
+                <button class="btn btn-drive" id="btnDriveSave">⬆️ Simpan ke Drive</button>
+                <button class="btn btn-drive" id="btnDriveLoad">⬇️ Muat dari Drive</button>
+                <button class="btn" id="btnExport" style="border-color: var(--color-2d-tengah); color: var(--color-2d-tengah);">💾 Export JSON</button>
+                <button class="btn" id="btnImport" style="border-color: var(--color-3d); color: var(--color-3d);">📂 Import JSON</button>
+                <input type="file" id="fileImport" accept=".json,application/json" class="hidden">
+            </div>
+            <details class="cloud-settings">
+                <summary>⚙️ Pengaturan Google Drive API (klik untuk buka)</summary>
+                <div style="padding-top:8px;">
+                    <label>OAuth Client ID</label>
+                    <input type="text" id="gdClientId" placeholder="xxxxxxxxxxxx.apps.googleusercontent.com" autocomplete="off" spellcheck="false">
+                    <label>API Key (opsional, untuk beberapa endpoint)</label>
+                    <input type="text" id="gdApiKey" placeholder="AIzaSy..." autocomplete="off" spellcheck="false">
+                    <button class="btn btn-drive" id="btnSaveGdConfig" style="margin-top:8px;">💾 Simpan Konfigurasi</button>
+                    <div class="info-box" style="border-left-color:#60a5fa; margin-top:12px;">
+                        <strong>Cara setup (sekali saja):</strong><br>
+                        1. Buka <code>console.cloud.google.com</code> → buat project.<br>
+                        2. Aktifkan <strong>Google Drive API</strong>.<br>
+                        3. Buat <strong>OAuth Client ID</strong> tipe <em>Web application</em>.<br>
+                        4. Di <em>Authorized JavaScript origins</em>, tambahkan URL tempat file ini dibuka (contoh: <code>http://localhost</code> atau <code>https://domain-anda.com</code>).<br>
+                        5. Salin Client ID ke kolom di atas → Simpan.<br>
+                        <br>
+                        Data disimpan di folder tersembunyi <code>appDataFolder</code> milik aplikasi (tidak terlihat di Drive utama Anda).
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div class="footer">Deterministik — hasil sama untuk input yang sama. Auto-save ke perangkat. Siap dipasang sebagai app (PWA).</div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        /* =========================================================
+           DOM REFS
+           ========================================================= */
+        const $ = (id) => document.getElementById(id);
+
+        const inputMyLines   = $('inputMyLines');
+        const inputControl   = $('inputControl');
+        const inputControl3D = $('inputControl3D');
+        const inputControl2D = $('inputControl2D');
+
+        const btnGenerate = $('btnGenerate');
+        const btnReset    = $('btnReset');
+        const hasilArea   = $('hasilArea');
+
+        const myLinesCount = $('myLinesCount');
+
+        // Trimmer
+        const trimDepan     = $('trimDepan');
+        const trimTengah    = $('trimTengah');
+        const trimBelakang  = $('trimBelakang');
+        const applyPosisiMy = $('applyPosisiMyLines');
+
+        // Stats
+        const statMyInput = $('statMyInput');
+        const statAwal    = $('statAwal');
+        const statRef2D   = $('statRef2D');
+        const statPosisi  = $('statPosisi');
+        const statAkhir   = $('statAkhir');
+        const jumlahKontrol = $('jumlahKontrol');
+        const daftarKontrol = $('daftarKontrol');
+        const emptyNotice = $('emptyNotice');
+        const hasilSourceLabel = $('hasilSourceLabel');
+
+        // Ref grids
+        const gridRef4D = $('gridRef4D'), countRef4D = $('countRef4D');
+        const gridRef2DDepan = $('gridRef2DDepan'), countRef2DDepan = $('countRef2DDepan');
+        const gridRef2DTengah = $('gridRef2DTengah'), countRef2DTengah = $('countRef2DTengah');
+        const gridRef2DBelakang = $('gridRef2DBelakang'), countRef2DBelakang = $('countRef2DBelakang');
+
+        // Final grids
+        const grid4D = $('grid4D'), count4D = $('count4D');
+        const grid3D = $('grid3D'), count3D = $('count3D');
+        const grid2DDepan = $('grid2DDepan'), count2DDepan = $('count2DDepan');
+        const grid2DTengah = $('grid2DTengah'), count2DTengah = $('count2DTengah');
+        const grid2DBelakang = $('grid2DBelakang'), count2DBelakang = $('count2DBelakang');
+
+        // Buttons
+        const btnCopy4D = $('btnCopy4D');
+        const btnCopy3D = $('btnCopy3D');
+        const btnCopy2DDepan = $('btnCopy2DDepan');
+        const btnCopy2DTengah = $('btnCopy2DTengah');
+        const btnCopy2DBelakang = $('btnCopy2DBelakang');
+        const btnCopySplit = $('btnCopySplit');
+        const splitArea = $('splitArea');
+        const splitContainer = $('splitContainer');
+        const splitCount = $('splitCount');
+
+        // Cloud
+        const cloudStatus   = $('cloudStatus');
+        const btnDriveSave  = $('btnDriveSave');
+        const btnDriveLoad  = $('btnDriveLoad');
+        const btnQuickSave  = $('btnQuickSave');
+        const btnQuickLoad  = $('btnQuickLoad');
+        const btnExport     = $('btnExport');
+        const btnImport     = $('btnImport');
+        const fileImport    = $('fileImport');
+        const gdClientId    = $('gdClientId');
+        const gdApiKey      = $('gdApiKey');
+        const btnSaveGdConfig = $('btnSaveGdConfig');
+
+        // Install
+        const btnInstall = $('btnInstall');
+
+        const toastEl = $('toast');
+
+        /* =========================================================
+           STATE
+           ========================================================= */
+        const posisiState = [
+            Array(10).fill(true),
+            Array(10).fill(true),
+            Array(10).fill(true),
+            Array(10).fill(true)
+        ];
+
+        let myLines4D       = [];    // daftar user (parsed)
+        let reference4D     = [];    // hasil generate dari kontrol (setelah filter)
+        let ref2DDepan      = [];
+        let ref2DTengah     = [];
+        let ref2DBelakang   = [];
+
+        let currentResults4D = [];
+        let currentResults3D = [];
+        let current2DDepan = [];
+        let current2DTengah = [];
+        let current2DBelakang = [];
+
+        /* =========================================================
+           TOAST
+           ========================================================= */
+        let toastTimer = null;
+        function toast(msg, isErr) {
+            toastEl.textContent = msg;
+            toastEl.classList.toggle('err', !!isErr);
+            toastEl.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+        }
+
+        /* =========================================================
+           POSISI RENDER
+           ========================================================= */
+        function renderPosisi() {
+            for (let p = 0; p < 4; p++) {
+                const grid = document.getElementById('grid' + p);
+                const offCount = posisiState[p].filter(v => !v).length;
+                document.getElementById('offCount' + p).textContent = offCount + ' OFF';
+                grid.innerHTML = '';
+                for (let d = 0; d < 10; d++) {
+                    const btn = document.createElement('div');
+                    btn.className = 'digit-btn' + (posisiState[p][d] ? '' : ' off');
+                    btn.textContent = d;
+                    btn.dataset.posisi = p;
+                    btn.dataset.digit = d;
+                    btn.addEventListener('click', function() {
+                        const p2 = parseInt(this.dataset.posisi);
+                        const d2 = parseInt(this.dataset.digit);
+                        posisiState[p2][d2] = !posisiState[p2][d2];
+                        renderPosisi();
+                        saveLocalDebounced();
+                        if (!hasilArea.classList.contains('hidden')) generate();
+                    });
+                    grid.appendChild(btn);
+                }
+            }
+        }
+
+        function setAllPosisi(posisi, value) {
+            for (let d = 0; d < 10; d++) posisiState[posisi][d] = value;
+            renderPosisi();
+            saveLocalDebounced();
+            if (!hasilArea.classList.contains('hidden')) generate();
+        }
+
+        document.querySelectorAll('.posisi-all-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const posisi = parseInt(this.dataset.posisi);
+                if (this.dataset.action === 'all-on') setAllPosisi(posisi, true);
+                else setAllPosisi(posisi, false);
+            });
+        });
+
+        /* =========================================================
+           PARSER
+           ========================================================= */
+        function parseControls(text) {
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            const controls = lines.map(line => {
+                const digits = line.replace(/\s/g, '').split('');
+                const unique = [...new Set(digits)].filter(d => d >= '0' && d <= '9');
+                return unique.sort();
+            });
+            return controls.filter(arr => arr.length > 0);
+        }
+
+        function parse4DLines(text) {
+            if (!text) return [];
+            // Ambil semua deret 4 digit (abaikan pemisah apapun)
+            const matches = text.match(/\d{4}/g) || [];
+            const set = new Set();
+            for (const m of matches) set.add(m.padStart(4, '0'));
+            return Array.from(set).sort();
+        }
+
+        /* =========================================================
+           GENERATE / FILTER
+           ========================================================= */
+        function generate4D(controls) {
+            if (controls.length === 0) return [];
+            const results = [];
+            for (let i = 0; i < 10000; i++) {
+                const num = String(i).padStart(4, '0');
+                const digits = num.split('');
+                let valid = true;
+                for (const control of controls) {
+                    if (!control.some(d => digits.includes(d))) { valid = false; break; }
+                }
+                if (valid) results.push(num);
+            }
+            return results;
+        }
+
+        function filterCT3D(list, ct3dControls) {
+            if (ct3dControls.length === 0) return list;
+            return list.filter(num => {
+                const d = num.split('');
+                const cke = [d[1], d[2], d[3]];
+                for (const control of ct3dControls) {
+                    if (!control.some(x => cke.includes(x))) return false;
+                }
+                return true;
+            });
+        }
+
+        function filterCT2D(list, ct2dControls) {
+            if (ct2dControls.length === 0) return list;
+            return list.filter(num => {
+                const d = num.split('');
+                const ke = [d[2], d[3]];
+                for (const control of ct2dControls) {
+                    if (!control.some(x => ke.includes(x))) return false;
+                }
+                return true;
+            });
+        }
+
+        function filterPosisi(list) {
+            for (let p = 0; p < 4; p++) {
+                if (!posisiState[p].some(v => v === true)) return [];
+            }
+            return list.filter(num => {
+                const d = num.split('');
+                for (let p = 0; p < 4; p++) {
+                    if (!posisiState[p][parseInt(d[p])]) return false;
+                }
+                return true;
+            });
+        }
+
+        /* Turunan */
+        function to3D(list) {
+            const set = new Set();
+            for (const num of list) set.add(num.slice(1));
+            return Array.from(set).sort();
+        }
+        function to2DDepan(list) {
+            const set = new Set();
+            for (const num of list) set.add(num.slice(0, 2));
+            return Array.from(set).sort();
+        }
+        function to2DTengah(list) {
+            const set = new Set();
+            for (const num of list) set.add(num.slice(1, 3));
+            return Array.from(set).sort();
+        }
+        function to2DBelakang(list) {
+            const set = new Set();
+            for (const num of list) set.add(num.slice(2));
+            return Array.from(set).sort();
+        }
+
+        function splitArray(arr, size) {
+            const chunks = [];
+            for (let i = 0; i < arr.length; i += size) chunks.push(arr.slice(i, i + size));
+            return chunks;
+        }
+
+        /* =========================================================
+           RENDER
+           ========================================================= */
+        function renderControls(controls) {
+            daftarKontrol.innerHTML = '';
+            if (controls.length === 0) {
+                daftarKontrol.innerHTML = '<span style="color:var(--text-secondary);">(tidak ada)</span>';
+                return;
+            }
+            controls.forEach((arr, idx) => {
+                const div = document.createElement('div');
+                div.className = 'row-control';
+                div.innerHTML = `<span class="idx">#${idx+1}</span><span class="digits">${arr.join(' ')}</span>`;
+                daftarKontrol.appendChild(div);
+            });
+        }
+
+        function renderGrid(gridEl, items, className, emptyMsg = '-') {
+            if (!gridEl) return;
+            gridEl.innerHTML = '';
+            if (!items || items.length === 0) {
+                gridEl.innerHTML = `<span style="color:var(--text-secondary); grid-column:1/-1; text-align:center;">${emptyMsg}</span>`;
+                return;
+            }
+            const frag = document.createDocumentFragment();
+            for (const item of items) {
+                const span = document.createElement('span');
+                span.className = className;
+                span.textContent = item;
+                frag.appendChild(span);
+            }
+            gridEl.appendChild(frag);
+        }
+
+        function renderSplit(results) {
+            if (!results || results.length === 0) {
+                splitArea.classList.add('hidden');
+                splitContainer.innerHTML = '';
+                splitCount.textContent = '0 bagian';
+                return;
+            }
+            const chunks = splitArray(results, 400);
+            splitCount.textContent = chunks.length + ' bagian';
+            splitContainer.innerHTML = '';
+            chunks.forEach((chunk, idx) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background:#0f172a; border-radius:8px; padding:12px; margin-bottom:8px; border-left:3px solid var(--color-2d-belakang);';
+                const label = document.createElement('div');
+                label.style.cssText = 'font-size:12px; color:var(--text-secondary); margin-bottom:6px; font-weight:600;';
+                label.textContent = `Bagian ${idx+1} (${chunk.length} LN)`;
+                const text = document.createElement('div');
+                text.style.cssText = 'font-family:"Courier New",monospace; font-size:13px; color:var(--text-primary); word-break:break-all; max-height:80px; overflow-y:auto; line-height:1.6;';
+                text.textContent = chunk.join('*');
+                div.appendChild(label);
+                div.appendChild(text);
+                splitContainer.appendChild(div);
+            });
+            splitArea.classList.remove('hidden');
+        }
+
+        function renderAll() {
+            // Referensi
+            renderGrid(gridRef4D, reference4D, 'item-4d', '(tidak ada referensi)');
+            countRef4D.textContent = reference4D.length + ' angka';
+
+            renderGrid(gridRef2DDepan, ref2DDepan, 'item-2d-depan', '-');
+            countRef2DDepan.textContent = ref2DDepan.length;
+            renderGrid(gridRef2DTengah, ref2DTengah, 'item-2d-tengah', '-');
+            countRef2DTengah.textContent = ref2DTengah.length;
+            renderGrid(gridRef2DBelakang, ref2DBelakang, 'item-2d-belakang', '-');
+            countRef2DBelakang.textContent = ref2DBelakang.length;
+
+            // Final 4D
+            renderGrid(grid4D, currentResults4D, 'item-4d', '(belum ada hasil)');
+            count4D.textContent = currentResults4D.length + ' angka';
+
+            // Turunan
+            currentResults3D = to3D(currentResults4D);
+            renderGrid(grid3D, currentResults3D, 'item-3d', '(belum ada)');
+            count3D.textContent = currentResults3D.length + ' angka';
+
+            current2DDepan = to2DDepan(currentResults4D);
+            renderGrid(grid2DDepan, current2DDepan, 'item-2d-depan', '-');
+            count2DDepan.textContent = current2DDepan.length + ' angka';
+
+            current2DTengah = to2DTengah(currentResults4D);
+            renderGrid(grid2DTengah, current2DTengah, 'item-2d-tengah', '-');
+            count2DTengah.textContent = current2DTengah.length + ' angka';
+
+            current2DBelakang = to2DBelakang(currentResults4D);
+            renderGrid(grid2DBelakang, current2DBelakang, 'item-2d-belakang', '-');
+            count2DBelakang.textContent = current2DBelakang.length + ' angka';
+
+            renderSplit(currentResults4D);
+        }
+
+        /* =========================================================
+           COPY
+           ========================================================= */
+        function copyText(text) {
+            if (!text) { toast('Tidak ada data untuk disalin.', true); return; }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text)
+                    .then(() => toast('✅ Berhasil disalin!'))
+                    .catch(() => copyFallback(text));
+            } else copyFallback(text);
+        }
+        function copyFallback(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); toast('✅ Berhasil disalin!'); }
+            catch (e) { toast('Gagal menyalin.', true); }
+            document.body.removeChild(ta);
+        }
+
+        /* =========================================================
+           GENERATE UTAMA
+           ========================================================= */
+        function generate() {
+            try {
+                const controls = parseControls(inputControl.value);
+                if (controls.length === 0) {
+                    toast('Masukkan minimal 1 baris kontrol 4D.', true);
+                    return;
+                }
+
+                const ct3dControls = parseControls(inputControl3D.value);
+                const ct2dControls = parseControls(inputControl2D.value);
+
+                // 1. Daftar user
+                myLines4D = parse4DLines(inputMyLines.value);
+                statMyInput.textContent = myLines4D.length;
+
+                // 2. Referensi dari kontrol
+                renderControls(controls);
+                jumlahKontrol.textContent = controls.length + ' baris';
+
+                const base4D   = generate4D(controls);
+                const after3D  = filterCT3D(base4D, ct3dControls);
+                const after2D  = filterCT2D(after3D, ct2dControls);
+                const afterPos = filterPosisi(after2D);
+
+                reference4D = afterPos;
+                statAwal.textContent = reference4D.length;
+
+                // 3. Set pemangkas 2D dari referensi
+                ref2DDepan    = to2DDepan(reference4D);
+                ref2DTengah   = to2DTengah(reference4D);
+                ref2DBelakang = to2DBelakang(reference4D);
+
+                statRef2D.textContent = (ref2DDepan.length + ref2DTengah.length + ref2DBelakang.length);
+
+                // 4. Terapkan pemangkas ke daftar user
+                let finalList;
+                let usingMyLines = myLines4D.length > 0;
+
+                if (usingMyLines) {
+                    finalList = myLines4D.slice();
+
+                    if (trimDepan.checked) {
+                        const setD = new Set(ref2DDepan);
+                        finalList = finalList.filter(n => setD.has(n.slice(0, 2)));
+                    }
+                    if (trimTengah.checked) {
+                        const setT = new Set(ref2DTengah);
+                        finalList = finalList.filter(n => setT.has(n.slice(1, 3)));
+                    }
+                    if (trimBelakang.checked) {
+                        const setB = new Set(ref2DBelakang);
+                        finalList = finalList.filter(n => setB.has(n.slice(2)));
+                    }
+                    if (applyPosisiMy.checked) {
+                        finalList = filterPosisi(finalList);
+                    }
+                } else {
+                    // Fallback: kalau user belum isi daftar, pakai referensi
+                    finalList = reference4D.slice();
+                }
+
+                statPosisi.textContent = usingMyLines
+                    ? (myLines4D.length - finalList.length) + ' terpangkas'
+                    : reference4D.length + ' ref';
+
+                statAkhir.textContent = finalList.length;
+                currentResults4D = finalList;
+
+                emptyNotice.classList.toggle('hidden', usingMyLines);
+                hasilSourceLabel.textContent = usingMyLines
+                    ? '(dari Daftar 4D Saya setelah dipangkas)'
+                    : '(memakai Referensi 4D — daftar saya kosong)';
+
+                renderAll();
+                hasilArea.classList.remove('hidden');
+                hasilArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch (e) {
+                console.error(e);
+                toast('Terjadi kesalahan: ' + e.message, true);
+            }
+        }
+
+        /* =========================================================
+           RESET
+           ========================================================= */
+        function resetAll() {
+            inputMyLines.value = '';
+            inputControl.value = '01234\n56789';
+            inputControl3D.value = '1235';
+            inputControl2D.value = '1246';
+            for (let p = 0; p < 4; p++)
+                for (let d = 0; d < 10; d++) posisiState[p][d] = true;
+            trimDepan.checked = true;
+            trimTengah.checked = true;
+            trimBelakang.checked = true;
+            applyPosisiMy.checked = false;
+
+            renderPosisi();
+            updateMyLinesCount();
+
+            hasilArea.classList.add('hidden');
+            myLines4D = []; reference4D = [];
+            currentResults4D = []; currentResults3D = [];
+            current2DDepan = []; current2DTengah = []; current2DBelakang = [];
+            ref2DDepan = []; ref2DTengah = []; ref2DBelakang = [];
+
+            daftarKontrol.innerHTML = '';
+            [gridRef4D, grid3D, grid4D, grid2DDepan, grid2DTengah, grid2DBelakang,
+             gridRef2DDepan, gridRef2DTengah, gridRef2DBelakang].forEach(g => {
+                if (g) g.innerHTML = '<span style="color:var(--text-secondary); grid-column:1/-1; text-align:center;">-</span>';
+            });
+            [count4D, count3D, count2DDepan, count2DTengah, count2DBelakang, countRef4D,
+             countRef2DDepan, countRef2DTengah, countRef2DBelakang].forEach(c => {
+                if (c) c.textContent = '0';
+            });
+            jumlahKontrol.textContent = '0 baris';
+            splitArea.classList.add('hidden');
+            splitContainer.innerHTML = '';
+            splitCount.textContent = '0 bagian';
+            [statAwal, stat3D, stat2D, statPosisi, statAkhir, statMyInput, statRef2D].forEach(s => {
+                if (s) s.textContent = '0';
+            });
+
+            localStorage.removeItem('p4d_state');
+            toast('Semua direset.');
+        }
+
+        /* =========================================================
+           COPY LISTENERS
+           ========================================================= */
+        btnCopy4D.addEventListener('click', () => copyText(currentResults4D.join('*')));
+        btnCopy3D.addEventListener('click', () => copyText(currentResults3D.join('*')));
+        btnCopy2DDepan.addEventListener('click', () => copyText(current2DDepan.join('*')));
+        btnCopy2DTengah.addEventListener('click', () => copyText(current2DTengah.join('*')));
+        btnCopy2DBelakang.addEventListener('click', () => copyText(current2DBelakang.join('*')));
+        btnCopySplit.addEventListener('click', function() {
+            if (currentResults4D.length === 0) { toast('Tidak ada 4D.', true); return; }
+            const chunks = splitArray(currentResults4D, 400);
+            let out = '';
+            chunks.forEach((chunk, idx) => {
+                out += `=== Bagian ${idx+1} (${chunk.length} LN) ===\n`;
+                out += chunk.join('*') + '\n\n';
+            });
+            copyText(out);
+        });
+
+        /* =========================================================
+           MY LINES COUNT (LIVE)
+           ========================================================= */
+        function updateMyLinesCount() {
+            const n = parse4DLines(inputMyLines.value).length;
+            myLinesCount.textContent = n + ' LN';
+        }
+
+        /* =========================================================
+           EVENT LISTENERS UTAMA
+           ========================================================= */
+        btnGenerate.addEventListener('click', () => { generate(); saveLocalDebounced(); });
+        btnReset.addEventListener('click', resetAll);
+
+        inputMyLines.addEventListener('input', () => {
+            updateMyLinesCount();
+            saveLocalDebounced();
+        });
+        [inputControl, inputControl3D, inputControl2D].forEach(el => {
+            el.addEventListener('input', saveLocalDebounced);
+        });
+        [trimDepan, trimTengah, trimBelakang, applyPosisiMy].forEach(el => {
+            el.addEventListener('change', () => {
+                saveLocalDebounced();
+                if (!hasilArea.classList.contains('hidden')) generate();
+            });
+        });
+
+        /* =========================================================
+           LOCAL STORAGE
+           ========================================================= */
+        let saveTimer = null;
+        function saveLocalDebounced() {
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(saveLocal, 400);
+        }
+
+        function collectData() {
+            return {
+                version: 2,
+                savedAt: new Date().toISOString(),
+                myLines: inputMyLines.value,
+                control4D: inputControl.value,
+                control3D: inputControl3D.value,
+                control2D: inputControl2D.value,
+                posisi: posisiState.map(a => a.slice()),
+                trim: {
+                    depan: trimDepan.checked,
+                    tengah: trimTengah.checked,
+                    belakang: trimBelakang.checked,
+                    applyPosisi: applyPosisiMy.checked
+                }
+            };
+        }
+
+        function applyData(data) {
+            if (!data || typeof data !== 'object') throw new Error('Format data tidak valid.');
+            if (typeof data.myLines === 'string') inputMyLines.value = data.myLines;
+            if (typeof data.control4D === 'string') inputControl.value = data.control4D;
+            if (typeof data.control3D === 'string') inputControl3D.value = data.control3D;
+            if (typeof data.control2D === 'string') inputControl2D.value = data.control2D;
+
+            if (Array.isArray(data.posisi) && data.posisi.length === 4) {
+                for (let p = 0; p < 4; p++) {
+                    if (Array.isArray(data.posisi[p]) && data.posisi[p].length === 10) {
+                        for (let d = 0; d < 10; d++) posisiState[p][d] = !!data.posisi[p][d];
+                    }
+                }
+            }
+            if (data.trim && typeof data.trim === 'object') {
+                trimDepan.checked    = data.trim.depan !== false;
+                trimTengah.checked   = data.trim.tengah !== false;
+                trimBelakang.checked = data.trim.belakang !== false;
+                applyPosisiMy.checked = !!data.trim.applyPosisi;
+            }
+            renderPosisi();
+            updateMyLinesCount();
+        }
+
+        function saveLocal() {
+            try { localStorage.setItem('p4d_state', JSON.stringify(collectData())); }
+            catch (e) { /* ignore quota */ }
+        }
+
+        function loadLocal() {
+            try {
+                const raw = localStorage.getItem('p4d_state');
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
+        }
+
+        /* =========================================================
+           EXPORT / IMPORT JSON
+           ========================================================= */
+        btnExport.addEventListener('click', function() {
+            try {
+                const data = collectData();
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'permutasi4d_backup_' + new Date().toISOString().slice(0,10) + '.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                toast('💾 File JSON diunduh.');
+            } catch (e) { toast('Gagal export: ' + e.message, true); }
+        });
+
+        btnImport.addEventListener('click', () => fileImport.click());
+        fileImport.addEventListener('change', function() {
+            const file = this.files && this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    applyData(data);
+                    saveLocal();
+                    generate();
+                    toast('📂 Berhasil import data.');
+                } catch (e) {
+                    toast('Gagal import: ' + e.message, true);
+                }
+            };
+            reader.readAsText(file);
+            this.value = '';
+        });
+
+        /* =========================================================
+           GOOGLE DRIVE SYNC
+           ========================================================= */
+        const GD = {
+            clientId: localStorage.getItem('p4d_gd_client') || '',
+            apiKey:   localStorage.getItem('p4d_gd_key') || '',
+            token:    null,
+            fileName: 'permutasi4d_backup.json',
+            scope:    'https://www.googleapis.com/auth/drive.appdata'
+        };
+
+        // Prefill
+        gdClientId.value = GD.clientId;
+        gdApiKey.value = GD.apiKey;
+
+        function setCloudStatus(msg, kind) {
+            cloudStatus.textContent = msg;
+            cloudStatus.classList.remove('ok', 'err', 'info');
+            if (kind) cloudStatus.classList.add(kind);
+        }
+
+        btnSaveGdConfig.addEventListener('click', function() {
+            GD.clientId = gdClientId.value.trim();
+            GD.apiKey = gdApiKey.value.trim();
+            localStorage.setItem('p4d_gd_client', GD.clientId);
+            localStorage.setItem('p4d_gd_key', GD.apiKey);
+            toast('⚙️ Konfigurasi Google disimpan.');
+            setCloudStatus(GD.clientId ? 'Konfigurasi tersimpan. Siap terhubung.' : 'Client ID belum diisi.', GD.clientId ? 'info' : 'err');
+        });
+
+        function loadGISScript() {
+            return new Promise((resolve, reject) => {
+                if (window.google && window.google.accounts && window.google.accounts.oauth2) return resolve();
+                const s = document.createElement('script');
+                s.src = 'https://accounts.google.com/gsi/client';
+                s.async = true;
+                s.defer = true;
+                s.onload = () => resolve();
+                s.onerror = () => reject(new Error('Gagal memuat Google Identity Services. Periksa koneksi internet.'));
+                document.head.appendChild(s);
+            });
+        }
+
+        function ensureToken() {
+            if (GD.token) return Promise.resolve(GD.token);
+            if (!GD.clientId) {
+                return Promise.reject(new Error('Client ID Google belum diisi. Buka ⚙️ Pengaturan Google Drive API.'));
+            }
+            return loadGISScript().then(() => new Promise((resolve, reject) => {
+                let resolved = false;
+                const client = google.accounts.oauth2.initTokenClient({
+                    client_id: GD.clientId,
+                    scope: GD.scope,
+                    callback: (resp) => {
+                        resolved = true;
+                        if (resp && resp.error) return reject(new Error(resp.error));
+                        GD.token = resp.access_token;
+                        setCloudStatus('Terhubung ke Google Drive ✅', 'ok');
+                        resolve(GD.token);
+                    },
+                    error_callback: (err) => {
+                        if (!resolved) reject(new Error((err && err.message) || 'Login dibatalkan.'));
+                    }
+                });
+                try { client.requestAccessToken({ prompt: '' }); }
+                catch (e) { reject(e); }
+            }));
+        }
+
+        function driveFindFile(token) {
+            const q = encodeURIComponent(`name='${GD.fileName}' and trashed=false`);
+            const url = `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}&fields=files(id,name,modifiedTime,size)`;
+            return fetch(url, { headers: { Authorization: 'Bearer ' + token } })
+                .then(r => {
+                    if (!r.ok) return r.json().then(j => { throw new Error(j.error && j.error.message || ('HTTP ' + r.status)); });
+                    return r.json();
+                })
+                .then(j => (j.files && j.files[0]) || null);
+        }
+
+        function driveSave() {
+            setCloudStatus('Menyiapkan koneksi ke Google Drive...', 'info');
+            return ensureToken().then(token => {
+                setCloudStatus('Mengunggah data...', 'info');
+                const data = collectData();
+                const content = JSON.stringify(data, null, 2);
+                const metadata = { name: GD.fileName, mimeType: 'application/json' };
+
+                return driveFindFile(token).then(existing => {
+                    const boundary = '-------p4d' + Date.now();
+                    const delimiter = '\r\n--' + boundary + '\r\n';
+                    const closeDelim = '\r\n--' + boundary + '--';
+
+                    let body = delimiter +
+                        'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+                        JSON.stringify(metadata) +
+                        delimiter +
+                        'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+                        content +
+                        closeDelim;
+
+                    let url, method;
+                    if (existing) {
+                        url = `https://www.googleapis.com/upload/drive/v3/files/${existing.id}?uploadType=multipart`;
+                        method = 'PATCH';
+                    } else {
+                        metadata.parents = ['appDataFolder'];
+                        // rebuild body because metadata changed
+                        body = delimiter +
+                            'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+                            JSON.stringify(metadata) +
+                            delimiter +
+                            'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+                            content +
+                            closeDelim;
+                        url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+                        method = 'POST';
+                    }
+
+                    return fetch(url, {
+                        method,
+                        headers: {
+                            Authorization: 'Bearer ' + token,
+                            'Content-Type': 'multipart/related; boundary=' + boundary
+                        },
+                        body
+                    });
+                }).then(r => {
+                    if (!r.ok) return r.json().then(j => { throw new Error(j.error && j.error.message || ('HTTP ' + r.status)); });
+                    return r.json();
+                }).then(() => {
+                    setCloudStatus('Data tersimpan di Google Drive ✅ (' + new Date().toLocaleString() + ')', 'ok');
+                    toast('☁️ Berhasil simpan ke Google Drive!');
+                });
+            }).catch(err => {
+                setCloudStatus('Gagal simpan: ' + err.message, 'err');
+                toast('Gagal simpan: ' + err.message, true);
+                throw err;
+            });
+        }
+
+        function driveLoad() {
+            setCloudStatus('Menyiapkan koneksi ke Google Drive...', 'info');
+            return ensureToken().then(token => {
+                setCloudStatus('Mencari backup...', 'info');
+                return driveFindFile(token).then(file => {
+                    if (!file) throw new Error('Backup belum ada di Google Drive. Simpan dulu.');
+                    return fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`, {
+                        headers: { Authorization: 'Bearer ' + token }
+                    });
+                }).then(r => {
+                    if (!r.ok) return r.json().then(j => { throw new Error(j.error && j.error.message || ('HTTP ' + r.status)); });
+                    return r.json();
+                }).then(data => {
+                    applyData(data);
+                    saveLocal();
+                    generate();
+                    const when = data.savedAt ? new Date(data.savedAt).toLocaleString() : '-';
+                    setCloudStatus('Data dimuat dari Drive ✅ (tersimpan: ' + when + ')', 'ok');
+                    toast('⬇️ Berhasil muat dari Google Drive!');
+                });
+            }).catch(err => {
+                setCloudStatus('Gagal muat: ' + err.message, 'err');
+                toast('Gagal muat: ' + err.message, true);
+                throw err;
+            });
+        }
+
+        btnDriveSave.addEventListener('click', () => driveSave().catch(()=>{}));
+        btnDriveLoad.addEventListener('click', () => driveLoad().catch(()=>{}));
+        btnQuickSave.addEventListener('click', () => driveSave().catch(()=>{}));
+        btnQuickLoad.addEventListener('click', () => driveLoad().catch(()=>{}));
+
+        /* =========================================================
+           PWA — MANIFEST + INSTALL
+           ========================================================= */
+        function makeIcon(size) {
+            const c = document.createElement('canvas');
+            c.width = c.height = size;
+            const ctx = c.getContext('2d');
+            const g = ctx.createLinearGradient(0, 0, size, size);
+            g.addColorStop(0, '#06b6d4');
+            g.addColorStop(1, '#10b981');
+            ctx.fillStyle = g;
+            // rounded corners
+            const r = size * 0.18;
+            ctx.beginPath();
+            ctx.moveTo(r, 0);
+            ctx.arcTo(size, 0, size, size, r);
+            ctx.arcTo(size, size, 0, size, r);
+            ctx.arcTo(0, size, 0, 0, r);
+            ctx.arcTo(0, 0, size, 0, r);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold ' + Math.round(size * 0.42) + 'px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('4D', size / 2, size / 2 + size * 0.02);
+            return c.toDataURL('image/png');
+        }
+
+        function buildManifest() {
+            try {
+                const icon192 = makeIcon(192);
+                const icon512 = makeIcon(512);
+                const manifest = {
+                    name: 'Permutasi 4D Pro',
+                    short_name: 'P4D Pro',
+                    description: 'Permutasi 4D + pemangkas 2D + turunan 3D/2D',
+                    start_url: location.pathname + location.search,
+                    scope: './',
+                    display: 'standalone',
+                    orientation: 'portrait',
+                    background_color: '#0f172a',
+                    theme_color: '#06b6d4',
+                    icons: [
+                        { src: icon192, sizes: '192x192', type: 'image/png', purpose: 'any' },
+                        { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'any' },
+                        { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+                    ]
+                };
+                const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('link');
+                link.rel = 'manifest';
+                link.href = url;
+                document.head.appendChild(link);
+
+                // Apple touch icon
+                const apple = document.createElement('link');
+                apple.rel = 'apple-touch-icon';
+                apple.href = icon192;
+                document.head.appendChild(apple);
+
+                // favicon
+                const fav = document.createElement('link');
+                fav.rel = 'icon';
+                fav.href = icon192;
+                document.head.appendChild(fav);
+            } catch (e) {
+                console.warn('Manifest gagal dibuat:', e);
+            }
+        }
+
+        // Service worker (opsional — cuma jalan kalau sw.js tersedia di folder yang sama)
+        function registerSW() {
+            if (!('serviceWorker' in navigator)) return;
+            if (location.protocol === 'file:') return;
+            navigator.serviceWorker.register('./sw.js').catch(() => { /* diabaikan */ });
+        }
+
+        // Install prompt
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            btnInstall.classList.remove('hidden');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            btnInstall.classList.add('hidden');
+            toast('📲 App berhasil dipasang!');
+        });
+
+        btnInstall.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                try {
+                    const choice = await deferredPrompt.userChoice;
+                    if (choice && choice.outcome === 'accepted') toast('📲 Memasang app...');
+                } catch (e) {}
+                deferredPrompt = null;
+                btnInstall.classList.add('hidden');
+            } else {
+                toast('Gunakan menu browser → "Install app" / "Add to Home Screen".');
+            }
+        });
+
+        // Tampilkan tombol install juga di iOS (yang tidak support beforeinstallprompt)
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        if (isIOS && !isStandalone) {
+            btnInstall.classList.remove('hidden');
+        }
+
+        /* =========================================================
+           INIT
+           ========================================================= */
+        function init() {
+            buildManifest();
+            registerSW();
+
+            // Restore local
+            const saved = loadLocal();
+            if (saved) {
+                try { applyData(saved); } catch (e) { console.warn(e); }
+            } else {
+                renderPosisi();
+            }
+            updateMyLinesCount();
+
+            // Kalau daftar kontrol kosong, isi default
+            if (!inputControl.value.trim()) inputControl.value = '01234\n56789';
+            if (!inputControl3D.value.trim()) inputControl3D.value = '1235';
+            if (!inputControl2D.value.trim()) inputControl2D.value = '1246';
+
+            setCloudStatus(
+                GD.clientId
+                    ? 'Siap terhubung ke Google Drive (Client ID tersimpan).'
+                    : 'Status: belum terhubung. Isi Client ID di ⚙️ Pengaturan bila ingin sync Drive.',
+                GD.clientId ? 'info' : null
+            );
+
+            window.addEventListener('load', () => {
+                try { generate(); } catch (e) { console.warn(e); }
+            });
+        }
+
+        init();
+
+    })();
+    </script>
+</body>
+</html>
