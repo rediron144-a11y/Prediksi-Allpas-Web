@@ -665,16 +665,26 @@ function selectFormula(section, formula) {
 
 function getPrediction(section, formula, num) {
     const cleanNum = num.toString().trim();
-    if (DB[section] && DB[section][formula] && DB[section][formula][cleanNum]) return DB[section][formula][cleanNum];
     
+    // Cek database
+    if (DB[section] && DB[section][formula] && DB[section][formula][cleanNum]) {
+        return DB[section][formula][cleanNum];
+    }
+    
+    // Fallback untuk Shio
     if (section === 'shio') {
         const d = cleanNum.split('').map(Number);
         const weakShio = ((d[0] + d[1] + d[2] + d[3]) % 12) + 1;
         let result = [];
-        for (let i = 1; i <= 12; i++) if (i !== weakShio) result.push(i.toString().padStart(2, '0'));
+        for (let i = 1; i <= 12; i++) {
+            if (i !== weakShio) {
+                result.push(i.toString().padStart(2, '0'));
+            }
+        }
         return result.join(' ');
     }
     
+    // Fallback untuk BBFS - 9 digit
     if (section === 'bbfs') {
         const d = cleanNum.split('').map(Number);
         let base = 0;
@@ -688,6 +698,44 @@ function getPrediction(section, formula, num) {
         return result;
     }
     
+    // ✅ Fallback untuk AI - bisa 4 digit atau 6 digit
+    if (section === 'ai') {
+        const d = cleanNum.split('').map(Number);
+        const len = d.length;
+        let base = 0;
+        
+        // Adaptasi rumus untuk data 4 digit atau 6 digit
+        if (formula === 'ix') {
+            // C5+C2: untuk 4 digit pakai digit ke-4 + digit ke-2
+            base = (d[len-1] + d[1]) % 10;
+        }
+        else if (formula === 'ml') {
+            // C5+K1: untuk 4 digit pakai digit ke-4 + digit ke-1
+            base = (d[len-1] + d[0]) % 10;
+        }
+        else if (formula === 'mb') {
+            // C4+E2: untuk 4 digit pakai digit ke-4 + digit ke-2
+            base = (d[len-1] + d[1]) % 10;
+        }
+        else if (formula === 'm0') {
+            // C6+E2+1: untuk 4 digit pakai digit ke-4 + digit ke-2 + 1
+            base = (d[len-1] + d[1] + 1) % 10;
+        }
+        else if (formula === 'ty') {
+            // K1+C1: digit ke-1 + digit ke-1
+            base = (d[0] + d[0]) % 10;
+        }
+        
+        let result = '';
+        // ix, ml, mb = 7 digit; m0, ty = 6 digit
+        const totalDigits = (formula === 'm0' || formula === 'ty') ? 6 : 7;
+        for (let i = 0; i < totalDigits; i++) {
+            result += ((base + i) % 10).toString();
+        }
+        return result;
+    }
+    
+    // Fallback untuk section lain (Kepala, Ekor, Biji) - 9 digit
     const d = cleanNum.split('').map(Number);
     let base = 0;
     if (section === 'kepala') {
@@ -700,7 +748,7 @@ function getPrediction(section, formula, num) {
     let res = '';
     for(let i=0; i<9; i++) res += (base+i)%10;
     return res;
-}
+    }
 
 function renderTable(section, formula) {
     const tbody = document.getElementById(`table-${section}`);
