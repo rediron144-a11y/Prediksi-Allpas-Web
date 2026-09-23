@@ -1,1832 +1,1008 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#06b6d4" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="P4D Pro" />
-<title>Permutasi 4D Pro + Pemangkas 2D + Drive Sync</title>
-<style>
-    :root {
-        --bg-dark: #0f172a;
-        --card-bg: #1e293b;
-        --card-border: #334155;
-        --text-primary: #f8fafc;
-        --text-secondary: #94a3b8;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎯 Scanner Hub Pro</title>
+    
+    <!-- Google API Scripts untuk Google Drive -->
+    <script src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 
-        --color-4d: #06b6d4;
-        --color-3d: #f59e0b;
-        --color-2d-depan: #f43f5e;
-        --color-2d-tengah: #10b981;
-        --color-2d-belakang: #a855f7;
-        --color-my: #38bdf8;
-        --color-off: #475569;
-        --color-danger: #ef4444;
-    }
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #475569;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+            
+            --kepala: #ef4444;
+            --ekor: #3b82f6;
+            --biji: #10b981;
+            --ai: #f59e0b;
+            --shio: #ec4899;
+            --bbfs: #8b5cf6;
+        }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: var(--bg-primary); 
+            color: var(--text-primary); 
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
 
-    body {
-        background: var(--bg-dark);
-        color: var(--text-primary);
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        padding: 20px;
-        min-height: 100vh;
-        line-height: 1.5;
-    }
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #8b5cf6 100%);
+            padding: 20px 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .header h1 { font-size: 22px; font-weight: 800; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 12px; opacity: 0.9; margin-top: 5px; }
 
-    .container { max-width: 1200px; margin: 0 auto; }
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            overflow-x: auto;
+            background: var(--bg-secondary);
+            padding: 10px;
+            gap: 8px;
+            position: sticky;
+            top: 70px;
+            z-index: 99;
+            scrollbar-width: none;
+        }
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        .nav-tab {
+            flex: 0 0 auto;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .nav-tab.active { background: var(--accent); color: white; transform: scale(1.05); }
+        .nav-tab.kepala.active { background: var(--kepala); }
+        .nav-tab.ekor.active { background: var(--ekor); }
+        .nav-tab.biji.active { background: var(--biji); }
+        .nav-tab.ai.active { background: var(--ai); }
+        .nav-tab.shio.active { background: var(--shio); }
+        .nav-tab.bbfs.active { background: var(--bbfs); }
 
-    .header {
-        text-align: center;
-        padding: 24px 0 20px 0;
-        border-bottom: 2px solid var(--card-border);
-        margin-bottom: 20px;
-    }
-    .header h1 {
-        font-size: 28px;
-        font-weight: 800;
-        background: linear-gradient(90deg, var(--color-4d), var(--color-2d-tengah));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.5px;
-    }
-    .header p { font-size: 14px; color: var(--text-secondary); margin-top: 8px; }
+        /* Content Sections */
+        .section { display: none; padding: 15px; animation: fadeIn 0.3s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Toolbar atas */
-    .topbar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: center;
-        margin-top: 16px;
-    }
-    .topbar .btn { flex: 0 1 auto; min-width: 0; padding: 8px 16px; min-height: 40px; font-size: 13px; }
+        /* Input Card */
+        .input-card {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+        .input-card label { display: block; margin-bottom: 10px; font-weight: 600; color: var(--accent); font-size: 14px; }
+        .input-card textarea {
+            width: 100%;
+            height: 80px;
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            padding: 12px;
+            font-size: 14px;
+            resize: none;
+        }
+        .input-card textarea:focus { outline: none; border-color: var(--accent); }
+        .btn-scan {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-scan:active { transform: scale(0.98); }
 
-    .card {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 16px;
-        padding: 24px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .card:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2); }
+        /* Formula Cards Grid */
+        .formula-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .formula-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border-top: 4px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .formula-card:active { transform: scale(0.95); }
+        .formula-card.active { transform: scale(1.02); box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        .formula-card.kepala { border-color: var(--kepala); }
+        .formula-card.kepala.active { background: linear-gradient(135deg, rgba(239,68,68,0.2), var(--bg-secondary)); }
+        .formula-card.ekor { border-color: var(--ekor); }
+        .formula-card.ekor.active { background: linear-gradient(135deg, rgba(59,130,246,0.2), var(--bg-secondary)); }
+        .formula-card.biji { border-color: var(--biji); }
+        .formula-card.biji.active { background: linear-gradient(135deg, rgba(16,185,129,0.2), var(--bg-secondary)); }
+        .formula-card.ai { border-color: var(--ai); }
+        .formula-card.ai.active { background: linear-gradient(135deg, rgba(245,158,11,0.2), var(--bg-secondary)); }
+        .formula-card.shio { border-color: var(--shio); }
+        .formula-card.shio.active { background: linear-gradient(135deg, rgba(236,72,153,0.2), var(--bg-secondary)); }
+        .formula-card.bbfs { border-color: var(--bbfs); }
+        .formula-card.bbfs.active { background: linear-gradient(135deg, rgba(139,92,246,0.2), var(--bg-secondary)); }
+        
+        .formula-card-title { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600; }
+        .formula-card-result { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; font-family: monospace; line-height: 1.4; word-break: break-word; min-height: 35px; }
+        .formula-card-sub { font-size: 9px; opacity: 0.7; margin-top: 5px; }
+        .formula-card-hint { position: absolute; top: 8px; right: 8px; font-size: 8px; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
 
-    .card-mylines {
-        border-color: rgba(56, 189, 248, 0.45);
-        background: linear-gradient(180deg, rgba(56,189,248,0.06), rgba(30,41,59,1) 60%);
-    }
+        /* Table Section */
+        .table-section {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+        .table-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .formula-badge { padding: 4px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; }
+        
+        table { width: 100%; border-collapse: collapse; min-width: 650px; }
+        th { text-align: left; padding: 12px 8px; background: var(--bg-primary); color: var(--text-secondary); font-size: 11px; font-weight: 600; white-space: nowrap; }
+        td { padding: 12px 8px; border-bottom: 1px solid var(--border); font-size: 12px; }
+        tr:last-child td { border-bottom: none; }
+        tr:active { background: rgba(255,255,255,0.05); }
+        
+        .col-num { font-family: monospace; font-size: 14px; color: var(--text-primary); font-weight: 700; }
+        .col-value { font-family: monospace; font-size: 13px; font-weight: 700; }
+        .col-pred { font-family: monospace; font-size: 11px; letter-spacing: 0.3px; font-weight: 700; line-height: 1.4; }
+        
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; white-space: nowrap; display: inline-block; }
+        .badge-ok { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .badge-zonk { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+        .badge-wait { background: rgba(148, 163, 184, 0.2); color: var(--text-secondary); border: 1px solid var(--text-secondary); }
+        
+        .stats { display: flex; gap: 8px; flex-wrap: wrap; }
+        .stat-item { background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 8px; font-size: 11px; }
+        .stat-ok { color: var(--success); font-weight: 700; }
+        .stat-zonk { color: var(--danger); font-weight: 700; }
 
-    .card-title {
-        font-size: 16px;
-        font-weight: 700;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-    .card-subtitle {
-        font-size: 13px;
-        color: var(--text-secondary);
-        font-weight: 400;
-        margin-left: 4px;
-    }
+        /* Shio & BBFS Reference */
+        .shio-info, .bbfs-info { background: rgba(236, 72, 153, 0.1); border: 1px solid var(--shio); padding: 12px; border-radius: 10px; margin-bottom: 12px; font-size: 11px; }
+        .shio-table, .bbfs-table { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+        .shio-table h4, .bbfs-table h4 { font-size: 12px; color: var(--shio); margin-bottom: 10px; font-weight: 700; }
+        .shio-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; font-size: 9px; }
+        .shio-item { background: rgba(255,255,255,0.1); padding: 6px; border-radius: 6px; text-align: center; }
+        .weak-shio { font-size: 9px; color: var(--danger); margin-top: 4px; font-weight: 600; }
 
-    textarea {
-        width: 100%;
-        background: #0f172a;
-        border: 1px solid var(--card-border);
-        border-radius: 10px;
-        color: var(--text-primary);
-        font-size: 16px;
-        padding: 14px;
-        font-family: 'Courier New', monospace;
-        resize: vertical;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    textarea:focus {
-        outline: none;
-        border-color: var(--color-4d);
-        box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
-    }
-    .input-control { min-height: 100px; letter-spacing: 1px; }
-    .input-mylines { min-height: 150px; letter-spacing: 1px; border-color: rgba(56, 189, 248, 0.4); }
-    .input-mylines:focus { border-color: var(--color-my); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18); }
-    .input-control-3d { min-height: 80px; letter-spacing: 2px; border-color: rgba(245, 158, 11, 0.3); }
-    .input-control-3d:focus { border-color: var(--color-3d); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15); }
-    .input-control-2d { min-height: 80px; letter-spacing: 2px; border-color: rgba(16, 185, 129, 0.3); }
-    .input-control-2d:focus { border-color: var(--color-2d-tengah); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); }
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav-item:active { transform: scale(0.9); }
+        .nav-item.active { background: rgba(59, 130, 246, 0.2); }
+        .nav-icon { font-size: 20px; margin-bottom: 4px; }
+        .nav-label { font-size: 10px; font-weight: 600; }
 
-    .info-box {
-        background: rgba(15, 23, 42, 0.6);
-        border-left: 4px solid var(--color-4d);
-        border-radius: 8px;
-        padding: 12px 16px;
-        margin-top: 12px;
-        font-size: 13px;
-        color: var(--text-secondary);
-    }
-    .info-box strong { color: var(--text-primary); }
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; text-align: center; }
+        .modal-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .modal-btn-primary { background: var(--accent); color: white; }
+        .modal-btn-danger { background: var(--danger); color: white; }
+        .modal-btn-secondary { background: var(--bg-card); color: var(--text-primary); }
 
-    .btn-group { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        color: #fff;
-        background: transparent;
-        border: 1px solid var(--card-border);
-        min-height: 48px;
-        flex: 1;
-        min-width: 120px;
-        transition: all 0.2s;
-        font-family: inherit;
-    }
-    .btn:hover { transform: translateY(-1px); }
-    .btn:active { transform: translateY(0); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .btn-primary { background: var(--color-4d); border-color: var(--color-4d); color: #0f172a; }
-    .btn-primary:hover { background: #0891b2; }
-    .btn-danger { border-color: var(--color-danger); color: var(--color-danger); }
-    .btn-danger:hover { background: var(--color-danger); color: #fff; }
-    .btn-copy { border-color: var(--color-2d-tengah); color: var(--color-2d-tengah); }
-    .btn-copy:hover { background: var(--color-2d-tengah); color: #0f172a; }
-    .btn-my { border-color: var(--color-my); color: var(--color-my); }
-    .btn-my:hover { background: var(--color-my); color: #0f172a; }
-    .btn-drive { border-color: #60a5fa; color: #60a5fa; }
-    .btn-drive:hover { background: #60a5fa; color: #0f172a; }
-    .btn-install { border-color: #facc15; color: #facc15; }
-    .btn-install:hover { background: #facc15; color: #0f172a; }
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            z-index: 3000;
+            white-space: nowrap;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { background: var(--success); color: white; }
+        .toast.error { background: var(--danger); color: white; }
 
-    /* ===== POSISI ON/OFF ===== */
-    .posisi-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-top: 12px;
-    }
-    .posisi-box {
-        background: #0f172a;
-        border: 1px solid var(--card-border);
-        border-radius: 12px;
-        padding: 16px;
-    }
-    .posisi-label {
-        font-weight: 700;
-        font-size: 14px;
-        color: var(--text-primary);
-        margin-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
-    .off-count { font-size: 12px; color: var(--color-danger); font-weight: 600; }
+        /* Empty State */
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
+        .empty-state-icon { font-size: 48px; margin-bottom: 15px; opacity: 0.5; }
+        .empty-state-text { font-size: 14px; }
 
-    .digit-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 6px;
-    }
-    .digit-btn {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 8px;
-        color: var(--text-primary);
-        font-size: 16px;
-        font-weight: 700;
-        font-family: 'Courier New', monospace;
-        padding: 8px 0;
-        cursor: pointer;
-        transition: all 0.15s;
-        text-align: center;
-        user-select: none;
-    }
-    .digit-btn:hover { background: var(--card-border); }
-    .digit-btn.off {
-        background: rgba(239, 68, 68, 0.1);
-        border-color: var(--color-danger);
-        color: var(--color-danger);
-        opacity: 0.5;
-        text-decoration: line-through;
-    }
-    .digit-btn.off:hover { opacity: 0.8; }
-
-    .posisi-all-btn {
-        font-size: 11px;
-        padding: 4px 8px;
-        border-radius: 6px;
-        border: 1px solid var(--card-border);
-        background: transparent;
-        color: var(--text-secondary);
-        cursor: pointer;
-        margin-left: 4px;
-        transition: all 0.2s;
-        font-family: inherit;
-    }
-    .posisi-all-btn:hover { background: var(--card-border); color: var(--text-primary); }
-    .posisi-all-btn.on { border-color: var(--color-2d-tengah); color: var(--color-2d-tengah); }
-    .posisi-all-btn.off { border-color: var(--color-danger); color: var(--color-danger); }
-
-    /* ===== TRIMMER ===== */
-    .trimmer-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 12px;
-    }
-    .trimmer-item {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        background: #0f172a;
-        border: 1px solid var(--card-border);
-        border-radius: 10px;
-        padding: 12px 14px;
-        cursor: pointer;
-        transition: border-color 0.2s, background 0.2s;
-    }
-    .trimmer-item:hover { border-color: var(--color-2d-belakang); }
-    .trimmer-item input[type="checkbox"] {
-        width: 20px; height: 20px;
-        accent-color: var(--color-2d-belakang);
-        margin-top: 2px;
-        cursor: pointer;
-        flex-shrink: 0;
-    }
-    .trimmer-title { font-weight: 700; font-size: 14px; }
-    .trimmer-sub { font-size: 12px; color: var(--text-secondary); }
-
-    /* ===== HASIL & STATS ===== */
-    .filter-stats {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        padding: 16px;
-        background: #0f172a;
-        border-radius: 12px;
-        margin: 16px 0;
-        font-size: 13px;
-        border: 1px solid var(--card-border);
-    }
-    .stat-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 8px 16px;
-        background: var(--card-bg);
-        border-radius: 8px;
-        border: 1px solid var(--card-border);
-        min-width: 100px;
-        flex: 1;
-    }
-    .stat-item .label { color: var(--text-secondary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; text-align: center; }
-    .stat-item .value { font-weight: 800; font-size: 18px; color: var(--text-primary); }
-
-    .grid-container {
-        display: grid;
-        gap: 6px;
-        margin-top: 12px;
-        background: #0f172a;
-        border-radius: 12px;
-        padding: 16px;
-        border: 1px solid var(--card-border);
-        max-height: 350px;
-        overflow-y: auto;
-    }
-    .grid-4d { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); border-color: rgba(6, 182, 212, 0.3); }
-    .grid-3d { grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); border-color: rgba(245, 158, 11, 0.3); }
-    .grid-2d { grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)); }
-
-    .item-4d { background: rgba(6, 182, 212, 0.1); color: var(--color-4d); border: 1px solid rgba(6, 182, 212, 0.2); }
-    .item-3d { background: rgba(245, 158, 11, 0.1); color: var(--color-3d); border: 1px solid rgba(245, 158, 11, 0.2); }
-    .item-2d-depan { background: rgba(244, 63, 94, 0.1); color: var(--color-2d-depan); border: 1px solid rgba(244, 63, 94, 0.2); }
-    .item-2d-tengah { background: rgba(16, 185, 129, 0.1); color: var(--color-2d-tengah); border: 1px solid rgba(16, 185, 129, 0.2); }
-    .item-2d-belakang { background: rgba(168, 85, 247, 0.1); color: var(--color-2d-belakang); border: 1px solid rgba(168, 85, 247, 0.2); }
-    .item-my { background: rgba(56, 189, 248, 0.1); color: var(--color-my); border: 1px solid rgba(56, 189, 248, 0.25); }
-
-    .item-4d, .item-3d, .item-2d-depan, .item-2d-tengah, .item-2d-belakang, .item-my {
-        padding: 6px 4px;
-        border-radius: 6px;
-        font-size: 15px;
-        font-weight: 700;
-        text-align: center;
-        font-family: 'Courier New', monospace;
-        transition: transform 0.1s;
-    }
-    .item-4d:hover, .item-3d:hover, .item-2d-depan:hover, .item-2d-tengah:hover, .item-2d-belakang:hover, .item-my:hover {
-        transform: scale(1.05);
-        filter: brightness(1.2);
-    }
-
-    .label-daftar {
-        font-size: 15px;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-top: 24px;
-        margin-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 8px;
-        border-bottom: 1px solid var(--card-border);
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-    .count-badge {
-        font-size: 13px;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-weight: 700;
-    }
-    .count-4d { background: rgba(6, 182, 212, 0.15); color: var(--color-4d); }
-    .count-3d { background: rgba(245, 158, 11, 0.15); color: var(--color-3d); }
-    .count-2d-depan { background: rgba(244, 63, 94, 0.15); color: var(--color-2d-depan); }
-    .count-2d-tengah { background: rgba(16, 185, 129, 0.15); color: var(--color-2d-tengah); }
-    .count-2d-belakang { background: rgba(168, 85, 247, 0.15); color: var(--color-2d-belakang); }
-    .count-my { background: rgba(56, 189, 248, 0.15); color: var(--color-my); }
-
-    .row-control {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        background: #0f172a;
-        padding: 10px 14px;
-        border-radius: 8px;
-        margin-bottom: 8px;
-        border-left: 4px solid var(--color-4d);
-    }
-    .row-control .idx { color: var(--text-secondary); font-weight: 700; font-size: 13px; min-width: 30px; }
-    .row-control .digits { font-family: 'Courier New', monospace; font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: 3px; }
-
-    .divider { border: none; border-top: 1px solid var(--card-border); margin: 24px 0; }
-
-    .result-section { margin-top: 24px; }
-
-    .grid-2d-wrapper {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-    }
-    .grid-2d-box {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 12px;
-        padding: 16px;
-    }
-
-    .hidden { display: none !important; }
-
-    .footer { text-align: center; padding: 32px 0 16px 0; font-size: 13px; color: var(--text-secondary); border-top: 1px solid var(--card-border); margin-top: 40px; }
-
-    /* Scrollbar styling */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #475569; }
-
-    /* ===== CLOUD / DRIVE ===== */
-    .cloud-status {
-        font-size: 13px;
-        padding: 10px 14px;
-        border-radius: 8px;
-        background: #0f172a;
-        border: 1px solid var(--card-border);
-        color: var(--text-secondary);
-        margin-bottom: 12px;
-    }
-    .cloud-status.ok { border-color: var(--color-2d-tengah); color: var(--color-2d-tengah); }
-    .cloud-status.err { border-color: var(--color-danger); color: var(--color-danger); }
-    .cloud-status.info { border-color: #60a5fa; color: #60a5fa; }
-
-    details.cloud-settings {
-        margin-top: 14px;
-        border: 1px solid var(--card-border);
-        border-radius: 10px;
-        padding: 10px 14px;
-        background: #0f172a;
-    }
-    details.cloud-settings summary {
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text-secondary);
-        user-select: none;
-    }
-    details.cloud-settings summary:hover { color: var(--text-primary); }
-    details.cloud-settings input[type="text"] {
-        width: 100%;
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 8px;
-        color: var(--text-primary);
-        padding: 10px 12px;
-        font-size: 13px;
-        font-family: 'Courier New', monospace;
-        margin-top: 6px;
-        margin-bottom: 10px;
-    }
-    details.cloud-settings input[type="text"]:focus {
-        outline: none;
-        border-color: var(--color-4d);
-    }
-    details.cloud-settings label {
-        display: block;
-        font-size: 12px;
-        color: var(--text-secondary);
-        font-weight: 600;
-        margin-top: 8px;
-    }
-
-    details.ref-details {
-        margin-top: 14px;
-        border: 1px solid var(--card-border);
-        border-radius: 12px;
-        padding: 12px 16px;
-        background: rgba(15, 23, 42, 0.5);
-    }
-    details.ref-details > summary {
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--text-secondary);
-        user-select: none;
-        list-style: none;
-    }
-    details.ref-details > summary::-webkit-details-marker { display: none; }
-    details.ref-details > summary::before { content: '▸ '; display: inline-block; transition: transform 0.2s; }
-    details.ref-details[open] > summary::before { transform: rotate(90deg); }
-    details.ref-details > summary:hover { color: var(--text-primary); }
-
-    .toast {
-        position: fixed;
-        bottom: 24px;
-        left: 50%;
-        transform: translateX(-50%) translateY(100px);
-        background: var(--card-bg);
-        border: 1px solid var(--color-2d-tengah);
-        color: var(--text-primary);
-        padding: 12px 22px;
-        border-radius: 12px;
-        font-size: 14px;
-        font-weight: 600;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-        opacity: 0;
-        transition: all 0.3s ease;
-        z-index: 9999;
-        pointer-events: none;
-        max-width: 90vw;
-        text-align: center;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    .toast.err { border-color: var(--color-danger); }
-
-    .notice {
-        background: rgba(245, 158, 11, 0.1);
-        border: 1px solid rgba(245, 158, 11, 0.4);
-        color: var(--color-3d);
-        padding: 10px 14px;
-        border-radius: 8px;
-        font-size: 13px;
-        margin-bottom: 12px;
-    }
-
-    @media (max-width: 600px) {
-        .posisi-container { grid-template-columns: 1fr 1fr; }
-        .grid-2d-wrapper { grid-template-columns: 1fr; }
-        .header h1 { font-size: 22px; }
-        .stat-item { min-width: 80px; padding: 6px 10px; }
-        .stat-item .value { font-size: 15px; }
-        body { padding: 12px; }
-        .card { padding: 18px; }
-    }
-</style>
+        /* Responsive */
+        @media (max-width: 480px) {
+            .header h1 { font-size: 18px; }
+            .formula-grid { grid-template-columns: repeat(2, 1fr); }
+            .shio-grid { grid-template-columns: repeat(4, 1fr); }
+            .nav-tabs { top: 60px; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🧩 Permutasi 4D Pro + Pemangkas 2D</h1>
-            <p>Muat daftar 4D Anda → dipangkas oleh referensi 2D Depan / Tengah / Belakang dari kontrol → turunan 3D & 2D otomatis</p>
-            <div class="topbar">
-                <button class="btn btn-install hidden" id="btnInstall">📲 Install App</button>
-                <button class="btn btn-drive" id="btnQuickSave">☁️ Simpan ke Drive</button>
-                <button class="btn btn-drive" id="btnQuickLoad">⬇️ Muat dari Drive</button>
-            </div>
+
+<!-- Header -->
+<div class="header">
+    <button id="btn-install" onclick="installApp()" style="display: none; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; backdrop-filter: blur(4px);">📱 INSTALL</button>
+    <h1>🎯 SCANNER HUB PRO</h1>
+    <p>All-in-One Prediction Tool</p>
+    <button onclick="openSettings()" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px; backdrop-filter: blur(4px);">⚙️</button>
+</div>
+
+<!-- Navigation Tabs -->
+<div class="nav-tabs">
+    <button class="nav-tab kepala active" onclick="switchSection('kepala')">📊 Kepala</button>
+    <button class="nav-tab ekor" onclick="switchSection('ekor')">🎯 Ekor</button>
+    <button class="nav-tab biji" onclick="switchSection('biji')">🌱 Biji</button>
+    <button class="nav-tab ai" onclick="switchSection('ai')">🎮 AI</button>
+    <button class="nav-tab shio" onclick="switchSection('shio')">🐉 Shio</button>
+    <button class="nav-tab bbfs" onclick="switchSection('bbfs')">🔢 BBFS</button>
+</div>
+
+<!-- Main Content -->
+<div id="content">
+    <!-- Section Kepala -->
+    <div class="section active" id="section-kepala">
+        <div class="input-card">
+            <label>📥 Input Result (Spasi/Koma/Enter)</label>
+            <textarea id="input-kepala" placeholder="3437 0146 3461 3403..."></textarea>
+            <button class="btn-scan" onclick="processData('kepala')">🚀 SCAN DATA</button>
         </div>
-
-        <!-- ================= INPUT DAFTAR 4D SAYA ================= -->
-        <div class="card card-mylines">
-            <div class="card-title" style="color: var(--color-my);">
-                📥 Daftar 4D Saya
-                <span class="card-subtitle">(Tempel daftar LN 4D di sini — akan dipangkas oleh referensi 2D)</span>
-            </div>
-            <textarea id="inputMyLines" class="input-mylines" placeholder="Contoh:&#10;1234 5678 9012 3456&#10;atau pisah baris:&#10;1234&#10;5678&#10;atau pakai bintang: 1234*5678*9012"></textarea>
-            <div class="info-box" style="border-left-color: var(--color-my);">
-                <strong>✏️ Format bebas:</strong> pisah dengan spasi, koma, tanda bintang (<code>*</code>), baris baru, atau gabung sekaligus.
-                Hanya deret <strong>4 digit</strong> yang diambil. Duplikat otomatis dihapus.
-                <br><strong>📊 Terdeteksi:</strong> <span id="myLinesCount" style="color: var(--color-my); font-weight: 700;">0 LN</span>
-            </div>
+        <div class="formula-grid" id="grid-kepala">
+            <div class="formula-card kepala" onclick="selectFormula('kepala', 'mb')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A8+A1+1 (MB)</div><div class="formula-card-result" id="res-kepala-mb">----</div><div class="formula-card-sub">Lemah K: 0</div></div>
+            <div class="formula-card kepala" onclick="selectFormula('kepala', 'ty')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">K5+A1 (TY)</div><div class="formula-card-result" id="res-kepala-ty">----</div><div class="formula-card-sub">Lemah K: 5</div></div>
+            <div class="formula-card kepala" onclick="selectFormula('kepala', 'ml')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">K5+C1 (ML)</div><div class="formula-card-result" id="res-kepala-ml">----</div><div class="formula-card-sub">Lemah K: 0</div></div>
+            <div class="formula-card kepala" onclick="selectFormula('kepala', 'ix')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A4+E1 (IX)</div><div class="formula-card-result" id="res-kepala-ix">----</div><div class="formula-card-sub">Lemah K: 3</div></div>
+            <div class="formula-card kepala" onclick="selectFormula('kepala', 'm0')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A8+K1 (M0)</div><div class="formula-card-result" id="res-kepala-m0">----</div><div class="formula-card-sub">Lemah K: 4</div></div>
         </div>
-
-        <!-- ================= KONTROL 4D (REFERENSI) ================= -->
-        <div class="card">
-            <div class="card-title">🎛️ Kontrol Referensi 4D <span class="card-subtitle">(Sumber pemangkas 2D — semua posisi WAJIB muncul minimal 1 digit dari setiap baris)</span></div>
-            <textarea id="inputControl" class="input-control" placeholder="01234&#10;56789">01234
-56789</textarea>
-            <div class="info-box">
-                <strong>✏️ Cara:</strong> Tulis setiap baris kontrol di baris baru. Referensi 4D harus memuat minimal 1 digit dari setiap baris.
+        <div class="table-section">
+            <div class="table-header">
+                <div class="table-title">📊 History <span class="formula-badge" id="badge-kepala" style="background:#334155;color:#94a3b8;">PILIH RUMUS</span></div>
+                <div class="stats" id="stats-kepala" style="display:none;"><div class="stat-item">OK: <span class="stat-ok" id="stat-ok-kepala">0</span></div><div class="stat-item">ZONK: <span class="stat-zonk" id="stat-zonk-kepala">0</span></div></div>
             </div>
+            <table><thead><tr><th width="8%">No</th><th width="18%">Result</th><th width="34%">Prediksi</th><th width="20%">Status</th></tr></thead><tbody id="table-kepala"><tr><td colspan="4" class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">Input data & pilih rumusan</div></td></tr></tbody></table>
         </div>
-
-        <div class="card">
-            <div class="card-title" style="color: var(--color-3d);">🎯 CT 3D <span class="card-subtitle">(Posisi Cop-Kepala-Ekor — multi-baris, semua harus dipenuhi)</span></div>
-            <textarea id="inputControl3D" class="input-control-3d" placeholder="1235">1235</textarea>
-            <div class="info-box" style="border-left-color: var(--color-3d);">
-                <strong style="color: var(--color-3d);">✏️ CT 3D:</strong> Filter berdasarkan posisi <strong>Cop (ke-2), Kepala (ke-3), Ekor (ke-4)</strong>.
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-title" style="color: var(--color-2d-tengah);">🎯 CT 2D <span class="card-subtitle">(Posisi Kepala-Ekor — multi-baris, semua harus dipenuhi)</span></div>
-            <textarea id="inputControl2D" class="input-control-2d" placeholder="1246">1246</textarea>
-            <div class="info-box" style="border-left-color: var(--color-2d-tengah);">
-                <strong style="color: var(--color-2d-tengah);">✏️ CT 2D:</strong> Filter berdasarkan posisi <strong>Kepala (ke-3) & Ekor (ke-4)</strong>.
-            </div>
-        </div>
-
-        <!-- FILTER POSISI ON/OFF -->
-        <div class="card">
-            <div class="card-title" style="color: var(--color-2d-depan);">🔘 Filter Posisi (ON/OFF per digit)</div>
-            <div class="posisi-container" id="posisiContainer">
-                <div class="posisi-box" data-posisi="0">
-                    <div class="posisi-label">
-                        <span>As <span style="color:var(--text-secondary);font-weight:400;font-size:12px;">(Pos 1)</span></span>
-                        <span><span class="off-count" id="offCount0">0 OFF</span>
-                            <button class="posisi-all-btn on" data-posisi="0" data-action="all-on">All ON</button>
-                            <button class="posisi-all-btn off" data-posisi="0" data-action="all-off">All OFF</button>
-                        </span>
-                    </div>
-                    <div class="digit-grid" id="grid0"></div>
-                </div>
-                <div class="posisi-box" data-posisi="1">
-                    <div class="posisi-label">
-                        <span>Cop <span style="color:var(--text-secondary);font-weight:400;font-size:12px;">(Pos 2)</span></span>
-                        <span><span class="off-count" id="offCount1">0 OFF</span>
-                            <button class="posisi-all-btn on" data-posisi="1" data-action="all-on">All ON</button>
-                            <button class="posisi-all-btn off" data-posisi="1" data-action="all-off">All OFF</button>
-                        </span>
-                    </div>
-                    <div class="digit-grid" id="grid1"></div>
-                </div>
-                <div class="posisi-box" data-posisi="2">
-                    <div class="posisi-label">
-                        <span>Kepala <span style="color:var(--text-secondary);font-weight:400;font-size:12px;">(Pos 3)</span></span>
-                        <span><span class="off-count" id="offCount2">0 OFF</span>
-                            <button class="posisi-all-btn on" data-posisi="2" data-action="all-on">All ON</button>
-                            <button class="posisi-all-btn off" data-posisi="2" data-action="all-off">All OFF</button>
-                        </span>
-                    </div>
-                    <div class="digit-grid" id="grid2"></div>
-                </div>
-                <div class="posisi-box" data-posisi="3">
-                    <div class="posisi-label">
-                        <span>Ekor <span style="color:var(--text-secondary);font-weight:400;font-size:12px;">(Pos 4)</span></span>
-                        <span><span class="off-count" id="offCount3">0 OFF</span>
-                            <button class="posisi-all-btn on" data-posisi="3" data-action="all-on">All ON</button>
-                            <button class="posisi-all-btn off" data-posisi="3" data-action="all-off">All OFF</button>
-                        </span>
-                    </div>
-                    <div class="digit-grid" id="grid3"></div>
-                </div>
-            </div>
-            <div class="info-box" style="margin-top:16px; border-left-color: var(--color-2d-depan);">
-                <strong>💡 Cara:</strong> Klik digit untuk toggle. <span style="color:var(--color-2d-tengah);">Terang = ON (Diizinkan)</span>, <span style="color:var(--color-danger);">Gelap + Coret = OFF (Dieliminasi)</span>.
-            </div>
-        </div>
-
-        <!-- ================= PEMANGKAS 2D ================= -->
-        <div class="card">
-            <div class="card-title" style="color: var(--color-2d-belakang);">✂️ Pemangkas 2D <span class="card-subtitle">(Gunakan referensi 2D hasil kontrol untuk menyaring Daftar 4D Saya)</span></div>
-            <div class="trimmer-grid">
-                <label class="trimmer-item">
-                    <input type="checkbox" id="trimDepan" checked>
-                    <div>
-                        <div class="trimmer-title" style="color: var(--color-2d-depan);">2D Depan</div>
-                        <div class="trimmer-sub">As + Cop (pos 1-2)</div>
-                    </div>
-                </label>
-                <label class="trimmer-item">
-                    <input type="checkbox" id="trimTengah" checked>
-                    <div>
-                        <div class="trimmer-title" style="color: var(--color-2d-tengah);">2D Tengah</div>
-                        <div class="trimmer-sub">Cop + Kepala (pos 2-3)</div>
-                    </div>
-                </label>
-                <label class="trimmer-item">
-                    <input type="checkbox" id="trimBelakang" checked>
-                    <div>
-                        <div class="trimmer-title" style="color: var(--color-2d-belakang);">2D Belakang</div>
-                        <div class="trimmer-sub">Kepala + Ekor (pos 3-4)</div>
-                    </div>
-                </label>
-            </div>
-            <label class="trimmer-item" style="margin-top:12px;">
-                <input type="checkbox" id="applyPosisiMyLines">
-                <div>
-                    <div class="trimmer-title" style="color: var(--color-2d-depan);">Terapkan Filter Posisi ke Daftar Saya</div>
-                    <div class="trimmer-sub">Selain pemangkas 2D, tombol ON/OFF digit juga menyaring Daftar 4D Saya</div>
-                </div>
-            </label>
-            <div class="info-box" style="border-left-color: var(--color-2d-belakang); margin-top:14px;">
-                <strong>💡 Cara kerja:</strong> Kontrol di atas menghasilkan referensi 4D → diturunkan menjadi set 2D Depan/Tengah/Belakang.
-                Daftar 4D Saya hanya lolos jika potongan 2D-nya ada di dalam set referensi (sesuai pemangkas yang aktif).
-            </div>
-        </div>
-
-        <!-- TOMBOL GENERATE / RESET -->
-        <div class="card">
-            <div class="btn-group">
-                <button class="btn btn-primary" id="btnGenerate">⚡ Proses &amp; Pangkas</button>
-                <button class="btn btn-danger" id="btnReset">🗑️ Reset Semua</button>
-            </div>
-        </div>
-
-        <!-- ================= HASIL ================= -->
-        <div id="hasilArea" class="hidden">
-            <div class="card">
-                <div class="card-title">📊 HASIL</div>
-
-                <div class="filter-stats">
-                    <div class="stat-item"><span class="label">Daftar Saya</span><span class="value" id="statMyInput" style="color: var(--color-my);">0</span></div>
-                    <div class="stat-item"><span class="label">Ref 4D</span><span class="value" id="statAwal" style="color: var(--color-4d);">0</span></div>
-                    <div class="stat-item"><span class="label">Ref 2D Set</span><span class="value" id="statRef2D" style="color: var(--color-2d-belakang);">0</span></div>
-                    <div class="stat-item"><span class="label">Setelah Pemangkas</span><span class="value" id="statPosisi" style="color: var(--color-2d-depan);">0</span></div>
-                    <div class="stat-item"><span class="label">✅ Akhir 4D</span><span class="value" id="statAkhir" style="color: #fff;">0</span></div>
-                </div>
-
-                <div id="emptyNotice" class="notice hidden">
-                    ⚠️ Daftar 4D Saya masih kosong — hasil di bawah memakai <strong>Referensi 4D</strong> dari kontrol sebagai output. Tempel daftar LN Anda di kolom atas untuk memakai fitur pemangkas.
-                </div>
-
-                <!-- ============ REFERENSI (COLLAPSIBLE) ============ -->
-                <details class="ref-details">
-                    <summary>🎛️ Detail Referensi dari Kontrol (klik untuk buka)</summary>
-
-                    <div class="label-daftar" style="margin-top:16px;">
-                        <span>📋 Daftar Kontrol 4D Aktif</span>
-                        <span class="count-badge count-4d" id="jumlahKontrol">0 baris</span>
-                    </div>
-                    <div id="daftarKontrol"></div>
-
-                    <div class="label-daftar">
-                        <span>🎯 Referensi 4D (sebelum dipakai memangkas)</span>
-                        <span class="count-badge count-4d" id="countRef4D">0 angka</span>
-                    </div>
-                    <div id="gridRef4D" class="grid-container grid-4d"></div>
-
-                    <div class="label-daftar">
-                        <span>✂️ Set Pemangkas 2D (dari referensi 4D)</span>
-                    </div>
-                    <div class="grid-2d-wrapper">
-                        <div class="grid-2d-box">
-                            <div class="label-daftar" style="margin-top:0;">
-                                <span style="color: var(--color-2d-depan);">2D Depan</span>
-                                <span class="count-badge count-2d-depan" id="countRef2DDepan">0</span>
-                            </div>
-                            <div id="gridRef2DDepan" class="grid-container grid-2d" style="max-height:200px; padding:10px;"></div>
-                        </div>
-                        <div class="grid-2d-box">
-                            <div class="label-daftar" style="margin-top:0;">
-                                <span style="color: var(--color-2d-tengah);">2D Tengah</span>
-                                <span class="count-badge count-2d-tengah" id="countRef2DTengah">0</span>
-                            </div>
-                            <div id="gridRef2DTengah" class="grid-container grid-2d" style="max-height:200px; padding:10px;"></div>
-                        </div>
-                        <div class="grid-2d-box">
-                            <div class="label-daftar" style="margin-top:0;">
-                                <span style="color: var(--color-2d-belakang);">2D Belakang</span>
-                                <span class="count-badge count-2d-belakang" id="countRef2DBelakang">0</span>
-                            </div>
-                            <div id="gridRef2DBelakang" class="grid-container grid-2d" style="max-height:200px; padding:10px;"></div>
-                        </div>
-                    </div>
-                </details>
-
-                <hr class="divider" />
-
-                <!-- ============ HASIL AKHIR 4D ============ -->
-                <div class="label-daftar">
-                    <span>✅ Hasil 4D Akhir <span id="hasilSourceLabel" style="color:var(--text-secondary); font-weight:400; font-size:13px;"></span></span>
-                    <span class="count-badge count-4d" id="count4D">0 angka</span>
-                </div>
-                <div id="grid4D" class="grid-container grid-4d">
-                    <span style="color:var(--text-secondary); grid-column:1/-1; text-align:center;">(belum ada hasil)</span>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-copy" id="btnCopy4D">📋 Salin 4D</button>
-                    <button class="btn btn-copy" id="btnCopySplit" style="border-color: var(--color-2d-belakang); color: var(--color-2d-belakang);">📦 Salin Split 4D (400 LN)</button>
-                </div>
-
-                <div id="splitArea" class="hidden" style="margin-top: 16px;">
-                    <div class="label-daftar" style="margin-top:0;">
-                        <span>Split 4D (400 LN per bagian)</span>
-                        <span class="count-badge count-4d" id="splitCount">0 bagian</span>
-                    </div>
-                    <div id="splitContainer"></div>
-                </div>
-
-                <hr class="divider" />
-
-                <!-- ============ TURUNAN 3D ============ -->
-                <div class="result-section">
-                    <div class="label-daftar" style="margin-top:0;">
-                        <span>🔽 Turunan 3D (Buang As) — dari 4D akhir</span>
-                        <span class="count-badge count-3d" id="count3D">0 angka</span>
-                    </div>
-                    <div id="grid3D" class="grid-container grid-3d">
-                        <span style="color:var(--text-secondary); grid-column:1/-1; text-align:center;">(belum ada)</span>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-copy" id="btnCopy3D" style="border-color: var(--color-3d); color: var(--color-3d);">📋 Salin 3D</button>
-                    </div>
-                </div>
-
-                <hr class="divider" />
-
-                <!-- ============ TURUNAN 2D ============ -->
-                <div class="result-section">
-                    <div class="label-daftar" style="margin-top:0; border-bottom: none; margin-bottom: 16px;">
-                        <span>🔽 Turunan 2D (Unik, tanpa duplikat)</span>
-                    </div>
-
-                    <div class="grid-2d-wrapper">
-                        <div class="grid-2d-box">
-                            <div class="label-daftar" style="margin-top:0;">
-                                <span style="color: var(--color-2d-depan);">2D Depan</span>
-                                <span class="count-badge count-2d-depan" id="count2DDepan">0</span>
-                            </div>
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">Posisi As + Cop</div>
-                            <div id="grid2DDepan" class="grid-container grid-2d" style="max-height: 300px; padding: 10px;"></div>
-                            <button class="btn btn-copy" id="btnCopy2DDepan" style="width:100%; margin-top:10px; border-color: var(--color-2d-depan); color: var(--color-2d-depan);">📋 Salin 2D Depan</button>
-                        </div>
-
-                        <div class="grid-2d-box">
-                            <div class="label-daftar" style="margin-top:0;">
-                                <span style="color: var(--color-2d-tengah);">2D Tengah</span>
-                                <span class="count-badge count-2d-tengah" id="count2DTengah">0</span>
-                            </div>
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">Posisi Cop + Kepala</div>
-                            <div id="grid2DTengah" class="grid-container grid-2d" style="max-height: 300px; padding: 10px;"></div>
-                            <button class="btn btn-copy" id="btnCopy2DTengah" style="width:100%; margin-top:10px; border-color: var(--color-2d-tengah); color: var(--color-2d-tengah);">📋 Salin 2D Tengah</button>
-                        </div>
-
-                        <div class="grid-2d-box">
-                            <div class="label-daftar" style="margin-top:0;">
-                                <span style="color: var(--color-2d-belakang);">2D Belakang</span>
-                                <span class="count-badge count-2d-belakang" id="count2DBelakang">0</span>
-                            </div>
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">Posisi Kepala + Ekor</div>
-                            <div id="grid2DBelakang" class="grid-container grid-2d" style="max-height: 300px; padding: 10px;"></div>
-                            <button class="btn btn-copy" id="btnCopy2DBelakang" style="width:100%; margin-top:10px; border-color: var(--color-2d-belakang); color: var(--color-2d-belakang);">📋 Salin 2D Belakang</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= CLOUD / BACKUP ================= -->
-        <div class="card">
-            <div class="card-title" style="color:#60a5fa;">☁️ Cloud Sync &amp; Backup</div>
-            <div class="cloud-status" id="cloudStatus">Status: belum terhubung ke Google Drive.</div>
-            <div class="btn-group">
-                <button class="btn btn-drive" id="btnDriveSave">⬆️ Simpan ke Drive</button>
-                <button class="btn btn-drive" id="btnDriveLoad">⬇️ Muat dari Drive</button>
-                <button class="btn" id="btnExport" style="border-color: var(--color-2d-tengah); color: var(--color-2d-tengah);">💾 Export JSON</button>
-                <button class="btn" id="btnImport" style="border-color: var(--color-3d); color: var(--color-3d);">📂 Import JSON</button>
-                <input type="file" id="fileImport" accept=".json,application/json" class="hidden">
-            </div>
-            <details class="cloud-settings">
-                <summary>⚙️ Pengaturan Google Drive API (klik untuk buka)</summary>
-                <div style="padding-top:8px;">
-                    <label>OAuth Client ID</label>
-                    <input type="text" id="gdClientId" placeholder="xxxxxxxxxxxx.apps.googleusercontent.com" autocomplete="off" spellcheck="false">
-                    <label>API Key (opsional, untuk beberapa endpoint)</label>
-                    <input type="text" id="gdApiKey" placeholder="AIzaSy..." autocomplete="off" spellcheck="false">
-                    <button class="btn btn-drive" id="btnSaveGdConfig" style="margin-top:8px;">💾 Simpan Konfigurasi</button>
-                    <div class="info-box" style="border-left-color:#60a5fa; margin-top:12px;">
-                        <strong>Cara setup (sekali saja):</strong><br>
-                        1. Buka <code>console.cloud.google.com</code> → buat project.<br>
-                        2. Aktifkan <strong>Google Drive API</strong>.<br>
-                        3. Buat <strong>OAuth Client ID</strong> tipe <em>Web application</em>.<br>
-                        4. Di <em>Authorized JavaScript origins</em>, tambahkan URL tempat file ini dibuka (contoh: <code>http://localhost</code> atau <code>https://domain-anda.com</code>).<br>
-                        5. Salin Client ID ke kolom di atas → Simpan.<br>
-                        <br>
-                        Data disimpan di folder tersembunyi <code>appDataFolder</code> milik aplikasi (tidak terlihat di Drive utama Anda).
-                    </div>
-                </div>
-            </details>
-        </div>
-
-        <div class="footer">Deterministik — hasil sama untuk input yang sama. Auto-save ke perangkat. Siap dipasang sebagai app (PWA).</div>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <!-- Section Ekor -->
+    <div class="section" id="section-ekor">
+        <div class="input-card">
+            <label>📥 Input Result (Spasi/Koma/Enter)</label>
+            <textarea id="input-ekor" placeholder="2971 8300 7445 8853..."></textarea>
+            <button class="btn-scan" onclick="processData('ekor')">🚀 SCAN DATA</button>
+        </div>
+        <div class="formula-grid" id="grid-ekor">
+            <div class="formula-card ekor" onclick="selectFormula('ekor', 'm0')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">K9+K1 (M0)</div><div class="formula-card-result" id="res-ekor-m0">----</div><div class="formula-card-sub">Lemah E: 5</div></div>
+            <div class="formula-card ekor" onclick="selectFormula('ekor', 'ml')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">C8+C1+1 (ML)</div><div class="formula-card-result" id="res-ekor-ml">----</div><div class="formula-card-sub">Lemah E: 8</div></div>
+            <div class="formula-card ekor" onclick="selectFormula('ekor', 'ix')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">E4+C1 (IX)</div><div class="formula-card-result" id="res-ekor-ix">----</div><div class="formula-card-sub">Lemah E: 8</div></div>
+            <div class="formula-card ekor" onclick="selectFormula('ekor', 'mb')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">C8+C1+K2 (MB)</div><div class="formula-card-result" id="res-ekor-mb">----</div><div class="formula-card-sub">Lemah E: 8</div></div>
+            <div class="formula-card ekor" onclick="selectFormula('ekor', 'ty')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">C8+C2+K2 (TY)</div><div class="formula-card-result" id="res-ekor-ty">----</div><div class="formula-card-sub">Lemah E: 9</div></div>
+        </div>
+        <div class="table-section">
+            <div class="table-header">
+                <div class="table-title">📊 History <span class="formula-badge" id="badge-ekor" style="background:#334155;color:#94a3b8;">PILIH RUMUS</span></div>
+                <div class="stats" id="stats-ekor" style="display:none;"><div class="stat-item">OK: <span class="stat-ok" id="stat-ok-ekor">0</span></div><div class="stat-item">ZONK: <span class="stat-zonk" id="stat-zonk-ekor">0</span></div></div>
+            </div>
+            <table><thead><tr><th width="8%">No</th><th width="15%">Result</th><th width="15%">Ekor</th><th width="42%">Prediksi</th><th width="20%">Status</th></tr></thead><tbody id="table-ekor"><tr><td colspan="5" class="empty-state"><div class="empty-state-icon">🎯</div><div class="empty-state-text">Input data & pilih rumusan</div></td></tr></tbody></table>
+        </div>
+    </div>
 
-    <script>
-    (function() {
-        'use strict';
+    <!-- Section Biji -->
+    <div class="section" id="section-biji">
+        <div class="input-card">
+            <label>📥 Input Result (Spasi/Koma/Enter)</label>
+            <textarea id="input-biji" placeholder="2971 8300 7445 8853..."></textarea>
+            <button class="btn-scan" onclick="processData('biji')">🚀 SCAN DATA</button>
+        </div>
+        <div class="formula-grid" id="grid-biji">
+            <div class="formula-card biji" onclick="selectFormula('biji', 'ml')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A9+C1+K2 (ML)</div><div class="formula-card-result" id="res-biji-ml">----</div><div class="formula-card-sub">Lemah J: 2</div></div>
+            <div class="formula-card biji" onclick="selectFormula('biji', 'ix')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A7+C1+E1 (IX)</div><div class="formula-card-result" id="res-biji-ix">----</div><div class="formula-card-sub">Lemah J: 0</div></div>
+            <div class="formula-card biji" onclick="selectFormula('biji', 'mb')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A7+K2+E1 (MB)</div><div class="formula-card-result" id="res-biji-mb">----</div><div class="formula-card-sub">Lemah J: 5</div></div>
+            <div class="formula-card biji" onclick="selectFormula('biji', 'm0')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A9+K2 (M0)</div><div class="formula-card-result" id="res-biji-m0">----</div><div class="formula-card-sub">Lemah J: 2</div></div>
+            <div class="formula-card biji" onclick="selectFormula('biji', 'ty')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A7+E2 (TY)</div><div class="formula-card-result" id="res-biji-ty">----</div><div class="formula-card-sub">Lemah J: 3</div></div>
+        </div>
+        <div class="table-section">
+            <div class="table-header">
+                <div class="table-title">📊 History <span class="formula-badge" id="badge-biji" style="background:#334155;color:#94a3b8;">PILIH RUMUS</span></div>
+                <div class="stats" id="stats-biji" style="display:none;"><div class="stat-item">OK: <span class="stat-ok" id="stat-ok-biji">0</span></div><div class="stat-item">ZONK: <span class="stat-zonk" id="stat-zonk-biji">0</span></div></div>
+            </div>
+            <table><thead><tr><th width="8%">No</th><th width="15%">Result</th><th width="12%">Biji</th><th width="45%">Prediksi</th><th width="20%">Status</th></tr></thead><tbody id="table-biji"><tr><td colspan="5" class="empty-state"><div class="empty-state-icon">🌱</div><div class="empty-state-text">Input data & pilih rumusan</div></td></tr></tbody></table>
+        </div>
+    </div>
 
-        /* =========================================================
-           DOM REFS
-           ========================================================= */
-        const $ = (id) => document.getElementById(id);
+    <!-- Section AI -->
+    <div class="section" id="section-ai">
+        <div class="input-card">
+            <label>📥 Input Result 6D (Spasi/Koma/Enter)</label>
+            <textarea id="input-ai" placeholder="123456 789012 345678..."></textarea>
+            <button class="btn-scan" onclick="processData('ai')">🚀 SCAN DATA</button>
+        </div>
+        <div class="formula-grid" id="grid-ai">
+            <div class="formula-card ai" onclick="selectFormula('ai', 'ix')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">C5+C2 (IX)</div><div class="formula-card-result" id="res-ai-ix">----</div><div class="formula-card-sub">7 Digit</div></div>
+            <div class="formula-card ai" onclick="selectFormula('ai', 'ml')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">C5+K1 (ML)</div><div class="formula-card-result" id="res-ai-ml">----</div><div class="formula-card-sub">7 Digit</div></div>
+            <div class="formula-card ai" onclick="selectFormula('ai', 'mb')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">C4+E2 (MB)</div><div class="formula-card-result" id="res-ai-mb">----</div><div class="formula-card-sub">7 Digit</div></div>
+            <div class="formula-card ai" onclick="selectFormula('ai', 'm0')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">C6+E2+1 (M0)</div><div class="formula-card-result" id="res-ai-m0">----</div><div class="formula-card-sub">6 Digit</div></div>
+            <div class="formula-card ai" onclick="selectFormula('ai', 'ty')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">K1+C1 (TY)</div><div class="formula-card-result" id="res-ai-ty">----</div><div class="formula-card-sub">6 Digit</div></div>
+        </div>
+        <div class="table-section">
+            <div class="table-header">
+                <div class="table-title">📊 History <span class="formula-badge" id="badge-ai" style="background:#334155;color:#94a3b8;">PILIH RUMUS</span></div>
+                <div class="stats" id="stats-ai" style="display:none;"><div class="stat-item">OK: <span class="stat-ok" id="stat-ok-ai">0</span></div><div class="stat-item">ZONK: <span class="stat-zonk" id="stat-zonk-ai">0</span></div></div>
+            </div>
+            <table><thead><tr><th width="8%">No</th><th width="15%">Result</th><th width="15%">AI (6D)</th><th width="42%">Prediksi</th><th width="20%">Status</th></tr></thead><tbody id="table-ai"><tr><td colspan="5" class="empty-state"><div class="empty-state-icon">🎮</div><div class="empty-state-text">Input data & pilih rumusan</div></td></tr></tbody></table>
+        </div>
+    </div>
 
-        const inputMyLines   = $('inputMyLines');
-        const inputControl   = $('inputControl');
-        const inputControl3D = $('inputControl3D');
-        const inputControl2D = $('inputControl2D');
+    <!-- Section Shio -->
+    <div class="section" id="section-shio">
+        <div class="input-card">
+            <label>📥 Input Result (Spasi/Koma/Enter)</label>
+            <textarea id="input-shio" placeholder="8324 5330 4503 6448..."></textarea>
+            <button class="btn-scan" onclick="processData('shio')">🚀 SCAN DATA</button>
+        </div>
+        <div class="shio-info">💡 <strong>Shio:</strong> 12 angka (01-12). Prediksi 11 digit (1 shio lemah).</div>
+        <div class="shio-table">
+            <h4>📋 Tabel Shio</h4>
+            <div class="shio-grid">
+                <div class="shio-item">01<br>Tikus</div><div class="shio-item">02<br>Kerbau</div><div class="shio-item">03<br>Macan</div>
+                <div class="shio-item">04<br>Kelinci</div><div class="shio-item">05<br>Naga</div><div class="shio-item">06<br>Ular</div>
+                <div class="shio-item">07<br>Kuda</div><div class="shio-item">08<br>Kambing</div><div class="shio-item">09<br>Monyet</div>
+                <div class="shio-item">10<br>Ayam</div><div class="shio-item">11<br>Anjing</div><div class="shio-item">12<br>Babi</div>
+            </div>
+        </div>
+        <div class="formula-grid" id="grid-shio">
+            <div class="formula-card shio" onclick="selectFormula('shio', 'ml')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A1+5 (ML)</div><div class="formula-card-result" id="res-shio-ml">----</div><div class="formula-card-sub">11 Digit</div></div>
+            <div class="formula-card shio" onclick="selectFormula('shio', 'ix')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A5+C1 (IX)</div><div class="formula-card-result" id="res-shio-ix">----</div><div class="formula-card-sub">11 Digit</div></div>
+            <div class="formula-card shio" onclick="selectFormula('shio', 'mb')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A7+K1 (MB)</div><div class="formula-card-result" id="res-shio-mb">----</div><div class="formula-card-sub">11 Digit</div></div>
+            <div class="formula-card shio" onclick="selectFormula('shio', 'm0')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">C7+E1+1 (M0)</div><div class="formula-card-result" id="res-shio-m0">----</div><div class="formula-card-sub">11 Digit</div></div>
+            <div class="formula-card shio" onclick="selectFormula('shio', 'ty')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">C7+A2+6 (TY)</div><div class="formula-card-result" id="res-shio-ty">----</div><div class="formula-card-sub">11 Digit</div></div>
+        </div>
+        <div class="table-section">
+            <div class="table-header">
+                <div class="table-title">📊 History <span class="formula-badge" id="badge-shio" style="background:#334155;color:#94a3b8;">PILIH RUMUS</span></div>
+                <div class="stats" id="stats-shio" style="display:none;"><div class="stat-item">OK: <span class="stat-ok" id="stat-ok-shio">0</span></div><div class="stat-item">ZONK: <span class="stat-zonk" id="stat-zonk-shio">0</span></div></div>
+            </div>
+            <table><thead><tr><th width="6%">No</th><th width="12%">Result</th><th width="10%">Shio</th><th width="52%">Prediksi</th><th width="20%">Status</th></tr></thead><tbody id="table-shio"><tr><td colspan="5" class="empty-state"><div class="empty-state-icon">🐉</div><div class="empty-state-text">Input data & pilih rumusan</div></td></tr></tbody></table>
+        </div>
+    </div>
 
-        const btnGenerate = $('btnGenerate');
-        const btnReset    = $('btnReset');
-        const hasilArea   = $('hasilArea');
+    <!-- Section BBFS -->
+    <div class="section" id="section-bbfs">
+        <div class="input-card">
+            <label>📥 Input Result (Spasi/Koma/Enter)</label>
+            <textarea id="input-bbfs" placeholder="0109 6076 4372 6794..."></textarea>
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
+                <button class="btn-scan" onclick="processData('bbfs')" style="flex: 2;">🚀 SCAN DATA</button>
+                <button class="btn-scan" onclick="resetSection('bbfs')" style="flex: 1; background: linear-gradient(135deg, #ef4444, #dc2626);">🗑️ RESET</button>
+            </div>
+            <div style="margin-top: 10px; padding: 10px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; text-align: center;">
+                <span style="font-size: 11px; color: #94a3b8;">📊 Total Input:</span>
+                <span id="counter-bbfs" style="font-size: 18px; font-weight: 700; color: #3b82f6; margin-left: 8px;">0</span>
+                <span style="font-size: 11px; color: #94a3b8; margin-left: 8px;">data</span>
+            </div>
+        </div>
 
-        const myLinesCount = $('myLinesCount');
+        <div class="formula-grid" id="grid-bbfs">
+            <div class="formula-card bbfs" onclick="selectFormula('bbfs', 'mb')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A1 + E10 (MB)</div><div class="formula-card-result" id="res-bbfs-mb">----</div><div class="formula-card-sub">9 Digit BBFS</div></div>
+            <div class="formula-card bbfs" onclick="selectFormula('bbfs', 'ml')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A2 - E5 (ML)</div><div class="formula-card-result" id="res-bbfs-ml">----</div><div class="formula-card-sub">9 Digit BBFS</div></div>
+            <div class="formula-card bbfs" onclick="selectFormula('bbfs', 'ty')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A2 + E5 (TY)</div><div class="formula-card-result" id="res-bbfs-ty">----</div><div class="formula-card-sub">9 Digit BBFS</div></div>
+            <div class="formula-card bbfs" onclick="selectFormula('bbfs', 'm0')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">C2 + K7 (ML)</div><div class="formula-card-result" id="res-bbfs-m0">----</div><div class="formula-card-sub">9 Digit BBFS</div></div>
+            <div class="formula-card bbfs" onclick="selectFormula('bbfs', 'm9')"><span class="formula-card-hint">KLIK</span><div class="formula-card-title">A9 + JKE7 (M9)</div><div class="formula-card-result" id="res-bbfs-m9">----</div><div class="formula-card-sub">9 Digit BBFS</div></div>
+        </div>
 
-        // Trimmer
-        const trimDepan     = $('trimDepan');
-        const trimTengah    = $('trimTengah');
-        const trimBelakang  = $('trimBelakang');
-        const applyPosisiMy = $('applyPosisiMyLines');
+        <div class="table-section">
+            <div class="table-header">
+                <div class="table-title">📊 History BBFS <span class="formula-badge" id="badge-bbfs" style="background:#334155;color:#94a3b8;">PILIH RUMUS</span></div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <div class="stats" id="stats-bbfs" style="display:none;"><div class="stat-item">OK: <span class="stat-ok" id="stat-ok-bbfs">0</span></div><div class="stat-item">ZONK: <span class="stat-zonk" id="stat-zonk-bbfs">0</span></div></div>
+                    <button onclick="exportBBFSToExcel()" style="padding: 6px 12px; background: linear-gradient(135deg, #10b981, #059669); border: none; border-radius: 6px; color: white; font-size: 11px; font-weight: 600; cursor: pointer;">📤 EXCEL</button>
+                </div>
+            </div>
+            <table><thead><tr><th width="6%">No</th><th width="15%">Result</th><th width="39%">Prediksi BBFS</th><th width="20%">Status</th></tr></thead><tbody id="table-bbfs"><tr><td colspan="4" class="empty-state"><div class="empty-state-icon">🔢</div><div class="empty-state-text">Input data & pilih rumusan</div></td></tr></tbody></table>
+        </div>
+    </div>
+</div>
 
-        // Stats
-        const statMyInput = $('statMyInput');
-        const statAwal    = $('statAwal');
-        const statRef2D   = $('statRef2D');
-        const statPosisi  = $('statPosisi');
-        const statAkhir   = $('statAkhir');
-        const jumlahKontrol = $('jumlahKontrol');
-        const daftarKontrol = $('daftarKontrol');
-        const emptyNotice = $('emptyNotice');
-        const hasilSourceLabel = $('hasilSourceLabel');
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="switchSection('kepala'); scrollToTop();"><div class="nav-icon">📊</div><div class="nav-label">Kepala</div></div>
+    <div class="nav-item" onclick="switchSection('ekor'); scrollToTop();"><div class="nav-icon">🎯</div><div class="nav-label">Ekor</div></div>
+    <div class="nav-item" onclick="switchSection('biji'); scrollToTop();"><div class="nav-icon">🌱</div><div class="nav-label">Biji</div></div>
+    <div class="nav-item" onclick="switchSection('ai'); scrollToTop();"><div class="nav-icon">🎮</div><div class="nav-label">AI</div></div>
+    <div class="nav-item" onclick="switchSection('shio'); scrollToTop();"><div class="nav-icon">🐉</div><div class="nav-label">Shio</div></div>
+    <div class="nav-item" onclick="switchSection('bbfs'); scrollToTop();"><div class="nav-icon">🔢</div><div class="nav-label">BBFS</div></div>
+</div>
 
-        // Ref grids
-        const gridRef4D = $('gridRef4D'), countRef4D = $('countRef4D');
-        const gridRef2DDepan = $('gridRef2DDepan'), countRef2DDepan = $('countRef2DDepan');
-        const gridRef2DTengah = $('gridRef2DTengah'), countRef2DTengah = $('countRef2DTengah');
-        const gridRef2DBelakang = $('gridRef2DBelakang'), countRef2DBelakang = $('countRef2DBelakang');
+<!-- Settings Modal -->
+<div class="modal" id="modal-settings">
+    <div class="modal-content">
+        <div class="modal-title">⚙️ Pengaturan & Google Drive</div>
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-size: 12px; color: var(--text-secondary);">Google Client ID</label>
+            <input type="text" id="google-client-id" placeholder="Salin dari Google Cloud Console" style="width: 100%; padding: 10px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 12px;" onchange="initGDrive()">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-size: 12px; color: var(--text-secondary);">Google API Key</label>
+            <input type="text" id="google-api-key" placeholder="Salin dari Google Cloud Console" style="width: 100%; padding: 10px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 12px;" onchange="initGDrive()">
+        </div>
+        <div id="gdrive-status" style="margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 12px; text-align: center; color: var(--text-secondary);">
+            Status: Belum Terhubung
+        </div>
+        <button class="modal-btn modal-btn-primary" id="btn-connect-gdrive" onclick="handleAuthClick()" disabled>🔗 Hubungkan ke Google Drive</button>
+        <button class="modal-btn modal-btn-secondary" onclick="saveToGDrive()" style="margin-top: 10px;">💾 Simpan Data ke Drive</button>
+        <button class="modal-btn modal-btn-secondary" onclick="loadFromGDrive()" style="margin-top: 10px;">📥 Muat Data dari Drive</button>
+        <button class="modal-btn modal-btn-danger" onclick="closeSettings()" style="margin-top: 15px;">Tutup</button>
+    </div>
+</div>
 
-        // Final grids
-        const grid4D = $('grid4D'), count4D = $('count4D');
-        const grid3D = $('grid3D'), count3D = $('count3D');
-        const grid2DDepan = $('grid2DDepan'), count2DDepan = $('count2DDepan');
-        const grid2DTengah = $('grid2DTengah'), count2DTengah = $('count2DTengah');
-        const grid2DBelakang = $('grid2DBelakang'), count2DBelakang = $('count2DBelakang');
+<!-- Toast -->
+<div class="toast" id="toast">Notification</div>
 
-        // Buttons
-        const btnCopy4D = $('btnCopy4D');
-        const btnCopy3D = $('btnCopy3D');
-        const btnCopy2DDepan = $('btnCopy2DDepan');
-        const btnCopy2DTengah = $('btnCopy2DTengah');
-        const btnCopy2DBelakang = $('btnCopy2DBelakang');
-        const btnCopySplit = $('btnCopySplit');
-        const splitArea = $('splitArea');
-        const splitContainer = $('splitContainer');
-        const splitCount = $('splitCount');
+<script>
+// ============================================
+// DATABASE SEMUA MODULE
+// ============================================
+const DB = {
+    kepala: {
+        mb: { '0315':'012345678', '3582':'012345678', '6328':'456789012', '1773':'678901234', '5426':'567890123', '0810':'456789012', '7800':'234567890', '4097':'678901234', '0960':'012345678', '2129':'123456789', '8578':'456789012', '1075':'345678901', '5166':'567890123', '0205':'234567890', '3084':'234567890', '5239':'567890123', '4734':'345678901', '1870':'456789012', '2358':'012345678', '1378':'345678901', '9489':'456789012', '6502':'456789012', '3199':'123456789', '4164':'123456789', '4028':'567890123', '1152':'012345678', '8119':'456789012', '1080':'890123456', '0743':'345678901', '3648':'345678901', '1452':'567890123', '0428':'678901234', '9509':'890123456', '3622':'789012345', '6518':'234567890', '5999':'567890123', '2453':'567890123', '6198':'234567890', '8780':'123456789', '0740':'456789012', '2165':'567890123', '0604':'345678901', '3516':'123456789', '9755':'678901345', '9965':'123456890', '0348':'345678012' },
+        ty: { '9755':'678901345', '9965':'123456890', '0348':'345678012', '0315':'789012456', '3582':'567890234', '6328':'678901345', '1773':'890123567', '5426':'345678012', '0810':'567890234', '7800':'234567901', '4097':'901234678', '0960':'901234678', '2129':'678901345', '8578':'567890234', '1075':'456789123', '5166':'901234678', '0205':'901234678', '3084':'456789123', '5239':'678901345', '4734':'456789123', '1870':'456789123', '2358':'456789123', '1378':'123456890', '9489':'678901345', '6502':'123456890', '3199':'567890234', '4164':'901234678', '4028':'678901345', '1152':'456789123', '8119':'567890234', '1080':'012345789', '0743':'901234678', '3648':'567890234', '1452':'901234678', '0428':'567890234', '9509':'123456890', '3622':'012345789', '6518':'901234678', '5999':'012345789', '2453':'901234678', '6198':'567890234', '8780':'234567901', '0740':'234567901', '2165':'012345789', '0604':'234567901', '3516':'901234678' },
+        ml: { '0073':'890234567', '1625':'012456789', '3890':'012456789', '0091':'890234567', '3043':'456890123', '8568':'456890123', '3437':'789123456', '0146':'012456789', '3461':'345789012', '3403':'012456789', '9755':'012456789', '9965':'789123456', '0348':'678012345', '0315':'890234567', '3582':'012456789', '6328':'678012345', '1773':'567901234', '5426':'234678901', '0810':'456890123', '7800':'012456789', '4097':'456890123', '0960':'567901234', '2129':'567901234', '8578':'234678901', '1075':'678012345', '5166':'456890123', '0205':'789123456', '3084':'456890123', '5239':'678012345', '4734':'789123456', '1870':'345789012', '2358':'567901234', '1378':'901345678', '9489':'456890123', '6502':'890234567', '3199':'901345678', '4164':'345789012', '4028':'345789012', '1152':'012456789', '8119':'012456789', '1080':'901345678', '0743':'678012345', '3648':'567901234', '1452':'234678901', '0428':'890234567', '9509':'678012345', '3622':'012456789', '6518':'012456789', '5999':'567901234', '2453':'789123456', '6198':'890234567', '8780':'345789012', '0740':'456890123', '2165':'901345678', '0604':'901345678', '3516':'789123456' },
+        ix: { '3403':'124567890', '9755':'013456789', '9965':'346789012', '0348':'780123456', '0315':'013456789', '3582':'780123456', '6328':'346789012', '1773':'891234567', '5426':'457890123', '0810':'124567890', '7800':'679012345', '4097':'891234567', '0960':'568901234', '2129':'235678901', '8578':'891234567', '1075':'013456789', '5166':'346789012', '0205':'902345678', '3084':'013456789', '5239':'013456789', '4734':'902345678', '1870':'891234567', '2358':'902345678', '1378':'891234567', '9489':'679012345', '6502':'902345678', '3199':'679012345', '4164':'902345678', '4028':'013456789', '1152':'013456789', '8119':'902345678', '1080':'902345678', '0743':'902345678', '3648':'235678901', '1452':'891234567', '0428':'346789012', '9509':'891234567', '3622':'891234567', '6518':'346789012', '5999':'457890123', '2453':'124567890', '6198':'013456789', '8780':'013456789', '0740':'780123456', '2165':'780123456', '0604':'891234567', '3516':'124567890' },
+        m0: { '0315':'901245678', '3582':'234578901', '6328':'123467890', '1773':'567801234', '5426':'890134567', '0810':'567801234', '7800':'678912345', '4097':'456790123', '0960':'456790123', '2129':'234578901', '8578':'234578901', '1075':'789023456', '5166':'012356789', '0205':'345689012', '3084':'789023456', '5239':'789023456', '4734':'123467890', '1870':'012356789', '2358':'012356789', '1378':'789023456', '9489':'234578901', '6502':'789023456', '3199':'123467890', '4164':'567801234', '4028':'789023456', '1152':'345689012', '8119':'890134567', '1080':'234578901', '0743':'567801234', '3648':'345689012', '1452':'456790123', '0428':'012356789', '9509':'567801234', '3622':'567801234', '6518':'890134567', '5999':'456790123', '2453':'234578901', '6198':'567801234', '8780':'234578901', '0740':'901245678', '2165':'456790123', '0604':'012356789', '3516':'012356789' }
+    },
+    ekor: {
+        m0: { '0286':'013456789', '7344':'902345678', '2072':'891234567', '8331':'235678901', '3593':'457890123', '9663':'780123456', '4177':'346789012', '8964':'013456789', '6041':'780123456', '9604':'902345678', '7572':'124567890', '9456':'235678901', '8737':'780123456', '1214':'346789012', '2453':'780123456', '9230':'457890123', '9247':'235678901', '5652':'124567890', '0521':'457890123', '5114':'013456789', '8906':'780123456', '9648':'124567890', '4324':'346789012', '1891':'780123456', '4097':'902345678', '8916':'013456789', '4383':'568901234', '6512':'891234567', '1536':'780123456', '7676':'891234567', '3725':'902345678', '0090':'457890123', '1940':'902345678', '4697':'568901234', '4521':'568901234', '0561':'346789012', '6077':'568901234', '0683':'013456789', '8038':'124567890', '6916':'568901234', '2388':'780123456', '9973':'346789012' },
+        ml: { '3798':'567890123', '0286':'345678901', '7344':'567890123', '2072':'456789012', '8331':'901234567', '3593':'123456789', '9663':'567890123', '4177':'456789012', '8964':'678901234', '6041':'901234567', '9604':'012345678', '7572':'456789012', '9456':'789012345', '8737':'890123456', '1214':'901234567', '2453':'890123456', '9230':'678901234', '9247':'456789012', '5652':'678901234', '0521':'789012345', '5114':'456789012', '8906':'678901234', '9648':'123456789', '4324':'345678901', '1891':'123456789', '4097':'012345678', '8916':'345678901', '4383':'890123456', '6512':'345678901', '1536':'678901234', '7676':'789012345', '3725':'012345678', '0090':'234567890', '1940':'789012345', '4697':'789012345', '4521':'123456789', '0561':'123456789', '6077':'012345678', '0683':'890123456', '8038':'234567890', '6916':'789012345', '2388':'789012345', '9973':'345678901' },
+        ix: { '8853':'456780123', '1092':'567891234', '9569':'678902345', '7105':'901235678', '3798':'456780123', '0286':'789013456', '7344':'345679012', '2072':'345679012', '8331':'456780123', '3593':'456780123', '9663':'345679012', '4177':'789013456', '8964':'890124567', '6041':'890124567', '9604':'901235678', '7572':'456780123', '9456':'012346789', '8737':'789013456', '1214':'901235678', '2453':'678902345', '9230':'456780123', '9247':'123457890', '5652':'456780123', '0521':'012346789', '5114':'345679012', '8906':'789013456', '9648':'234568901', '4324':'234568901', '1891':'012346789', '4097':'345679012', '8916':'901235678', '4383':'901235678', '6512':'890124567', '1536':'789013456', '7676':'456780123', '3725':'456780123', '0090':'123457890', '1940':'123457890', '4697':'789013456', '4521':'012346789', '0561':'012346789', '6077':'234568901', '0683':'234568901', '8038':'678902345', '6916':'234568901', '2388':'123457890', '9973':'345679012' },
+        mb: { '3798':'123567890', '0286':'456890123', '7344':'234678901', '2072':'901345678', '8331':'789123456', '3593':'567901234', '9663':'123567890', '4177':'456890123', '8964':'345789012', '6041':'345789012', '9604':'789123456', '7572':'012456789', '9456':'123567890', '8737':'345789012', '1214':'234678901', '2453':'456890123', '9230':'123567890', '9247':'678012345', '5652':'234678901', '0521':'456890123', '5114':'789123456', '8906':'901345678', '9648':'789123456', '4324':'345789012', '1891':'901345678', '4097':'234678901', '8916':'456890123', '4383':'456890123', '6512':'567901234', '1536':'901345678', '7676':'901345678', '3725':'567901234', '0090':'678012345', '1940':'345789012', '4697':'567901234', '4521':'789123456', '0561':'901345678', '6077':'901345678', '0683':'678012345', '8038':'012456789', '6916':'901345678', '2388':'789123456', '9973':'567901234' },
+        ty: { '3798':'456789012', '0286':'456789012', '7344':'890123456', '2072':'345678901', '8331':'012345678', '3593':'901234567', '9663':'345678901', '4177':'456789012', '8964':'456789012', '6041':'234567890', '9604':'123456789', '7572':'234567890', '9456':'567890123', '8737':'345678901', '1214':'901234567', '2453':'678901234', '9230':'234567890', '9247':'901234567', '5652':'901234567', '0521':'345678901', '5114':'890123456', '8906':'123456789', '9648':'123456789', '4324':'678901234', '1891':'012345678', '4097':'890123456', '8916':'890123456', '4383':'901234567', '6512':'901234567', '1536':'678901234', '7676':'901234567', '3725':'678901234', '0090':'234567890', '1940':'234567890', '4697':'012345678', '4521':'901234567', '0561':'678901234', '6077':'567890123', '0683':'890123456', '8038':'890123456', '6916':'678901234', '2388':'012345678', '9973':'012345678' }
+    },
+    biji: {
+        ml: { '0286':'789023456', '7344':'012356789', '2072':'567801234', '8331':'678912345', '3593':'678912345', '9663':'901245678', '4177':'234578901', '8964':'012356789', '6041':'901245678', '9604':'345689012', '7572':'456790123', '9456':'012356789', '8737':'901245678', '1214':'234578901', '2453':'678912345', '9230':'901245678', '9247':'567801234', '5652':'012356789', '0521':'345689012', '5114':'890134567', '8906':'678912345', '9648':'456790123', '4324':'678912345', '1891':'012356789', '4097':'678912345', '8916':'234578901', '4383':'789023456', '6512':'678912345', '1536':'234578901', '7676':'678912345', '3725':'678912345', '0090':'890134567', '1940':'789023456', '4697':'678912345', '4521':'678912345', '0561':'789023456', '6077':'456790123', '0683':'567801234', '8038':'567801234', '6916':'890134567', '2388':'234578901', '9973':'890134567' },
+        ix: { '7105':'346789012', '3798':'013456789', '0286':'124567890', '7344':'124567890', '2072':'891234567', '8331':'902345678', '3593':'124567890', '9663':'891234567', '4177':'346789012', '8964':'780123456', '6041':'891234567', '9604':'457890123', '7572':'679012345', '9456':'679012345', '8737':'457890123', '1214':'013456789', '2453':'902345678', '9230':'780123456', '9247':'235678901', '5652':'346789012', '0521':'013456789', '5114':'124567890', '8906':'346789012', '9648':'013456789', '4324':'235678901', '1891':'013456789', '4097':'235678901', '8916':'780123456', '4383':'013456789', '6512':'235678901', '1536':'124567890', '7676':'902345678', '3725':'235678901', '0090':'346789012', '1940':'902345678', '4697':'679012345', '4521':'235678901', '0561':'902345678', '6077':'679012345', '0683':'457890123', '8038':'457890123', '6916':'679012345', '2388':'124567890', '9973':'891234567' },
+        mb: { '7105':'567890123', '3798':'123456789', '0286':'567890123', '7344':'678901234', '2072':'123456789', '8331':'012345678', '3593':'567890123', '9663':'234567890', '4177':'567890123', '8964':'345678901', '6041':'345678901', '9604':'123456789', '7572':'456789012', '9456':'567890123', '8737':'123456789', '1214':'234567890', '2453':'789012345', '9230':'456789012', '9247':'012345678', '5652':'234567890', '0521':'456789012', '5114':'123456789', '8906':'345678901', '9648':'012345678', '4324':'012345678', '1891':'012345678', '4097':'123456789', '8916':'678901234', '4383':'901234567', '6512':'789012345', '1536':'678901234', '7676':'789012345', '3725':'123456789', '0090':'789012345', '1940':'567890123', '4697':'012345678', '4521':'678901234', '0561':'789012345', '6077':'123456789', '0683':'789012345', '8038':'012345678', '6916':'567890123', '2388':'567890123', '9973':'678901234' },
+        m0: { '0286':'890124567', '7344':'345679012', '2072':'890124567', '8331':'012346789', '3593':'901235678', '9663':'456780123', '4177':'901235678', '8964':'567891234', '6041':'012346789', '9604':'890124567', '7572':'890124567', '9456':'012346789', '8737':'234568901', '1214':'789013456', '2453':'123457890', '9230':'901235678', '9247':'456780123', '5652':'901235678', '0521':'789013456', '5114':'890124567', '8906':'456780123', '9648':'567891234', '4324':'012346789', '1891':'890124567', '4097':'456780123', '8916':'123457890', '4383':'567891234', '6512':'901235678', '1536':'456780123', '7676':'789013456', '3725':'890124567', '0090':'789013456', '1940':'901235678', '4697':'789013456', '4521':'901235678', '0561':'234568901', '6077':'345679012', '0683':'123457890', '8038':'890124567', '6916':'789013456', '2388':'890124567', '9973':'789013456' },
+        ty: { '7105':'901234568', '3798':'123456780', '0286':'345678902', '7344':'890123457', '2072':'890123457', '8331':'901234568', '3593':'567890124', '9663':'345678902', '4177':'678901235', '8964':'890123457', '6041':'345678902', '9604':'234567891', '7572':'012345679', '9456':'901234568', '8737':'456789013', '1214':'345678902', '2453':'456789013', '9230':'678901235', '9247':'012345679', '5652':'012345679', '0521':'456789013', '5114':'901234568', '8906':'345678902', '9648':'345678902', '4324':'567890124', '1891':'234567891', '4097':'456789013', '8916':'678901235', '4383':'890123457', '6512':'678901235', '1536':'345678902', '7676':'012345679', '3725':'456789013', '0090':'123456780', '1940':'123456780', '4697':'345678902', '4521':'567890124', '0561':'567890124', '6077':'123456780', '0683':'012345679', '8038':'123456780', '6916':'678901235', '2388':'456789013', '9973':'567890124' }
+    },
+    ai: {
+        ix: { '1092':'3567901', '9569':'8012456', '7105':'4678012', '3798':'4678012', '0286':'2456890', '7344':'2456890', '2072':'9123567', '8331':'2456890', '3593':'0234678', '9663':'3567901', '4177':'1345789', '8964':'9123567', '6041':'0234678', '9604':'1345789', '7572':'2456890', '9456':'0234678', '8737':'9123567', '1214':'9123567', '2453':'2456890', '9230':'3567901', '9247':'4678012', '5652':'9123567', '0521':'6890234', '5114':'2456890', '8906':'8012456', '9648':'1345789', '4324':'7901345', '1891':'9123567', '4097':'3567901', '8916':'1345789', '4383':'8012456', '6512':'7901345', '1536':'0234678', '7676':'0234678', '3725':'4678012', '0090':'8012456', '1940':'0234678', '4697':'1345789', '4521':'9123567', '0561':'0234678', '6077':'0234678', '0683':'1345789', '8038':'7901345', '6916':'0234678', '2388':'4678012', '9973':'4678012', '9787':'4678012' },
+        ml: { '1092':'6781245', '9569':'6781245', '7105':'7892356', '3798':'3458912', '0286':'3458912', '7344':'6781245', '2072':'3458912', '8331':'0125689', '3593':'5670134', '9663':'6781245', '4177':'4569023', '8964':'6781245', '6041':'6781245', '9604':'9014578', '7572':'3458912', '9456':'2347801', '8737':'8903467', '1214':'4569023', '2453':'0125689', '9230':'4569023', '9247':'5670134', '5652':'4569023', '0521':'9014578', '5114':'8903467', '8906':'5670134', '9648':'0125689', '4324':'4569023', '1891':'0125689', '4097':'6781245', '8916':'4569023', '4383':'5670134', '6512':'6781245', '1536':'8903467', '7676':'4569023', '3725':'2347801', '0090':'2347801', '1940':'6781245', '4697':'9014578', '4521':'6781245', '0561':'9014578', '6077':'4569023', '0683':'2347801', '8038':'3458912', '6916':'9014578', '2388':'3458912', '9973':'7892356', '9787':'3458912' },
+        mb: { '8853':'4890123', '1092':'2678901', '9569':'2678901', '7105':'0456789', '3798':'4890123', '0286':'5901234', '7344':'1567890', '2072':'6012345', '8331':'5901234', '3593':'5901234', '9663':'9345678', '4177':'2678901', '8964':'9345678', '6041':'7123456', '9604':'6012345', '7572':'5901234', '9456':'6012345', '8737':'9345678', '1214':'9345678', '2453':'0456789', '9230':'7123456', '9247':'6012345', '5652':'6012345', '0521':'5901234', '5114':'9345678', '8906':'7123456', '9648':'6012345', '4324':'3789012', '1891':'5901234', '4097':'1567890', '8916':'7123456', '4383':'4890123', '6512':'9345678', '1536':'6012345', '7676':'3789012', '3725':'6012345', '0090':'7123456', '1940':'2678901', '4697':'1567890', '4521':'1567890', '0561':'7123456', '6077':'1567890', '0683':'9345678', '8038':'0456789', '6916':'0456789', '2388':'9345678', '9973':'0456789', '9787':'9345678' },
+        m0: { '9569':'903467', '7105':'892356', '3798':'569023', '0286':'458912', '7344':'125689', '2072':'569023', '8331':'892356', '3593':'347801', '9663':'236790', '4177':'125689', '8964':'458912', '6041':'458912', '9604':'125689', '7572':'670134', '9456':'892356', '8737':'125689', '1214':'458912', '2453':'670134', '9230':'347801', '9247':'014578', '5652':'236790', '0521':'014578', '5114':'236790', '8906':'125689', '9648':'347801', '4324':'236790', '1891':'569023', '4097':'903467', '8916':'458912', '4383':'892356', '6512':'125689', '1536':'670134', '7676':'125689', '3725':'125689', '0090':'347801', '1940':'236790', '4697':'236790', '4521':'014578', '0561':'347801', '6077':'670134', '0683':'458912', '8038':'569023', '6916':'014578', '2388':'903467', '9973':'347801', '9787':'569023' },
+        ty: { '2971':'012489', '8300':'678045', '7445':'567934', '8853':'123590', '1092':'234601', '9569':'901378', '7105':'456823', '3798':'012489', '0286':'456823', '7344':'012489', '2072':'012489', '8331':'345712', '3593':'890267', '9663':'678045', '4177':'567934', '8964':'345712', '6041':'123590', '9604':'345712', '7572':'678045', '9456':'234601', '8737':'456823', '1214':'678045', '2453':'234601', '9230':'890267', '9247':'345712', '5652':'901378', '0521':'012489', '5114':'901378', '8906':'234601', '9648':'456823', '4324':'890267', '1891':'567934', '4097':'234601', '8916':'456823', '4383':'901378', '6512':'345712', '1536':'567934', '7676':'123590', '3725':'234601', '0090':'234601', '1940':'123590', '4697':'345712', '4521':'012489', '0561':'901378', '6077':'012489', '0683':'890267', '8038':'678045', '6916':'456823', '2388':'901378', '9973':'012489', '9787':'345712' }
+    },
+    shio: {
+        ml: { '8324':'04 05 06 07 08 09 10 11 01 02 03', '5330':'03 04 05 06 07 08 09 10 12 01 02', '4503':'08 09 10 11 12 01 02 03 05 06 07', '6448':'10 11 12 01 02 03 04 05 07 08 09', '7883':'05 06 07 08 09 10 11 12 02 03 04', '4548':'08 09 10 11 12 01 02 03 05 06 07', '3921':'09 10 11 12 01 02 03 04 06 07 08', '6232':'10 11 12 01 02 03 04 05 07 08 09', '2887':'06 07 08 09 10 11 12 01 03 04 05', '6039':'10 11 12 01 02 03 04 05 07 08 09', '8594':'04 05 06 07 08 09 10 11 01 02 03', '0441':'02 03 04 05 06 07 08 09 11 12 01', '3851':'09 10 11 12 01 02 03 04 06 07 08', '1158':'01 02 03 04 05 06 07 08 10 11 12', '5965':'03 04 05 06 07 08 09 10 12 01 02', '2178':'06 07 08 09 10 11 12 01 03 04 05', '6287':'10 11 12 01 02 03 04 05 07 08 09', '2865':'06 07 08 09 10 11 12 01 03 04 05', '5706':'03 04 05 06 07 08 09 10 12 01 02', '0442':'02 03 04 05 06 07 08 09 11 12 01', '2966':'06 07 08 09 10 11 12 01 03 04 05', '3381':'09 10 11 12 01 02 03 04 06 07 08', '0026':'02 03 04 05 06 07 08 09 11 12 01', '3484':'09 10 11 12 01 02 03 04 06 07 08', '2569':'06 07 08 09 10 11 12 01 03 04 05', '0642':'02 03 04 05 06 07 08 09 11 12 01', '0250':'02 03 04 05 06 07 08 09 11 12 01', '2483':'06 07 08 09 10 11 12 01 03 04 05', '5005':'03 04 05 06 07 08 09 10 12 01 02', '3321':'09 10 11 12 01 02 03 04 06 07 08', '1166':'01 02 03 04 05 06 07 08 10 11 12', '3264':'09 10 11 12 01 02 03 04 06 07 08', '5098':'03 04 05 06 07 08 09 10 12 01 02', '8536':'04 05 06 07 08 09 10 11 01 02 03', '4508':'08 09 10 11 12 01 02 03 05 06 07', '8460':'04 05 06 07 08 09 10 11 01 02 03', '9607':'07 08 09 10 11 12 01 02 04 05 06', '9134':'07 08 09 10 11 12 01 02 04 05 06', '1441':'01 02 03 04 05 06 07 08 10 11 12', '5384':'03 04 05 06 07 08 09 10 12 01 02', '3275':'09 10 11 12 01 02 03 04 06 07 08', '0920':'02 03 04 05 06 07 08 09 11 12 01', '6835':'10 11 12 01 02 03 04 05 07 08 09', '0043':'02 03 04 05 06 07 08 09 11 12 01', '9615':'07 08 09 10 11 12 01 02 04 05 06', '3188':'09 10 11 12 01 02 03 04 06 07 08', '0306':'02 03 04 05 06 07 08 09 11 12 01', '8339':'04 05 06 07 08 09 10 11 01 02 03', '3900':'09 10 11 12 01 02 03 04 06 07 08', '2286':'06 07 08 09 10 11 12 01 03 04 05' },
+        ix: { '7883':'03 04 05 06 07 09 10 11 12 01 02', '4548':'07 08 09 10 11 01 02 03 04 05 06', '3921':'10 11 12 01 02 04 05 06 07 08 09', '6232':'04 05 06 07 08 10 11 12 01 02 03', '2887':'02 03 04 05 06 08 09 10 11 12 01', '6039':'10 11 12 01 02 04 05 06 07 08 09', '8594':'04 05 06 07 08 10 11 12 01 02 03', '0441':'07 08 09 10 11 01 02 03 04 05 06', '3851':'07 08 09 10 11 01 02 03 04 05 06', '1158':'03 04 05 06 07 09 10 11 12 01 02', '5965':'04 05 06 07 08 10 11 12 01 02 03', '2178':'07 08 09 10 11 01 02 03 04 05 06', '6287':'01 02 03 04 05 07 08 09 10 11 12', '2865':'05 06 07 08 09 11 12 01 02 03 04', '5706':'09 10 11 12 01 03 04 05 06 07 08', '0442':'02 03 04 05 06 08 09 10 11 12 01', '2966':'02 03 04 05 06 08 09 10 11 12 01', '3381':'01 02 03 04 05 07 08 09 10 11 12', '0026':'01 02 03 04 05 07 08 09 10 11 12', '3484':'10 11 12 01 02 04 05 06 07 08 09', '2569':'03 04 05 06 07 09 10 11 12 01 02', '0642':'05 06 07 08 09 11 12 01 02 03 04', '0250':'08 09 10 11 12 02 03 04 05 06 07', '2483':'03 04 05 06 07 09 10 11 12 01 02', '5005':'08 09 10 11 12 02 03 04 05 06 07', '3321':'09 10 11 12 01 03 04 05 06 07 08', '1166':'07 08 09 10 11 01 02 03 04 05 06', '3264':'10 11 12 01 02 04 05 06 07 08 09', '5098':'01 02 03 04 05 07 08 09 10 11 12', '8536':'04 05 06 07 08 10 11 12 01 02 03', '4508':'02 03 04 05 06 08 09 10 11 12 01', '8460':'03 04 05 06 07 09 10 11 12 01 02', '9607':'08 09 10 11 12 02 03 04 05 06 07', '9134':'05 06 07 08 09 11 12 01 02 03 04', '1441':'04 05 06 07 08 10 11 12 01 02 03', '5384':'08 09 10 11 12 02 03 04 05 06 07', '3275':'08 09 10 11 12 02 03 04 05 06 07', '0920':'05 06 07 08 09 11 12 01 02 03 04', '6835':'05 06 07 08 09 11 12 01 02 03 04', '0043':'01 02 03 04 05 07 08 09 10 11 12', '9615':'05 06 07 08 09 11 12 01 02 03 04', '3188':'07 08 09 10 11 01 02 03 04 05 06', '0306':'05 06 07 08 09 11 12 01 02 03 04', '8339':'09 10 11 12 01 03 04 05 06 07 08', '3900':'05 06 07 08 09 11 12 01 02 03 04', '2286':'01 02 03 04 05 07 08 09 10 11 12' },
+        mb: { '3921':'08 09 10 11 01 02 03 04 05 06 07', '6232':'01 02 03 04 06 07 08 09 10 11 12', '2887':'10 11 12 01 03 04 05 06 07 08 09', '6039':'04 05 06 07 09 10 11 12 01 02 03', '8594':'02 03 04 05 07 08 09 10 11 12 01', '0441':'01 02 03 04 06 07 08 09 10 11 12', '3851':'01 02 03 04 06 07 08 09 10 11 12', '1158':'07 08 09 10 12 01 02 03 04 05 06', '5965':'01 02 03 04 06 07 08 09 10 11 12', '2178':'06 07 08 09 11 12 01 02 03 04 05', '6287':'02 03 04 05 07 08 09 10 11 12 01', '2865':'03 04 05 06 08 09 10 11 12 01 02', '5706':'10 11 12 01 03 04 05 06 07 08 09', '0442':'05 06 07 08 10 11 12 01 02 03 04', '2966':'07 08 09 10 12 01 02 03 04 05 06', '3381':'08 09 10 11 01 02 03 04 05 06 07', '0026':'01 02 03 04 06 07 08 09 10 11 12', '3484':'08 09 10 11 01 02 03 04 05 06 07', '2569':'07 08 09 10 12 01 02 03 04 05 06', '0642':'06 07 08 09 11 12 01 02 03 04 05', '0250':'02 03 04 05 07 08 09 10 11 12 01', '2483':'07 08 09 10 12 01 02 03 04 05 06', '5005':'09 10 11 12 02 03 04 05 06 07 08', '3321':'05 06 07 08 10 11 12 01 02 03 04', '1166':'01 02 03 04 06 07 08 09 10 11 12', '3264':'03 04 05 06 08 09 10 11 12 01 02', '5098':'04 05 06 07 09 10 11 12 01 02 03', '8536':'05 06 07 08 10 11 12 01 02 03 04', '4508':'05 06 07 08 10 11 12 01 02 03 04', '8460':'04 05 06 07 09 10 11 12 01 02 03', '9607':'08 09 10 11 01 02 03 04 05 06 07', '9134':'03 04 05 06 08 09 10 11 12 01 02', '1441':'04 05 06 07 09 10 11 12 01 02 03', '5384':'02 03 04 05 07 08 09 10 11 12 01', '3275':'07 08 09 10 12 01 02 03 04 05 06', '0920':'08 09 10 11 01 02 03 04 05 06 07', '6835':'10 11 12 01 03 04 05 06 07 08 09', '0043':'06 07 08 09 11 12 01 02 03 04 05', '9615':'07 08 09 10 12 01 02 03 04 05 06', '3188':'06 07 08 09 11 12 01 02 03 04 05', '0306':'10 11 12 01 03 04 05 06 07 08 09', '8339':'10 11 12 01 03 04 05 06 07 08 09', '3900':'03 04 05 06 08 09 10 11 12 01 02', '2286':'01 02 03 04 06 07 08 09 10 11 12' },
+        m0: { '3921':'10 11 12 01 03 04 05 06 07 08 09', '6232':'01 02 03 04 06 07 08 09 10 11 12', '2887':'09 10 11 12 02 03 04 05 06 07 08', '6039':'10 11 12 01 03 04 05 06 07 08 09', '8594':'09 10 11 12 02 03 04 05 06 07 08', '0441':'02 03 04 05 07 08 09 10 11 12 01', '3851':'07 08 09 10 12 01 02 03 04 05 06', '1158':'07 08 09 10 12 01 02 03 04 05 06', '5965':'10 11 12 01 03 04 05 06 07 08 09', '2178':'04 05 06 07 09 10 11 12 01 02 03', '6287':'09 10 11 12 02 03 04 05 06 07 08', '2865':'05 06 07 08 10 11 12 01 02 03 04', '5706':'01 02 03 04 06 07 08 09 10 11 12', '0442':'09 10 11 12 02 03 04 05 06 07 08', '2966':'02 03 04 05 07 08 09 10 11 12 01', '3381':'08 09 10 11 01 02 03 04 05 06 07', '0026':'04 05 06 07 09 10 11 12 01 02 03', '3484':'09 10 11 12 02 03 04 05 06 07 08', '2569':'03 04 05 06 08 09 10 11 12 01 02', '0642':'02 03 04 05 07 08 09 10 11 12 01', '0250':'05 06 07 08 10 11 12 01 02 03 04', '2483':'02 03 04 05 07 08 09 10 11 12 01', '5005':'01 02 03 04 06 07 08 09 10 11 12', '3321':'01 02 03 04 06 07 08 09 10 11 12', '1166':'08 09 10 11 01 02 03 04 05 06 07', '3264':'07 08 09 10 12 01 02 03 04 05 06', '5098':'07 08 09 10 12 01 02 03 04 05 06', '8536':'07 08 09 10 12 01 02 03 04 05 06', '4508':'04 05 06 07 09 10 11 12 01 02 03', '8460':'09 10 11 12 02 03 04 05 06 07 08', '9607':'04 05 06 07 09 10 11 12 01 02 03', '9134':'02 03 04 05 07 08 09 10 11 12 01', '1441':'07 08 09 10 12 01 02 03 04 05 06', '5384':'05 06 07 08 10 11 12 01 02 03 04', '3275':'07 08 09 10 12 01 02 03 04 05 06', '0920':'10 11 12 01 03 04 05 06 07 08 09', '6835':'08 09 10 11 01 02 03 04 05 06 07', '0043':'10 11 12 01 03 04 05 06 07 08 09', '9615':'05 06 07 08 10 11 12 01 02 03 04', '3188':'08 09 10 11 01 02 03 04 05 06 07', '0306':'04 05 06 07 09 10 11 12 01 02 03', '8339':'05 06 07 08 10 11 12 01 02 03 04', '3900':'04 05 06 07 09 10 11 12 01 02 03', '2286':'02 03 04 05 07 08 09 10 11 12 01' },
+        ty: { '3921':'02 03 04 05 06 07 08 09 10 11 12', '6232':'05 06 07 08 09 10 11 12 01 02 03', '2887':'11 12 01 02 03 04 05 06 07 08 09', '6039':'05 06 07 08 09 10 11 12 01 02 03', '8594':'10 11 12 01 02 03 04 05 06 07 08', '0441':'03 04 05 06 07 08 09 10 11 12 01', '3851':'04 05 06 07 08 09 10 11 12 01 02', '1158':'10 11 12 01 02 03 04 05 06 07 08', '5965':'04 05 06 07 08 09 10 11 12 01 02', '2178':'10 11 12 01 02 03 04 05 06 07 08', '6287':'02 03 04 05 06 07 08 09 10 11 12', '2865':'06 07 08 09 10 11 12 01 02 03 04', '5706':'06 07 08 09 10 11 12 01 02 03 04', '0442':'05 06 07 08 09 10 11 12 01 02 03', '2966':'04 05 06 07 08 09 10 11 12 01 02', '3381':'08 09 10 11 12 01 02 03 04 05 06', '0026':'10 11 12 01 02 03 04 05 06 07 08', '3484':'07 08 09 10 11 12 01 02 03 04 05', '2569':'06 07 08 09 10 11 12 01 02 03 04', '0642':'05 06 07 08 09 10 11 12 01 02 03', '0250':'04 05 06 07 08 09 10 11 12 01 02', '2483':'08 09 10 11 12 01 02 03 04 05 06', '5005':'11 12 01 02 03 04 05 06 07 08 09', '3321':'04 05 06 07 08 09 10 11 12 01 02', '1166':'07 08 09 10 11 12 01 02 03 04 05', '3264':'02 03 04 05 06 07 08 09 10 11 12', '5098':'10 11 12 01 02 03 04 05 06 07 08', '8536':'04 05 06 07 08 09 10 11 12 01 02', '4508':'07 08 09 10 11 12 01 02 03 04 05', '8460':'02 03 04 05 06 07 08 09 10 11 12', '9607':'04 05 06 07 08 09 10 11 12 01 02', '9134':'11 12 01 02 03 04 05 06 07 08 09', '1441':'04 05 06 07 08 09 10 11 12 01 02', '5384':'05 06 07 08 09 10 11 12 01 02 03', '3275':'06 07 08 09 10 11 12 01 02 03 04', '0920':'02 03 04 05 06 07 08 09 10 11 12', '6835':'05 06 07 08 09 10 11 12 01 02 03', '0043':'02 03 04 05 06 07 08 09 10 11 12', '9615':'03 04 05 06 07 08 09 10 11 12 01', '3188':'08 09 10 11 12 01 02 03 04 05 06', '0306':'10 11 12 01 02 03 04 05 06 07 08', '8339':'04 05 06 07 08 09 10 11 12 01 02', '3900':'02 03 04 05 06 07 08 09 10 11 12', '2286':'08 09 10 11 12 01 02 03 04 05 06' }
+    },
+    bbfs: {
+        mb: { '0109':'234567891', '6076':'234567891', '4372':'567890124', '6794':'012345679', '0601':'567890124', '6110':'234567891', '6461':'456789013', '8570':'012345679', '8275':'567890124', '2520':'678901235', '1712':'123456780', '2961':'567890124', '5440':'345678902', '7666':'012345679', '2752':'678901235', '2967':'901234568', '9404':'345678902', '6254':'678901235', '2906':'678901235', '6816':'012345679', '8117':'345678902', '3544':'901234568', '7764':'567890124', '8018':'789012346', '7936':'456789013', '1806':'456789013', '5390':'345678902', '3724':'345678902', '0303':'234567891', '9968':'123456780', '5363':'345678902', '0240':'567890124', '8208':'123456780', '6364':'901234568', '0611':'234567891', '4956':'567890124', '9268':'567890124', '5670':'012345679', '0949':'012345679', '3294':'234567891', '8918':'012345679', '4254':'901234568', '4938':'012345679', '9309':'789012346', '4530':'789012346', '2743':'789012346', '8420':'012345679', '4004':'567890124', '5848':'345678902', '2887':'789012346' },
+        ml: { '0109':'013456789', '6076':'891234567', '4372':'013456789', '6794':'780123456', '0601':'568901234', '6110':'013456789', '6461':'013456789', '8570':'891234567', '8275':'568901234', '2520':'891234567', '1712':'780123456', '2961':'780123456', '5440':'568901234', '7666':'124567890', '2752':'124567890', '2967':'780123456', '9404':'891234567', '6254':'346789012', '2906':'013456789', '6816':'124567890', '8117':'891234567', '3544':'013456789', '7764':'568901234', '8018':'902345678', '7936':'902345678', '1806':'568901234', '5390':'346789012', '3724':'568901234', '0303':'568901234', '9968':'013456789', '5363':'780123456', '0240':'780123456', '8208':'346789012', '6364':'235678901', '0611':'568901234', '4956':'235678901', '9268':'013456789', '5670':'124567890', '0949':'013456789', '3294':'013456789', '8918':'124567890', '4254':'891234567', '4938':'124567890', '9309':'235678901', '4530':'902345678', '2743':'235678901', '8420':'013456789', '4004':'780123456', '5848':'013456789', '2887':'891234567' },
+        ty: { '0109':'234678901', '6076':'678012345', '4372':'901345678', '6794':'123567890', '0601':'456890123', '6110':'456890123', '6461':'123567890', '8570':'345789012', '8275':'890234567', '2520':'123567890', '1712':'567901234', '2961':'345789012', '5440':'901345678', '7666':'456890123', '2752':'890234567', '2967':'567901234', '9404':'012456789', '6254':'456890123', '2906':'123567890', '6816':'123567890', '8117':'345789012', '3544':'567901234', '7764':'123567890', '8018':'567901234', '7936':'456890123', '1806':'012456789', '5390':'456890123', '3724':'567901234', '0303':'123567890', '9968':'456890123', '5363':'890234567', '0240':'890234567', '8208':'567901234', '6364':'901345678', '0611':'890234567', '4956':'890234567', '9268':'012456789', '5670':'234678901', '0949':'901345678', '3294':'456890123', '8918':'345789012', '4254':'123567890', '4938':'567901234', '9309':'123567890', '4530':'678012345', '2743':'123567890', '8420':'890234567', '4004':'678012345', '5848':'234678901', '2887':'123567890' },
+        m0: { '0109':'901345678', '6076':'345789012', '4372':'012456789', '6794':'678012345', '0601':'456890123', '6110':'678012345', '6461':'012456789', '8570':'567901234', '8275':'890234567', '2520':'567901234', '1712':'234678901', '2961':'345789012', '5440':'901345678', '7666':'567901234', '2752':'789123456', '2967':'678012345', '9404':'012456789', '6254':'012456789', '2906':'901345678', '6816':'901345678', '8117':'789123456', '3544':'456890123', '7764':'234678901', '8018':'890234567', '7936':'123567890', '1806':'012456789', '5390':'678012345', '3724':'456890123', '0303':'789123456', '9968':'789123456', '5363':'890234567', '0240':'890234567', '8208':'567901234', '6364':'789123456', '0611':'890234567', '4956':'890234567', '9268':'901345678', '5670':'901345678', '0949':'901345678', '3294':'901345678', '8918':'890234567', '4254':'234678901', '4938':'345789012', '9309':'456890123', '4530':'456890123', '2743':'234678901', '8420':'345789012', '4004':'678012345', '5848':'890234567', '2887':'345789012' },
+        m9: { '0109':'801234567', '6076':'790123456', '4372':'467890123', '6794':'790123456', '0601':'134567890', '6110':'134567890', '6461':'578901234', '8570':'023456789', '8275':'023456789', '2520':'801234567', '1712':'467890123', '2961':'245678901', '5440':'245678901', '7666':'578901234', '2752':'023456789', '2967':'801234567', '9404':'790123456', '6254':'023456789', '2906':'467890123', '6816':'467890123', '8117':'689012345', '3544':'790123456', '7764':'356789012', '8018':'790123456', '7936':'356789012', '1806':'578901234', '5390':'801234567', '3724':'467890123', '0303':'023456789', '9968':'689012345', '5363':'245678901', '0240':'467890123', '8208':'245678901', '6364':'245678901', '0611':'134567890', '4956':'134567890', '9268':'023456789', '5670':'578901234', '0949':'578901234', '3294':'801234567', '8918':'801234567', '4254':'134567890', '4938':'467890123', '9309':'790123456', '4530':'578901234', '2743':'023456789', '8420':'023456789', '4004':'689012345', '5848':'801234567', '2887':'578901234' }
+    }
+};
 
-        // Cloud
-        const cloudStatus   = $('cloudStatus');
-        const btnDriveSave  = $('btnDriveSave');
-        const btnDriveLoad  = $('btnDriveLoad');
-        const btnQuickSave  = $('btnQuickSave');
-        const btnQuickLoad  = $('btnQuickLoad');
-        const btnExport     = $('btnExport');
-        const btnImport     = $('btnImport');
-        const fileImport    = $('fileImport');
-        const gdClientId    = $('gdClientId');
-        const gdApiKey      = $('gdApiKey');
-        const btnSaveGdConfig = $('btnSaveGdConfig');
+// ============================================
+// APP STATE
+// ============================================
+const state = {
+    currentSection: 'kepala',
+    data: { kepala: [], ekor: [], biji: [], ai: [], shio: [], bbfs: [] },
+    activeFormula: { kepala: null, ekor: null, biji: null, ai: null, shio: null, bbfs: null }
+};
 
-        // Install
-        const btnInstall = $('btnInstall');
+// ============================================
+// CORE FUNCTIONS
+// ============================================
+function switchSection(section) {
+    state.currentSection = section;
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`section-${section}`).classList.add('active');
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll(`.nav-tab.${section}`).forEach(t => t.classList.add('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll(`.nav-item:nth-child(${section === 'kepala' ? 1 : section === 'ekor' ? 2 : section === 'biji' ? 3 : section === 'ai' ? 4 : section === 'shio' ? 5 : 6})`).forEach(n => n.classList.add('active'));
+    saveState();
+}
 
-        const toastEl = $('toast');
+function processData(section) {
+    const input = document.getElementById(`input-${section}`).value;
+    const dataArray = input.split(/[\s,\n\t]+/).map(s => s.trim()).filter(item => item.length >= 4 && /^\d+$/.test(item));
+    if (dataArray.length === 0) { showToast('Masukkan minimal 1 result!', 'error'); return; }
+    
+    state.data[section] = dataArray;
+    const counter = document.getElementById(`counter-${section}`);
+    if (counter) counter.innerText = dataArray.length;
+    
+    const formulas = {
+        kepala: ['mb', 'ty', 'ml', 'ix', 'm0'],
+        ekor: ['m0', 'ml', 'ix', 'mb', 'ty'],
+        biji: ['ml', 'ix', 'mb', 'm0', 'ty'],
+        ai: ['ix', 'ml', 'mb', 'm0', 'ty'],
+        shio: ['ml', 'ix', 'mb', 'm0', 'ty'],
+        bbfs: ['mb', 'ml', 'ty', 'm0', 'm9']
+    };
+    
+    const firstFormula = formulas[section][0];
+    state.activeFormula[section] = firstFormula;
+    const lastNum = dataArray[dataArray.length - 1];
+    
+    formulas[section].forEach(f => {
+        const pred = getPrediction(section, f, lastNum);
+        const cardResult = document.getElementById(`res-${section}-${f}`);
+        if (cardResult) cardResult.innerText = pred;
+    });
+    
+    document.querySelectorAll(`#grid-${section} .formula-card`).forEach(c => c.classList.remove('active'));
+    const firstCard = document.querySelector(`#grid-${section} .formula-card.${firstFormula}`);
+    if (firstCard) firstCard.classList.add('active');
+    
+    renderTable(section, firstFormula);
+    showToast(`✅ ${dataArray.length} data diproses!`, 'success');
+    saveState();
+}
 
-        /* =========================================================
-           STATE
-           ========================================================= */
-        const posisiState = [
-            Array(10).fill(true),
-            Array(10).fill(true),
-            Array(10).fill(true),
-            Array(10).fill(true)
-        ];
+function selectFormula(section, formula) {
+    if (state.data[section].length === 0) { showToast('Input data dulu!', 'error'); return; }
+    state.activeFormula[section] = formula;
+    
+    document.querySelectorAll(`#grid-${section} .formula-card`).forEach(c => c.classList.remove('active'));
+    const activeCard = document.querySelector(`#grid-${section} .formula-card.${formula}`);
+    if (activeCard) activeCard.classList.add('active');
+    
+    const names = {
+        kepala: { mb:'A8+A1+1 (MB)', ty:'K5+A1 (TY)', ml:'K5+C1 (ML)', ix:'A4+E1 (IX)', m0:'A8+K1 (M0)' },
+        ekor: { m0:'K9+K1 (M0)', ml:'C8+C1+1 (ML)', ix:'E4+C1 (IX)', mb:'C8+C1+K2 (MB)', ty:'C8+C2+K2 (TY)' },
+        biji: { ml:'A9+C1+K2 (ML)', ix:'A7+C1+E1 (IX)', mb:'A7+K2+E1 (MB)', m0:'A9+K2 (M0)', ty:'A7+E2 (TY)' },
+        ai: { ix:'C5+C2 (IX)', ml:'C5+K1 (ML)', mb:'C4+E2 (MB)', m0:'C6+E2+1 (M0)', ty:'K1+C1 (TY)' },
+        shio: { ml:'A1+5 (ML)', ix:'A5+C1 (IX)', mb:'A7+K1 (MB)', m0:'C7+E1+1 (M0)', ty:'C7+A2+6 (TY)' },
+        bbfs: { mb:'A1 + E10 (MB)', ml:'A2 - E5 (ML)', ty:'A2 + E5 (TY)', m0:'C2 + K7 (ML)', m9:'A9 + JKE7 (M9)' }
+    };
+    
+    const badge = document.getElementById(`badge-${section}`);
+    if (badge && names[section] && names[section][formula]) {
+        badge.innerText = names[section][formula];
+        const colors = { mb:'#ef4444', ty:'#3b82f6', ml:'#10b981', ix:'#f59e0b', m0:'#8b5cf6', m9:'#8b5cf6' };
+        badge.style.background = colors[formula] || '#334155';
+        badge.style.color = '#fff';
+    }
+    renderTable(section, formula);
+    saveState();
+}
 
-        let myLines4D       = [];    // daftar user (parsed)
-        let reference4D     = [];    // hasil generate dari kontrol (setelah filter)
-        let ref2DDepan      = [];
-        let ref2DTengah     = [];
-        let ref2DBelakang   = [];
+function getPrediction(section, formula, num) {
+    const cleanNum = num.toString().trim();
+    if (DB[section] && DB[section][formula] && DB[section][formula][cleanNum]) return DB[section][formula][cleanNum];
+    
+    if (section === 'shio') {
+        const d = cleanNum.split('').map(Number);
+        const weakShio = ((d[0] + d[1] + d[2] + d[3]) % 12) + 1;
+        let result = [];
+        for (let i = 1; i <= 12; i++) if (i !== weakShio) result.push(i.toString().padStart(2, '0'));
+        return result.join(' ');
+    }
+    
+    if (section === 'bbfs') {
+        const d = cleanNum.split('').map(Number);
+        let base = 0;
+        if (formula === 'mb') base = (d[0] + d[3]) % 10;
+        else if (formula === 'ml') base = ((d[1] - (d[2]||0)) + 10) % 10;
+        else if (formula === 'ty') base = (d[1] + (d[2]||0)) % 10;
+        else if (formula === 'm0') base = (d[2] + d[0]) % 10;
+        else if (formula === 'm9') base = (d[0] + d[2]) % 10;
+        let result = '';
+        for (let i = 0; i < 9; i++) result += ((base + i) % 10).toString();
+        return result;
+    }
+    
+    const d = cleanNum.split('').map(Number);
+    let base = 0;
+    if (section === 'kepala') {
+        if(formula==='mb') base=(d[0]+d[1])%10;
+        if(formula==='ty') base=(d[1]+d[2])%10;
+        if(formula==='ml') base=(d[2]+d[3])%10;
+        if(formula==='ix') base=(d[0]+d[3])%10;
+        if(formula==='m0') base=(d[1]+d[3])%10;
+    }
+    let res = '';
+    for(let i=0; i<9; i++) res += (base+i)%10;
+    return res;
+}
 
-        let currentResults4D = [];
-        let currentResults3D = [];
-        let current2DDepan = [];
-        let current2DTengah = [];
-        let current2DBelakang = [];
+function renderTable(section, formula) {
+    const tbody = document.getElementById(`table-${section}`);
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    let okCount = 0, zonkCount = 0;
+    const data = state.data[section];
+    
+    if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">Input data & pilih rumusan</div></td></tr>';
+        return;
+    }
 
-        /* =========================================================
-           TOAST
-           ========================================================= */
-        let toastTimer = null;
-        function toast(msg, isErr) {
-            toastEl.textContent = msg;
-            toastEl.classList.toggle('err', !!isErr);
-            toastEl.classList.add('show');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+    data.forEach((num, index) => {
+        const cleanNum = num.toString().trim();
+        const pred = getPrediction(section, formula, cleanNum);
+        const nextNum = data[index + 1];
+        let statusBadge = '<span class="badge badge-wait">PENDING</span>';
+        let extraValue = '';
+        
+        if (section === 'ekor') extraValue = `<td class="col-value">${cleanNum.charAt(3)}</td>`;
+        else if (section === 'biji') extraValue = `<td class="col-value">${(parseInt(cleanNum.charAt(0)) + parseInt(cleanNum.charAt(3))) % 10}</td>`;
+        else if (section === 'ai') {
+            // PERBAIKAN: Mengambil digit ke-6 (index 5) dari data 6D sebagai acuan hasil AI.
+            // Jika yang dimaksud adalah digit ke-1 (Kepala), ubah charAt(5) menjadi charAt(0)
+            const ai = cleanNum.length >= 6 ? cleanNum.charAt(5) : cleanNum.charAt(0);
+            extraValue = `<td class="col-value">${ai}</td>`;
         }
+        else if (section === 'shio') extraValue = `<td class="col-value">${(((parseInt(cleanNum.substring(2,4)) - 1) % 12) + 1).toString().padStart(2,'0')}</td>`;
+        
+        if (nextNum) {
+            const nextClean = nextNum.toString().trim();
+            let nextValue = '';
+            if (section === 'kepala') nextValue = nextClean.charAt(0);
+            else if (section === 'ekor') nextValue = nextClean.charAt(3);
+            else if (section === 'biji') nextValue = ((parseInt(nextClean.charAt(0)) + parseInt(nextClean.charAt(3))) % 10).toString();
+            else if (section === 'ai') nextValue = nextClean.length >= 6 ? nextClean.charAt(5) : nextClean.charAt(0); // Validasi terhadap digit ke-6 (atau ke-1) hasil 6D berikutnya
+            else if (section === 'shio') nextValue = (((parseInt(nextClean.substring(2,4)) - 1) % 12) + 1).toString().padStart(2,'0');
+            else if (section === 'bbfs') nextValue = nextClean.charAt(0);
+            
+            const isHit = pred.includes(nextValue);
+            if (isHit) { statusBadge = '<span class="badge badge-ok">OK ✓</span>'; okCount++; }
+            else { statusBadge = '<span class="badge badge-zonk">ZONK ✗</span>'; zonkCount++; }
+        }
+        
+        const colors = { mb:'#ef4444', ty:'#3b82f6', ml:'#10b981', ix:'#f59e0b', m0:'#8b5cf6', m9:'#8b5cf6' };
+        const predColor = colors[formula] || '#fff';
+        const weakInfo = section === 'shio' ? getWeakShio(pred) : '';
+        
+        tbody.innerHTML += `<tr>
+            <td>${index + 1}</td>
+            <td class="col-num">${cleanNum}</td>
+            ${extraValue}
+            <td class="col-pred" style="color: ${predColor}">${pred}${weakInfo}</td>
+            <td>${statusBadge}</td>
+        </tr>`;
+    });
+    
+    const statOk = document.getElementById(`stat-ok-${section}`);
+    const statZonk = document.getElementById(`stat-zonk-${section}`);
+    const statsDiv = document.getElementById(`stats-${section}`);
+    if (statOk) statOk.innerText = okCount;
+    if (statZonk) statZonk.innerText = zonkCount;
+    if (statsDiv) statsDiv.style.display = 'flex';
+}
 
-        /* =========================================================
-           POSISI RENDER
-           ========================================================= */
-        function renderPosisi() {
-            for (let p = 0; p < 4; p++) {
-                const grid = document.getElementById('grid' + p);
-                const offCount = posisiState[p].filter(v => !v).length;
-                document.getElementById('offCount' + p).textContent = offCount + ' OFF';
-                grid.innerHTML = '';
-                for (let d = 0; d < 10; d++) {
-                    const btn = document.createElement('div');
-                    btn.className = 'digit-btn' + (posisiState[p][d] ? '' : ' off');
-                    btn.textContent = d;
-                    btn.dataset.posisi = p;
-                    btn.dataset.digit = d;
-                    btn.addEventListener('click', function() {
-                        const p2 = parseInt(this.dataset.posisi);
-                        const d2 = parseInt(this.dataset.digit);
-                        posisiState[p2][d2] = !posisiState[p2][d2];
-                        renderPosisi();
-                        saveLocalDebounced();
-                        if (!hasilArea.classList.contains('hidden')) generate();
-                    });
-                    grid.appendChild(btn);
-                }
+function getWeakShio(pred) {
+    const all = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+    const predArr = pred.split(' ');
+    const weak = all.filter(s => !predArr.includes(s));
+    return weak[0] ? `<div class="weak-shio">Lemah: ${weak[0]}</div>` : '';
+}
+
+function resetSection(section) {
+    if (confirm(`Reset semua data ${section.toUpperCase()}?`)) {
+        state.data[section] = [];
+        state.activeFormula[section] = null;
+        document.getElementById(`input-${section}`).value = '';
+        document.getElementById(`table-${section}`).innerHTML = '<tr><td colspan="5" class="empty-state"><div class="empty-state-icon">🔢</div><div class="empty-state-text">Input data & pilih rumusan</div></td></tr>';
+        document.getElementById(`stats-${section}`).style.display = 'none';
+        document.getElementById(`badge-${section}`).innerText = 'PILIH RUMUS';
+        document.getElementById(`badge-${section}`).style.background = '#334155';
+        document.querySelectorAll(`#grid-${section} .formula-card-result`).forEach(card => card.innerText = '----');
+        document.querySelectorAll(`#grid-${section} .formula-card`).forEach(card => card.classList.remove('active'));
+        const counter = document.getElementById(`counter-${section}`);
+        if (counter) counter.innerText = '0';
+        showToast(`🗑️ Data ${section.toUpperCase()} direset!`, 'success');
+        saveState();
+    }
+}
+
+function exportBBFSToExcel() {
+    if (state.data.bbfs.length === 0 || !state.activeFormula.bbfs) { showToast('Tidak ada data untuk export!', 'error'); return; }
+    const formula = state.activeFormula.bbfs;
+    let csv = 'No,Result,Prediksi BBFS,Status\n';
+    state.data.bbfs.forEach((num, index) => {
+        const pred = getPrediction('bbfs', formula, num);
+        const nextNum = state.data.bbfs[index + 1];
+        let status = 'PENDING';
+        if (nextNum) {
+            const nextClean = nextNum.toString().trim();
+            const isHit = pred.includes(nextClean.charAt(0));
+            status = isHit ? 'OK' : 'ZONK';
+        }
+        csv += `${index + 1},${num},${pred},${status}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `BBFS_${formula.toUpperCase()}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('📤 File Excel didownload!', 'success');
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.className = `toast ${type} show`;
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function saveState() { localStorage.setItem('scannerHub', JSON.stringify(state)); }
+
+function loadState() {
+    const saved = localStorage.getItem('scannerHub');
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        state.data = parsed.data || state.data;
+        state.activeFormula = parsed.activeFormula || state.activeFormula;
+        ['kepala','ekor','biji','ai','shio','bbfs'].forEach(section => {
+            if (state.data[section].length > 0) {
+                document.getElementById(`input-${section}`).value = state.data[section].join(' ');
+                const counter = document.getElementById(`counter-${section}`);
+                if (counter) counter.innerText = state.data[section].length;
+                if (state.activeFormula[section]) selectFormula(section, state.activeFormula[section]);
             }
-        }
-
-        function setAllPosisi(posisi, value) {
-            for (let d = 0; d < 10; d++) posisiState[posisi][d] = value;
-            renderPosisi();
-            saveLocalDebounced();
-            if (!hasilArea.classList.contains('hidden')) generate();
-        }
-
-        document.querySelectorAll('.posisi-all-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const posisi = parseInt(this.dataset.posisi);
-                if (this.dataset.action === 'all-on') setAllPosisi(posisi, true);
-                else setAllPosisi(posisi, false);
-            });
         });
+    }
+    const savedClientId = localStorage.getItem('gdrive_client_id');
+    const savedApiKey = localStorage.getItem('gdrive_api_key');
+    if (savedClientId) document.getElementById('google-client-id').value = savedClientId;
+    if (savedApiKey) document.getElementById('google-api-key').value = savedApiKey;
+}
 
-        /* =========================================================
-           PARSER
-           ========================================================= */
-        function parseControls(text) {
-            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            const controls = lines.map(line => {
-                const digits = line.replace(/\s/g, '').split('');
-                const unique = [...new Set(digits)].filter(d => d >= '0' && d <= '9');
-                return unique.sort();
-            });
-            return controls.filter(arr => arr.length > 0);
+// ============================================
+// GOOGLE DRIVE INTEGRATION
+// ============================================
+let tokenClient;
+let gapiInited = false;
+let gisInited = false;
+
+function gapiLoaded() { gapi.load('client', initializeGapiClient); }
+function gisLoaded() { gisInited = true; maybeEnableButtons(); }
+
+async function initializeGapiClient() {
+    const apiKey = document.getElementById('google-api-key').value.trim();
+    if (!apiKey) return;
+    try {
+        await gapi.client.init({ apiKey: apiKey, discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"] });
+        gapiInited = true;
+        maybeEnableButtons();
+    } catch (err) { console.error('GAPI init error:', err); }
+}
+
+function maybeEnableButtons() {
+    if (gapiInited && gisInited) document.getElementById('btn-connect-gdrive').disabled = false;
+}
+
+function initGDrive() {
+    const clientId = document.getElementById('google-client-id').value.trim();
+    const apiKey = document.getElementById('google-api-key').value.trim();
+    if (clientId && apiKey) {
+        localStorage.setItem('gdrive_client_id', clientId);
+        localStorage.setItem('gdrive_api_key', apiKey);
+        if (typeof gapi !== 'undefined') { gapiInited = false; gapi.load('client', initializeGapiClient); }
+        if (typeof google !== 'undefined') { gisInited = false; gisLoaded(); }
+    }
+}
+
+function handleAuthClick() {
+    const clientId = document.getElementById('google-client-id').value.trim();
+    if (!clientId) { showToast('Masukkan Google Client ID terlebih dahulu!', 'error'); return; }
+    tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'https://www.googleapis.com/auth/drive.file',
+        callback: async (resp) => {
+            if (resp.error !== undefined) { showToast('❌ Gagal terhubung: ' + resp.error, 'error'); return; }
+            showToast('✅ Terhubung ke Google Drive!', 'success');
+            document.getElementById('gdrive-status').innerText = 'Status: ✅ Terhubung';
+            document.getElementById('gdrive-status').style.color = 'var(--success)';
         }
+    });
+    if (gapi.client.getToken() === null) tokenClient.requestAccessToken({prompt: 'consent'});
+    else tokenClient.requestAccessToken({prompt: ''});
+}
 
-        function parse4DLines(text) {
-            if (!text) return [];
-            // Ambil semua deret 4 digit (abaikan pemisah apapun)
-            const matches = text.match(/\d{4}/g) || [];
-            const set = new Set();
-            for (const m of matches) set.add(m.padStart(4, '0'));
-            return Array.from(set).sort();
-        }
-
-        /* =========================================================
-           GENERATE / FILTER
-           ========================================================= */
-        function generate4D(controls) {
-            if (controls.length === 0) return [];
-            const results = [];
-            for (let i = 0; i < 10000; i++) {
-                const num = String(i).padStart(4, '0');
-                const digits = num.split('');
-                let valid = true;
-                for (const control of controls) {
-                    if (!control.some(d => digits.includes(d))) { valid = false; break; }
-                }
-                if (valid) results.push(num);
-            }
-            return results;
-        }
-
-        function filterCT3D(list, ct3dControls) {
-            if (ct3dControls.length === 0) return list;
-            return list.filter(num => {
-                const d = num.split('');
-                const cke = [d[1], d[2], d[3]];
-                for (const control of ct3dControls) {
-                    if (!control.some(x => cke.includes(x))) return false;
-                }
-                return true;
-            });
-        }
-
-        function filterCT2D(list, ct2dControls) {
-            if (ct2dControls.length === 0) return list;
-            return list.filter(num => {
-                const d = num.split('');
-                const ke = [d[2], d[3]];
-                for (const control of ct2dControls) {
-                    if (!control.some(x => ke.includes(x))) return false;
-                }
-                return true;
-            });
-        }
-
-        function filterPosisi(list) {
-            for (let p = 0; p < 4; p++) {
-                if (!posisiState[p].some(v => v === true)) return [];
-            }
-            return list.filter(num => {
-                const d = num.split('');
-                for (let p = 0; p < 4; p++) {
-                    if (!posisiState[p][parseInt(d[p])]) return false;
-                }
-                return true;
-            });
-        }
-
-        /* Turunan */
-        function to3D(list) {
-            const set = new Set();
-            for (const num of list) set.add(num.slice(1));
-            return Array.from(set).sort();
-        }
-        function to2DDepan(list) {
-            const set = new Set();
-            for (const num of list) set.add(num.slice(0, 2));
-            return Array.from(set).sort();
-        }
-        function to2DTengah(list) {
-            const set = new Set();
-            for (const num of list) set.add(num.slice(1, 3));
-            return Array.from(set).sort();
-        }
-        function to2DBelakang(list) {
-            const set = new Set();
-            for (const num of list) set.add(num.slice(2));
-            return Array.from(set).sort();
-        }
-
-        function splitArray(arr, size) {
-            const chunks = [];
-            for (let i = 0; i < arr.length; i += size) chunks.push(arr.slice(i, i + size));
-            return chunks;
-        }
-
-        /* =========================================================
-           RENDER
-           ========================================================= */
-        function renderControls(controls) {
-            daftarKontrol.innerHTML = '';
-            if (controls.length === 0) {
-                daftarKontrol.innerHTML = '<span style="color:var(--text-secondary);">(tidak ada)</span>';
-                return;
-            }
-            controls.forEach((arr, idx) => {
-                const div = document.createElement('div');
-                div.className = 'row-control';
-                div.innerHTML = `<span class="idx">#${idx+1}</span><span class="digits">${arr.join(' ')}</span>`;
-                daftarKontrol.appendChild(div);
-            });
-        }
-
-        function renderGrid(gridEl, items, className, emptyMsg = '-') {
-            if (!gridEl) return;
-            gridEl.innerHTML = '';
-            if (!items || items.length === 0) {
-                gridEl.innerHTML = `<span style="color:var(--text-secondary); grid-column:1/-1; text-align:center;">${emptyMsg}</span>`;
-                return;
-            }
-            const frag = document.createDocumentFragment();
-            for (const item of items) {
-                const span = document.createElement('span');
-                span.className = className;
-                span.textContent = item;
-                frag.appendChild(span);
-            }
-            gridEl.appendChild(frag);
-        }
-
-        function renderSplit(results) {
-            if (!results || results.length === 0) {
-                splitArea.classList.add('hidden');
-                splitContainer.innerHTML = '';
-                splitCount.textContent = '0 bagian';
-                return;
-            }
-            const chunks = splitArray(results, 400);
-            splitCount.textContent = chunks.length + ' bagian';
-            splitContainer.innerHTML = '';
-            chunks.forEach((chunk, idx) => {
-                const div = document.createElement('div');
-                div.style.cssText = 'background:#0f172a; border-radius:8px; padding:12px; margin-bottom:8px; border-left:3px solid var(--color-2d-belakang);';
-                const label = document.createElement('div');
-                label.style.cssText = 'font-size:12px; color:var(--text-secondary); margin-bottom:6px; font-weight:600;';
-                label.textContent = `Bagian ${idx+1} (${chunk.length} LN)`;
-                const text = document.createElement('div');
-                text.style.cssText = 'font-family:"Courier New",monospace; font-size:13px; color:var(--text-primary); word-break:break-all; max-height:80px; overflow-y:auto; line-height:1.6;';
-                text.textContent = chunk.join('*');
-                div.appendChild(label);
-                div.appendChild(text);
-                splitContainer.appendChild(div);
-            });
-            splitArea.classList.remove('hidden');
-        }
-
-        function renderAll() {
-            // Referensi
-            renderGrid(gridRef4D, reference4D, 'item-4d', '(tidak ada referensi)');
-            countRef4D.textContent = reference4D.length + ' angka';
-
-            renderGrid(gridRef2DDepan, ref2DDepan, 'item-2d-depan', '-');
-            countRef2DDepan.textContent = ref2DDepan.length;
-            renderGrid(gridRef2DTengah, ref2DTengah, 'item-2d-tengah', '-');
-            countRef2DTengah.textContent = ref2DTengah.length;
-            renderGrid(gridRef2DBelakang, ref2DBelakang, 'item-2d-belakang', '-');
-            countRef2DBelakang.textContent = ref2DBelakang.length;
-
-            // Final 4D
-            renderGrid(grid4D, currentResults4D, 'item-4d', '(belum ada hasil)');
-            count4D.textContent = currentResults4D.length + ' angka';
-
-            // Turunan
-            currentResults3D = to3D(currentResults4D);
-            renderGrid(grid3D, currentResults3D, 'item-3d', '(belum ada)');
-            count3D.textContent = currentResults3D.length + ' angka';
-
-            current2DDepan = to2DDepan(currentResults4D);
-            renderGrid(grid2DDepan, current2DDepan, 'item-2d-depan', '-');
-            count2DDepan.textContent = current2DDepan.length + ' angka';
-
-            current2DTengah = to2DTengah(currentResults4D);
-            renderGrid(grid2DTengah, current2DTengah, 'item-2d-tengah', '-');
-            count2DTengah.textContent = current2DTengah.length + ' angka';
-
-            current2DBelakang = to2DBelakang(currentResults4D);
-            renderGrid(grid2DBelakang, current2DBelakang, 'item-2d-belakang', '-');
-            count2DBelakang.textContent = current2DBelakang.length + ' angka';
-
-            renderSplit(currentResults4D);
-        }
-
-        /* =========================================================
-           COPY
-           ========================================================= */
-        function copyText(text) {
-            if (!text) { toast('Tidak ada data untuk disalin.', true); return; }
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text)
-                    .then(() => toast('✅ Berhasil disalin!'))
-                    .catch(() => copyFallback(text));
-            } else copyFallback(text);
-        }
-        function copyFallback(text) {
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.position = 'fixed';
-            ta.style.left = '-9999px';
-            document.body.appendChild(ta);
-            ta.select();
-            try { document.execCommand('copy'); toast('✅ Berhasil disalin!'); }
-            catch (e) { toast('Gagal menyalin.', true); }
-            document.body.removeChild(ta);
-        }
-
-        /* =========================================================
-           GENERATE UTAMA
-           ========================================================= */
-        function generate() {
-            try {
-                const controls = parseControls(inputControl.value);
-                if (controls.length === 0) {
-                    toast('Masukkan minimal 1 baris kontrol 4D.', true);
-                    return;
-                }
-
-                const ct3dControls = parseControls(inputControl3D.value);
-                const ct2dControls = parseControls(inputControl2D.value);
-
-                // 1. Daftar user
-                myLines4D = parse4DLines(inputMyLines.value);
-                statMyInput.textContent = myLines4D.length;
-
-                // 2. Referensi dari kontrol
-                renderControls(controls);
-                jumlahKontrol.textContent = controls.length + ' baris';
-
-                const base4D   = generate4D(controls);
-                const after3D  = filterCT3D(base4D, ct3dControls);
-                const after2D  = filterCT2D(after3D, ct2dControls);
-                const afterPos = filterPosisi(after2D);
-
-                reference4D = afterPos;
-                statAwal.textContent = reference4D.length;
-
-                // 3. Set pemangkas 2D dari referensi
-                ref2DDepan    = to2DDepan(reference4D);
-                ref2DTengah   = to2DTengah(reference4D);
-                ref2DBelakang = to2DBelakang(reference4D);
-
-                statRef2D.textContent = (ref2DDepan.length + ref2DTengah.length + ref2DBelakang.length);
-
-                // 4. Terapkan pemangkas ke daftar user
-                let finalList;
-                let usingMyLines = myLines4D.length > 0;
-
-                if (usingMyLines) {
-                    finalList = myLines4D.slice();
-
-                    if (trimDepan.checked) {
-                        const setD = new Set(ref2DDepan);
-                        finalList = finalList.filter(n => setD.has(n.slice(0, 2)));
-                    }
-                    if (trimTengah.checked) {
-                        const setT = new Set(ref2DTengah);
-                        finalList = finalList.filter(n => setT.has(n.slice(1, 3)));
-                    }
-                    if (trimBelakang.checked) {
-                        const setB = new Set(ref2DBelakang);
-                        finalList = finalList.filter(n => setB.has(n.slice(2)));
-                    }
-                    if (applyPosisiMy.checked) {
-                        finalList = filterPosisi(finalList);
-                    }
-                } else {
-                    // Fallback: kalau user belum isi daftar, pakai referensi
-                    finalList = reference4D.slice();
-                }
-
-                statPosisi.textContent = usingMyLines
-                    ? (myLines4D.length - finalList.length) + ' terpangkas'
-                    : reference4D.length + ' ref';
-
-                statAkhir.textContent = finalList.length;
-                currentResults4D = finalList;
-
-                emptyNotice.classList.toggle('hidden', usingMyLines);
-                hasilSourceLabel.textContent = usingMyLines
-                    ? '(dari Daftar 4D Saya setelah dipangkas)'
-                    : '(memakai Referensi 4D — daftar saya kosong)';
-
-                renderAll();
-                hasilArea.classList.remove('hidden');
-                hasilArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } catch (e) {
-                console.error(e);
-                toast('Terjadi kesalahan: ' + e.message, true);
-            }
-        }
-
-        /* =========================================================
-           RESET
-           ========================================================= */
-        function resetAll() {
-            inputMyLines.value = '';
-            inputControl.value = '01234\n56789';
-            inputControl3D.value = '1235';
-            inputControl2D.value = '1246';
-            for (let p = 0; p < 4; p++)
-                for (let d = 0; d < 10; d++) posisiState[p][d] = true;
-            trimDepan.checked = true;
-            trimTengah.checked = true;
-            trimBelakang.checked = true;
-            applyPosisiMy.checked = false;
-
-            renderPosisi();
-            updateMyLinesCount();
-
-            hasilArea.classList.add('hidden');
-            myLines4D = []; reference4D = [];
-            currentResults4D = []; currentResults3D = [];
-            current2DDepan = []; current2DTengah = []; current2DBelakang = [];
-            ref2DDepan = []; ref2DTengah = []; ref2DBelakang = [];
-
-            daftarKontrol.innerHTML = '';
-            [gridRef4D, grid3D, grid4D, grid2DDepan, grid2DTengah, grid2DBelakang,
-             gridRef2DDepan, gridRef2DTengah, gridRef2DBelakang].forEach(g => {
-                if (g) g.innerHTML = '<span style="color:var(--text-secondary); grid-column:1/-1; text-align:center;">-</span>';
-            });
-            [count4D, count3D, count2DDepan, count2DTengah, count2DBelakang, countRef4D,
-             countRef2DDepan, countRef2DTengah, countRef2DBelakang].forEach(c => {
-                if (c) c.textContent = '0';
-            });
-            jumlahKontrol.textContent = '0 baris';
-            splitArea.classList.add('hidden');
-            splitContainer.innerHTML = '';
-            splitCount.textContent = '0 bagian';
-            [statAwal, stat3D, stat2D, statPosisi, statAkhir, statMyInput, statRef2D].forEach(s => {
-                if (s) s.textContent = '0';
-            });
-
-            localStorage.removeItem('p4d_state');
-            toast('Semua direset.');
-        }
-
-        /* =========================================================
-           COPY LISTENERS
-           ========================================================= */
-        btnCopy4D.addEventListener('click', () => copyText(currentResults4D.join('*')));
-        btnCopy3D.addEventListener('click', () => copyText(currentResults3D.join('*')));
-        btnCopy2DDepan.addEventListener('click', () => copyText(current2DDepan.join('*')));
-        btnCopy2DTengah.addEventListener('click', () => copyText(current2DTengah.join('*')));
-        btnCopy2DBelakang.addEventListener('click', () => copyText(current2DBelakang.join('*')));
-        btnCopySplit.addEventListener('click', function() {
-            if (currentResults4D.length === 0) { toast('Tidak ada 4D.', true); return; }
-            const chunks = splitArray(currentResults4D, 400);
-            let out = '';
-            chunks.forEach((chunk, idx) => {
-                out += `=== Bagian ${idx+1} (${chunk.length} LN) ===\n`;
-                out += chunk.join('*') + '\n\n';
-            });
-            copyText(out);
+async function saveToGDrive() {
+    if (!gapi.client || !gapi.client.getToken()) { showToast('Hubungkan ke Google Drive dulu!', 'error'); return; }
+    try {
+        const dataStr = JSON.stringify(state);
+        const blob = new Blob([dataStr], {type: 'application/json'});
+        const token = gapi.client.getToken().access_token;
+        const metadata = { name: 'ScannerHub_Pro_Backup.json', mimeType: 'application/json' };
+        const form = new FormData();
+        form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+        form.append('file', blob);
+        const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+            method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: form
         });
+        if (res.ok) showToast('✅ Berhasil disimpan ke Google Drive!', 'success');
+        else { const err = await res.json(); showToast('❌ Gagal: ' + (err.error?.message || 'Unknown'), 'error'); }
+    } catch (err) { showToast('❌ Gagal menyimpan: ' + err.message, 'error'); }
+}
 
-        /* =========================================================
-           MY LINES COUNT (LIVE)
-           ========================================================= */
-        function updateMyLinesCount() {
-            const n = parse4DLines(inputMyLines.value).length;
-            myLinesCount.textContent = n + ' LN';
-        }
+async function loadFromGDrive() {
+    if (!gapi.client || !gapi.client.getToken()) { showToast('Hubungkan ke Google Drive dulu!', 'error'); return; }
+    try {
+        const res = await gapi.client.drive.files.list({ q: "name='ScannerHub_Pro_Backup.json' and trashed=false", spaces: 'drive', fields: 'files(id, name)' });
+        const files = res.result.files;
+        if (files && files.length > 0) {
+            const token = gapi.client.getToken().access_token;
+            const downloadRes = await fetch(`https://www.googleapis.com/drive/v3/files/${files[0].id}?alt=media`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (downloadRes.ok) {
+                const loadedState = await downloadRes.json();
+                Object.assign(state, loadedState);
+                saveState(); loadState();
+                showToast('✅ Berhasil dimuat dari Google Drive!', 'success');
+            } else { showToast('❌ Gagal mengunduh file.', 'error'); }
+        } else { showToast('⚠️ File backup tidak ditemukan.', 'error'); }
+    } catch (err) { showToast('❌ Gagal memuat: ' + (err.result?.error?.message || err.message), 'error'); }
+}
 
-        /* =========================================================
-           EVENT LISTENERS UTAMA
-           ========================================================= */
-        btnGenerate.addEventListener('click', () => { generate(); saveLocalDebounced(); });
-        btnReset.addEventListener('click', resetAll);
+function openSettings() {
+    document.getElementById('modal-settings').classList.add('active');
+    initGDrive();
+}
+function closeSettings() {
+    document.getElementById('modal-settings').classList.remove('active');
+    initGDrive();
+}
 
-        inputMyLines.addEventListener('input', () => {
-            updateMyLinesCount();
-            saveLocalDebounced();
-        });
-        [inputControl, inputControl3D, inputControl2D].forEach(el => {
-            el.addEventListener('input', saveLocalDebounced);
-        });
-        [trimDepan, trimTengah, trimBelakang, applyPosisiMy].forEach(el => {
-            el.addEventListener('change', () => {
-                saveLocalDebounced();
-                if (!hasilArea.classList.contains('hidden')) generate();
-            });
-        });
+// ============================================
+// PWA INSTALL FEATURE
+// ============================================
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('btn-install').style.display = 'block';
+});
 
-        /* =========================================================
-           LOCAL STORAGE
-           ========================================================= */
-        let saveTimer = null;
-        function saveLocalDebounced() {
-            clearTimeout(saveTimer);
-            saveTimer = setTimeout(saveLocal, 400);
-        }
-
-        function collectData() {
-            return {
-                version: 2,
-                savedAt: new Date().toISOString(),
-                myLines: inputMyLines.value,
-                control4D: inputControl.value,
-                control3D: inputControl3D.value,
-                control2D: inputControl2D.value,
-                posisi: posisiState.map(a => a.slice()),
-                trim: {
-                    depan: trimDepan.checked,
-                    tengah: trimTengah.checked,
-                    belakang: trimBelakang.checked,
-                    applyPosisi: applyPosisiMy.checked
-                }
-            };
-        }
-
-        function applyData(data) {
-            if (!data || typeof data !== 'object') throw new Error('Format data tidak valid.');
-            if (typeof data.myLines === 'string') inputMyLines.value = data.myLines;
-            if (typeof data.control4D === 'string') inputControl.value = data.control4D;
-            if (typeof data.control3D === 'string') inputControl3D.value = data.control3D;
-            if (typeof data.control2D === 'string') inputControl2D.value = data.control2D;
-
-            if (Array.isArray(data.posisi) && data.posisi.length === 4) {
-                for (let p = 0; p < 4; p++) {
-                    if (Array.isArray(data.posisi[p]) && data.posisi[p].length === 10) {
-                        for (let d = 0; d < 10; d++) posisiState[p][d] = !!data.posisi[p][d];
-                    }
-                }
-            }
-            if (data.trim && typeof data.trim === 'object') {
-                trimDepan.checked    = data.trim.depan !== false;
-                trimTengah.checked   = data.trim.tengah !== false;
-                trimBelakang.checked = data.trim.belakang !== false;
-                applyPosisiMy.checked = !!data.trim.applyPosisi;
-            }
-            renderPosisi();
-            updateMyLinesCount();
-        }
-
-        function saveLocal() {
-            try { localStorage.setItem('p4d_state', JSON.stringify(collectData())); }
-            catch (e) { /* ignore quota */ }
-        }
-
-        function loadLocal() {
-            try {
-                const raw = localStorage.getItem('p4d_state');
-                return raw ? JSON.parse(raw) : null;
-            } catch (e) { return null; }
-        }
-
-        /* =========================================================
-           EXPORT / IMPORT JSON
-           ========================================================= */
-        btnExport.addEventListener('click', function() {
-            try {
-                const data = collectData();
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'permutasi4d_backup_' + new Date().toISOString().slice(0,10) + '.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                toast('💾 File JSON diunduh.');
-            } catch (e) { toast('Gagal export: ' + e.message, true); }
-        });
-
-        btnImport.addEventListener('click', () => fileImport.click());
-        fileImport.addEventListener('change', function() {
-            const file = this.files && this.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                try {
-                    const data = JSON.parse(ev.target.result);
-                    applyData(data);
-                    saveLocal();
-                    generate();
-                    toast('📂 Berhasil import data.');
-                } catch (e) {
-                    toast('Gagal import: ' + e.message, true);
-                }
-            };
-            reader.readAsText(file);
-            this.value = '';
-        });
-
-        /* =========================================================
-           GOOGLE DRIVE SYNC
-           ========================================================= */
-        const GD = {
-            clientId: localStorage.getItem('p4d_gd_client') || '',
-            apiKey:   localStorage.getItem('p4d_gd_key') || '',
-            token:    null,
-            fileName: 'permutasi4d_backup.json',
-            scope:    'https://www.googleapis.com/auth/drive.appdata'
-        };
-
-        // Prefill
-        gdClientId.value = GD.clientId;
-        gdApiKey.value = GD.apiKey;
-
-        function setCloudStatus(msg, kind) {
-            cloudStatus.textContent = msg;
-            cloudStatus.classList.remove('ok', 'err', 'info');
-            if (kind) cloudStatus.classList.add(kind);
-        }
-
-        btnSaveGdConfig.addEventListener('click', function() {
-            GD.clientId = gdClientId.value.trim();
-            GD.apiKey = gdApiKey.value.trim();
-            localStorage.setItem('p4d_gd_client', GD.clientId);
-            localStorage.setItem('p4d_gd_key', GD.apiKey);
-            toast('⚙️ Konfigurasi Google disimpan.');
-            setCloudStatus(GD.clientId ? 'Konfigurasi tersimpan. Siap terhubung.' : 'Client ID belum diisi.', GD.clientId ? 'info' : 'err');
-        });
-
-        function loadGISScript() {
-            return new Promise((resolve, reject) => {
-                if (window.google && window.google.accounts && window.google.accounts.oauth2) return resolve();
-                const s = document.createElement('script');
-                s.src = 'https://accounts.google.com/gsi/client';
-                s.async = true;
-                s.defer = true;
-                s.onload = () => resolve();
-                s.onerror = () => reject(new Error('Gagal memuat Google Identity Services. Periksa koneksi internet.'));
-                document.head.appendChild(s);
-            });
-        }
-
-        function ensureToken() {
-            if (GD.token) return Promise.resolve(GD.token);
-            if (!GD.clientId) {
-                return Promise.reject(new Error('Client ID Google belum diisi. Buka ⚙️ Pengaturan Google Drive API.'));
-            }
-            return loadGISScript().then(() => new Promise((resolve, reject) => {
-                let resolved = false;
-                const client = google.accounts.oauth2.initTokenClient({
-                    client_id: GD.clientId,
-                    scope: GD.scope,
-                    callback: (resp) => {
-                        resolved = true;
-                        if (resp && resp.error) return reject(new Error(resp.error));
-                        GD.token = resp.access_token;
-                        setCloudStatus('Terhubung ke Google Drive ✅', 'ok');
-                        resolve(GD.token);
-                    },
-                    error_callback: (err) => {
-                        if (!resolved) reject(new Error((err && err.message) || 'Login dibatalkan.'));
-                    }
-                });
-                try { client.requestAccessToken({ prompt: '' }); }
-                catch (e) { reject(e); }
-            }));
-        }
-
-        function driveFindFile(token) {
-            const q = encodeURIComponent(`name='${GD.fileName}' and trashed=false`);
-            const url = `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}&fields=files(id,name,modifiedTime,size)`;
-            return fetch(url, { headers: { Authorization: 'Bearer ' + token } })
-                .then(r => {
-                    if (!r.ok) return r.json().then(j => { throw new Error(j.error && j.error.message || ('HTTP ' + r.status)); });
-                    return r.json();
-                })
-                .then(j => (j.files && j.files[0]) || null);
-        }
-
-        function driveSave() {
-            setCloudStatus('Menyiapkan koneksi ke Google Drive...', 'info');
-            return ensureToken().then(token => {
-                setCloudStatus('Mengunggah data...', 'info');
-                const data = collectData();
-                const content = JSON.stringify(data, null, 2);
-                const metadata = { name: GD.fileName, mimeType: 'application/json' };
-
-                return driveFindFile(token).then(existing => {
-                    const boundary = '-------p4d' + Date.now();
-                    const delimiter = '\r\n--' + boundary + '\r\n';
-                    const closeDelim = '\r\n--' + boundary + '--';
-
-                    let body = delimiter +
-                        'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-                        JSON.stringify(metadata) +
-                        delimiter +
-                        'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-                        content +
-                        closeDelim;
-
-                    let url, method;
-                    if (existing) {
-                        url = `https://www.googleapis.com/upload/drive/v3/files/${existing.id}?uploadType=multipart`;
-                        method = 'PATCH';
-                    } else {
-                        metadata.parents = ['appDataFolder'];
-                        // rebuild body because metadata changed
-                        body = delimiter +
-                            'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-                            JSON.stringify(metadata) +
-                            delimiter +
-                            'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-                            content +
-                            closeDelim;
-                        url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-                        method = 'POST';
-                    }
-
-                    return fetch(url, {
-                        method,
-                        headers: {
-                            Authorization: 'Bearer ' + token,
-                            'Content-Type': 'multipart/related; boundary=' + boundary
-                        },
-                        body
-                    });
-                }).then(r => {
-                    if (!r.ok) return r.json().then(j => { throw new Error(j.error && j.error.message || ('HTTP ' + r.status)); });
-                    return r.json();
-                }).then(() => {
-                    setCloudStatus('Data tersimpan di Google Drive ✅ (' + new Date().toLocaleString() + ')', 'ok');
-                    toast('☁️ Berhasil simpan ke Google Drive!');
-                });
-            }).catch(err => {
-                setCloudStatus('Gagal simpan: ' + err.message, 'err');
-                toast('Gagal simpan: ' + err.message, true);
-                throw err;
-            });
-        }
-
-        function driveLoad() {
-            setCloudStatus('Menyiapkan koneksi ke Google Drive...', 'info');
-            return ensureToken().then(token => {
-                setCloudStatus('Mencari backup...', 'info');
-                return driveFindFile(token).then(file => {
-                    if (!file) throw new Error('Backup belum ada di Google Drive. Simpan dulu.');
-                    return fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`, {
-                        headers: { Authorization: 'Bearer ' + token }
-                    });
-                }).then(r => {
-                    if (!r.ok) return r.json().then(j => { throw new Error(j.error && j.error.message || ('HTTP ' + r.status)); });
-                    return r.json();
-                }).then(data => {
-                    applyData(data);
-                    saveLocal();
-                    generate();
-                    const when = data.savedAt ? new Date(data.savedAt).toLocaleString() : '-';
-                    setCloudStatus('Data dimuat dari Drive ✅ (tersimpan: ' + when + ')', 'ok');
-                    toast('⬇️ Berhasil muat dari Google Drive!');
-                });
-            }).catch(err => {
-                setCloudStatus('Gagal muat: ' + err.message, 'err');
-                toast('Gagal muat: ' + err.message, true);
-                throw err;
-            });
-        }
-
-        btnDriveSave.addEventListener('click', () => driveSave().catch(()=>{}));
-        btnDriveLoad.addEventListener('click', () => driveLoad().catch(()=>{}));
-        btnQuickSave.addEventListener('click', () => driveSave().catch(()=>{}));
-        btnQuickLoad.addEventListener('click', () => driveLoad().catch(()=>{}));
-
-        /* =========================================================
-           PWA — MANIFEST + INSTALL
-           ========================================================= */
-        function makeIcon(size) {
-            const c = document.createElement('canvas');
-            c.width = c.height = size;
-            const ctx = c.getContext('2d');
-            const g = ctx.createLinearGradient(0, 0, size, size);
-            g.addColorStop(0, '#06b6d4');
-            g.addColorStop(1, '#10b981');
-            ctx.fillStyle = g;
-            // rounded corners
-            const r = size * 0.18;
-            ctx.beginPath();
-            ctx.moveTo(r, 0);
-            ctx.arcTo(size, 0, size, size, r);
-            ctx.arcTo(size, size, 0, size, r);
-            ctx.arcTo(0, size, 0, 0, r);
-            ctx.arcTo(0, 0, size, 0, r);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.fillStyle = '#0f172a';
-            ctx.font = 'bold ' + Math.round(size * 0.42) + 'px system-ui, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('4D', size / 2, size / 2 + size * 0.02);
-            return c.toDataURL('image/png');
-        }
-
-        function buildManifest() {
-            try {
-                const icon192 = makeIcon(192);
-                const icon512 = makeIcon(512);
-                const manifest = {
-                    name: 'Permutasi 4D Pro',
-                    short_name: 'P4D Pro',
-                    description: 'Permutasi 4D + pemangkas 2D + turunan 3D/2D',
-                    start_url: location.pathname + location.search,
-                    scope: './',
-                    display: 'standalone',
-                    orientation: 'portrait',
-                    background_color: '#0f172a',
-                    theme_color: '#06b6d4',
-                    icons: [
-                        { src: icon192, sizes: '192x192', type: 'image/png', purpose: 'any' },
-                        { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'any' },
-                        { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'maskable' }
-                    ]
-                };
-                const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('link');
-                link.rel = 'manifest';
-                link.href = url;
-                document.head.appendChild(link);
-
-                // Apple touch icon
-                const apple = document.createElement('link');
-                apple.rel = 'apple-touch-icon';
-                apple.href = icon192;
-                document.head.appendChild(apple);
-
-                // favicon
-                const fav = document.createElement('link');
-                fav.rel = 'icon';
-                fav.href = icon192;
-                document.head.appendChild(fav);
-            } catch (e) {
-                console.warn('Manifest gagal dibuat:', e);
-            }
-        }
-
-        // Service worker (opsional — cuma jalan kalau sw.js tersedia di folder yang sama)
-        function registerSW() {
-            if (!('serviceWorker' in navigator)) return;
-            if (location.protocol === 'file:') return;
-            navigator.serviceWorker.register('./sw.js').catch(() => { /* diabaikan */ });
-        }
-
-        // Install prompt
-        let deferredPrompt = null;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            btnInstall.classList.remove('hidden');
-        });
-
-        window.addEventListener('appinstalled', () => {
+function installApp() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') showToast('📱 Aplikasi berhasil diinstal!', 'success');
+            else showToast('Instalasi dibatalkan.', 'error');
             deferredPrompt = null;
-            btnInstall.classList.add('hidden');
-            toast('📲 App berhasil dipasang!');
+            document.getElementById('btn-install').style.display = 'none';
         });
+    } else {
+        showToast('Fitur instalasi tidak tersedia di browser ini.', 'error');
+    }
+}
 
-        btnInstall.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                try {
-                    const choice = await deferredPrompt.userChoice;
-                    if (choice && choice.outcome === 'accepted') toast('📲 Memasang app...');
-                } catch (e) {}
-                deferredPrompt = null;
-                btnInstall.classList.add('hidden');
-            } else {
-                toast('Gunakan menu browser → "Install app" / "Add to Home Screen".');
-            }
-        });
+// Dynamic PWA Manifest & Service Worker
+const manifest = {
+    "name": "Scanner Hub Pro",
+    "short_name": "ScannerHub",
+    "start_url": window.location.href,
+    "display": "standalone",
+    "background_color": "#0f172a",
+    "theme_color": "#0f172a",
+    "icons": [{ "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎯%3C/text%3E%3C/svg%3E", "sizes": "192x192", "type": "image/svg+xml" }]
+};
+const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+const manifestURL = URL.createObjectURL(manifestBlob);
+const link = document.createElement('link');
+link.rel = 'manifest';
+link.href = manifestURL;
+document.head.appendChild(link);
 
-        // Tampilkan tombol install juga di iOS (yang tidak support beforeinstallprompt)
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-        if (isIOS && !isStandalone) {
-            btnInstall.classList.remove('hidden');
-        }
+if ('serviceWorker' in navigator) {
+    const swCode = `
+        self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
+        self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+        self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response('Offline'))));
+    `;
+    const swBlob = new Blob([swCode], {type: 'application/javascript'});
+    const swURL = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swURL).catch(err => console.log('SW registration failed', err));
+}
 
-        /* =========================================================
-           INIT
-           ========================================================= */
-        function init() {
-            buildManifest();
-            registerSW();
-
-            // Restore local
-            const saved = loadLocal();
-            if (saved) {
-                try { applyData(saved); } catch (e) { console.warn(e); }
-            } else {
-                renderPosisi();
-            }
-            updateMyLinesCount();
-
-            // Kalau daftar kontrol kosong, isi default
-            if (!inputControl.value.trim()) inputControl.value = '01234\n56789';
-            if (!inputControl3D.value.trim()) inputControl3D.value = '1235';
-            if (!inputControl2D.value.trim()) inputControl2D.value = '1246';
-
-            setCloudStatus(
-                GD.clientId
-                    ? 'Siap terhubung ke Google Drive (Client ID tersimpan).'
-                    : 'Status: belum terhubung. Isi Client ID di ⚙️ Pengaturan bila ingin sync Drive.',
-                GD.clientId ? 'info' : null
-            );
-
-            window.addEventListener('load', () => {
-                try { generate(); } catch (e) { console.warn(e); }
-            });
-        }
-
-        init();
-
-    })();
-    </script>
+// ============================================
+// INIT
+// ============================================
+document.addEventListener('DOMContentLoaded', () => { loadState(); });
+</script>
 </body>
 </html>
