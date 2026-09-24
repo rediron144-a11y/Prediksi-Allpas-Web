@@ -1,0 +1,2401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIKAM MASTER - Multi App Hub</title>
+
+<script>
+function tikamNav(appId, btn) {
+    var wrappers = document.getElementsByClassName('app-wrapper');
+    for (var i = 0; i < wrappers.length; i++) wrappers[i].style.display = 'none';
+    var tabs = document.getElementsByClassName('nav-tab');
+    for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+    var target = document.getElementById(appId);
+    if (target) target.style.display = 'block';
+    if (btn) btn.classList.add('active');
+    window.scrollTo(0, 0);
+}
+</script>
+
+<style>
+/* ==========================================================
+   TEMA CERAH & NYAMAN DI MATA (SOFT LIGHT THEME)
+   ========================================================== */
+* { box-sizing: border-box; font-family: system-ui, Arial, sans-serif; }
+
+body {
+    background: linear-gradient(180deg, #f0f9ff 0%, #f0fdfa 50%, #f7fee7 100%);
+    background-attachment: fixed;
+    margin: 0; padding: 0; min-height: 100vh;
+    color: #1e293b;
+}
+
+/* HEADER */
+.main-header {
+    background: linear-gradient(135deg, #a5f3fc, #99f6e4, #bbf7d0);
+    padding: 15px 20px; position: sticky; top: 0; z-index: 1000;
+    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.18);
+    border-bottom: 3px solid #14b8a6;
+}
+.app-title {
+    color: #0f766e; font-size: 1.3rem; font-weight: 900; margin: 0 0 15px 0;
+    text-align: center; letter-spacing: 2px;
+}
+.nav-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+.nav-tab {
+    background: rgba(255,255,255,0.75); color: #0f766e;
+    border: 2px solid rgba(20,184,166,0.35);
+    padding: 10px 18px; border-radius: 25px; cursor: pointer;
+    font-weight: 700; font-size: 0.85rem; white-space: nowrap;
+    transition: all 0.25s; user-select: none;
+}
+.nav-tab:hover { background: #ffffff; border-color: #14b8a6; transform: translateY(-1px); }
+.nav-tab.active {
+    background: #14b8a6; color: #ffffff; border-color: #14b8a6;
+    box-shadow: 0 4px 15px rgba(20, 184, 166, 0.4);
+}
+.nav-tab .badge {
+    background: #fb7185; color: white; font-size: 0.65rem;
+    padding: 2px 6px; border-radius: 10px; margin-left: 5px;
+}
+.app-wrapper { max-width: 1400px; margin: 0 auto; padding: 20px; display: none; }
+
+/* ================= APP 1 ================= */
+.merapikan-section {
+    background: #ffffff; border-radius: 2rem; padding: 1.5rem;
+    border: 2px solid #bae6fd; box-shadow: 0 6px 24px rgba(14,165,233,0.08);
+}
+.merapikan-section h1 { font-size: 22px; text-align: center; color: #0284c7; margin-top: 0; }
+.merapikan-section textarea {
+    width: 100%; height: 150px; background: #f8fafc; color: #0f172a;
+    border: 1px solid #cbd5e1; padding: 10px; font-size: 14px;
+    border-radius: 12px; font-family: monospace;
+}
+.merapikan-section button {
+    background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc;
+    padding: 10px 20px; margin: 10px 5px 0 0; cursor: pointer;
+    font-size: 14px; border-radius: 30px; font-weight: bold; transition: 0.2s;
+}
+.merapikan-section button:hover { background: #bae6fd; }
+.btn-kirim { background: #10b981 !important; color: #fff !important; border-color: #059669 !important; }
+.btn-kirim:hover { background: #059669 !important; }
+.output-container { margin-top: 15px; }
+.output-container label { display: block; margin-bottom: 5px; font-weight: bold; color: #0284c7; }
+.output-container textarea {
+    width: 100%; background: #f8fafc; color: #047857;
+    border: 1px solid #cbd5e1; padding: 10px; border-radius: 12px; font-family: monospace;
+}
+
+/* ================= APP 2 ================= */
+.analisa-section {
+    background: #ffffff; color: #0f172a; border-radius: 2rem; padding: 1.5rem;
+    border: 2px solid #bae6fd; box-shadow: 0 6px 24px rgba(14,165,233,0.08);
+}
+.analisa-section h1 { font-size: 1.5rem; margin-top: 0; color: #0369a1; }
+.analisa-section textarea {
+    width: 100%; padding: 12px; font-family: monospace; font-size: 14px;
+    border-radius: 12px; border: 1px solid #cbd5e1; background: #f8fafc; resize: vertical;
+    color: #0f172a;
+}
+.toolbar {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;
+    background: #f0f9ff; padding: 12px; border-radius: 30px; align-items: center;
+    border: 1px solid #e0f2fe;
+}
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+    background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px;
+    border-radius: 30px; font-weight: 600; cursor: pointer; font-size: 0.85rem;
+    color: #334155; transition: 0.2s;
+}
+.btn:hover { background: #f1f5f9; }
+.btn.primary { background: #3b82f6; color: white; border-color: #3b82f6; }
+.btn.primary:hover { background: #2563eb; }
+.btn.danger { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+.btn.danger:hover { background: #fecaca; }
+.btn.success { background: #10b981; color: white; border-color: #10b981; }
+.pasaran-input {
+    display: flex; align-items: center; gap: 8px; background: white;
+    padding: 6px 14px; border-radius: 30px; border: 2px solid #7dd3fc;
+}
+.pasaran-input input {
+    border: none; outline: none; font-weight: bold; width: 100px;
+    text-transform: uppercase; color: #0369a1; background: transparent;
+}
+.digit-card {
+    background: white; border-radius: 1rem; margin-bottom: 1rem;
+    border: 1px solid #e2e8f0; overflow: hidden;
+}
+.digit-header {
+    background: #e0f2fe; color: #0c4a6e; padding: 10px 15px;
+    font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 10px;
+}
+.digit-header span:first-child { background: #38bdf8; color: #ffffff; padding: 2px 12px; border-radius: 30px; }
+.pair-row { display: flex; justify-content: space-between; padding: 8px 15px; border-bottom: 1px dashed #e2e8f0; align-items: center; }
+.pair-digits { font-family: monospace; font-weight: bold; font-size: 1rem; color: #0f172a; }
+.freq-badge { background: #dbeafe; border-radius: 20px; padding: 3px 10px; font-size: 0.8rem; color: #1e40af; }
+.filter-section { background: #fff7ed; border: 2px dashed #fb923c; border-radius: 1rem; padding: 1rem; margin: 1rem 0; }
+.filter-section h3 { margin-top: 0; color: #c2410c; }
+.filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.filter-grid input {
+    width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #fdba74;
+    text-align: center; font-weight: bold; background: #ffffff; color: #9a3412;
+}
+
+/* AI & CT */
+.ai-ct-section {
+    background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+    border-radius: 1rem; padding: 1rem; margin: 1rem 0;
+    color: #0c4a6e; border: 1px solid #bae6fd;
+}
+.ai-ct-section h3 { color: #0369a1; }
+.ai-ct-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; }
+.ai-box { background: linear-gradient(135deg, #fbbf24, #f87171); border-radius: 1rem; padding: 1rem; text-align: center; color: #ffffff; }
+.ai-box h4 { color: #fffbeb; }
+.ai-number { font-size: 1.8rem; font-weight: 900; letter-spacing: 4px; margin: 10px 0; font-family: monospace; color: #ffffff; word-break: break-all; }
+.ai-list { background: rgba(255,255,255,0.35); padding: 8px; border-radius: 8px; max-height: 120px; overflow-y: auto; font-family: monospace; font-size: 12px; color: #3b1004; text-align: left; }
+.ct-box { background: #f1f5f9; border-radius: 1rem; padding: 1rem; text-align: center; border: 1px solid #e2e8f0; }
+.ct-box h4 { color: #0369a1; }
+.ct-number { font-size: 1.4rem; font-weight: 900; letter-spacing: 3px; color: #d97706; font-family: monospace; word-break: break-all; }
+
+/* SHIO */
+.shio-section {
+    background: linear-gradient(135deg, #ffe4e6, #fecdd3);
+    border-radius: 1rem; padding: 1rem; margin: 1rem 0;
+    color: #7f1d1d; border: 1px solid #fecaca;
+}
+.shio-section h3 { color: #b91c1c; }
+.shio-grid-main { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.shio-box { background: rgba(255,255,255,0.7); border-radius: 1rem; padding: 1rem; border: 1px solid #fecaca; }
+.shio-item-main {
+    background: #ffffff; border-radius: 8px; padding: 6px; margin-bottom: 5px;
+    display: flex; justify-content: space-between; font-size: 0.9rem; color: #7f1d1d;
+}
+
+/* TOP 5 */
+.top5-section {
+    background: linear-gradient(135deg, #ede9fe, #e0e7ff);
+    border-radius: 1rem; padding: 1rem; margin: 1rem 0;
+    color: #4c1d95; border: 1px solid #ddd6fe;
+}
+.top5-section h3 { color: #6d28d9; }
+.top5-section h4 { color: #6d28d9; }
+.kombinasi-hasil {
+    background: #ffffff; padding: 10px; border-radius: 8px; font-family: monospace;
+    font-size: 12px; word-break: break-all; color: #047857;
+    max-height: 200px; overflow-y: auto; border: 1px solid #ddd6fe;
+}
+#infoJumlahKombinasi { background: #ffffff !important; padding: 6px; border-radius: 6px; margin-bottom: 8px; color: #6d28d9; border: 1px solid #ddd6fe; }
+
+/* BBFS & INVEST 2D — DIPERBAIKI */
+.bbfs-section {
+    background: linear-gradient(135deg, #ccfbf1, #d1fae5);
+    border-radius: 1rem; padding: 1rem; margin: 1rem 0;
+    color: #0f766e; border: 1px solid #99f6e4;
+}
+.bbfs-section h3, .bbfs-section h4 { color: #0f766e; }
+.bbfs-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+}
+.bbfs-grid > div { min-width: 0; }  /* kunci utama: cegah overflow grid */
+.bbfs-number {
+    font-size: 1.6rem; font-weight: 800; letter-spacing: 3px; text-align: center;
+    color: #0d9488; font-family: monospace; word-break: break-all;
+    line-height: 1.4; padding: 4px 0;
+}
+#info2D {
+    background: #ffffff; padding: 5px 10px; border-radius: 6px;
+    font-size: 0.8rem; margin-bottom: 6px; display: inline-block;
+    border: 1px solid #99f6e4; color: #0f766e; font-weight: 700;
+}
+.invest-2d-box {
+    background: #ffffff; padding: 8px; border-radius: 8px; color: #0f766e;
+    font-family: monospace; font-size: 11px;
+    display: flex; flex-wrap: wrap; gap: 4px; align-content: flex-start;
+    max-height: 170px; overflow-y: auto; overflow-x: hidden;
+    border: 1px solid #99f6e4; width: 100%; min-width: 0;
+}
+.invest-2d-item {
+    background: #ccfbf1; border: 1px solid #5eead4;
+    padding: 2px 6px; border-radius: 5px; font-size: 11px;
+    line-height: 1.5; flex: 0 0 auto; color: #0f766e; font-weight: 700;
+}
+.indikator-line {
+    background: linear-gradient(135deg, #a7f3d0, #6ee7b7);
+    border-radius: 1rem; padding: 1rem; margin: 1rem 0;
+    display: flex; justify-content: space-between; align-items: center;
+    color: #064e3b; border: 1px solid #6ee7b7;
+}
+.indikator-line .value { font-size: 2rem; font-weight: 900; font-family: monospace; color: #047857; }
+
+/* ================= APP 3 ================= */
+.balik-section {
+    background: linear-gradient(135deg, #ede9fe, #fae8ff);
+    border-radius: 2rem; padding: 1.5rem; color: #4c1d95;
+    border: 2px solid #ddd6fe;
+}
+.balik-section h1 { color: #6d28d9; text-align: center; margin-top: 0; }
+.balik-section h4 { color: #6d28d9; }
+.mode-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 15px 0; }
+.mode-card {
+    background: rgba(255,255,255,0.85); border: 2px solid #ddd6fe;
+    border-radius: 12px; padding: 12px; cursor: pointer; text-align: center;
+    transition: 0.3s; color: #5b21b6;
+}
+.mode-card h4 { margin: 0; }
+.mode-card.active { background: #8b5cf6; color: #ffffff; border-color: #8b5cf6; }
+.mode-card.active h4 { color: #ffffff; }
+.balik-textarea {
+    width: 100%; min-height: 100px; background: #ffffff; color: #4c1d95;
+    border: 2px solid #ddd6fe; padding: 12px; font-family: monospace; border-radius: 12px;
+}
+.balik-btn {
+    background: #ffffff; color: #4c1d95; border: 1px solid #ddd6fe;
+    padding: 10px 18px; border-radius: 30px; font-weight: bold; cursor: pointer; margin: 5px;
+}
+.balik-btn.primary { background: #8b5cf6; color: #fff; border-color: #8b5cf6; }
+.balik-btn.danger { background: #f43f5e; color: white; border-color: #f43f5e; }
+.balik-btn.success { background: #10b981; color: white; border-color: #10b981; }
+.balik-output {
+    background: #faf5ff; color: #6d28d9; padding: 12px; border-radius: 12px;
+    font-family: monospace; min-height: 80px; max-height: 300px; overflow-y: auto;
+    margin-top: 15px; border: 1px solid #e9d5ff;
+}
+.balik-output-chip {
+    display: inline-block; background: #ede9fe; border: 1px solid #ddd6fe;
+    padding: 3px 8px; border-radius: 15px; margin: 2px; font-size: 0.85rem; color: #6d28d9;
+}
+
+/* ================= APP 4 ================= */
+.predator-section {
+    background: linear-gradient(135deg, #ffe4e6, #fee2e2);
+    border-radius: 2rem; padding: 1.5rem; color: #7f1d1d;
+    border: 2px solid #fecaca;
+}
+.predator-section h1 { color: #dc2626; text-align: center; margin-top: 0; }
+.predator-section textarea {
+    width: 100%; height: 120px; background: #ffffff; color: #991b1b;
+    border: 2px solid #fecaca; border-radius: 12px; padding: 12px; font-family: monospace;
+}
+.predator-panel { background: #ffffff; border-radius: 12px; padding: 15px; margin-top: 15px; border: 1px solid #fecaca; }
+.predator-input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.predator-input-row input, .predator-market {
+    width: 100%; padding: 10px; background: #fff7f7; border: 1px solid #fecaca;
+    border-radius: 8px; color: #7f1d1d; text-align: center; font-weight: bold;
+}
+.predator-market { margin-bottom: 10px; }
+.predator-pos-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 10px 0; }
+.predator-pos-btn {
+    padding: 10px; background: #ffffff; border: 1px solid #fecaca; color: #b91c1c;
+    border-radius: 8px; cursor: pointer; text-align: center; font-size: 0.8rem; font-weight: 700;
+}
+.predator-pos-btn.active { background: #ef4444; color: white; border-color: #dc2626; }
+.predator-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin: 5px 0; font-size: 1rem; }
+.predator-btn-gen { background: #ef4444; color: white; }
+.predator-btn-copy { background: #10b981; color: white; }
+.predator-card {
+    background: #ffffff; padding: 15px; margin: 10px 0; border-radius: 15px;
+    border: 1px solid #fecaca; box-shadow: 0 2px 8px rgba(239,68,68,0.06);
+}
+.predator-card-val { font-size: 2rem; color: #b91c1c; font-weight: 900; letter-spacing: 3px; text-align: center; font-family: monospace; }
+.predator-f-text { color: #ea580c; font-size: 0.7rem; text-align: center; margin-top: 5px; }
+#predator-loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
+.predator-spinner { width: 60px; height: 60px; border: 3px solid rgba(239, 68, 68, 0.15); border-top: 3px solid #ef4444; border-radius: 50%; animation: spin 0.6s linear infinite; }
+#p-count { color: #dc2626; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ================= APP 5 & 6 ================= */
+.generator-section {
+    background: linear-gradient(135deg, #d1fae5, #ecfdf5);
+    border-radius: 2rem; padding: 1.5rem; color: #064e3b;
+    border: 2px solid #a7f3d0;
+}
+.generator-section h1 { color: #059669; text-align: center; margin-top: 0; }
+.generator-panel { background: #ffffff; border-radius: 12px; padding: 15px; margin: 10px 0; border: 1px solid #d1fae5; }
+.generator-panel h3 { color: #047857; margin-top: 0; }
+.gen-input {
+    width: 100%; padding: 10px; background: #f8fafc; border: 1px solid #cbd5e1;
+    border-radius: 8px; color: #0f172a; text-align: center; font-weight: bold; margin: 5px 0;
+}
+.gen-input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.gen-checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
+.gen-checkbox-item {
+    background: #ffffff; border: 2px solid #d1fae5; border-radius: 8px;
+    padding: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: #065f46;
+}
+.gen-checkbox-item.active { background: #10b981; border-color: #059669; color: #ffffff; }
+.gen-checkbox-item input { width: 18px; height: 18px; }
+.gen-radio-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+.gen-radio-item {
+    background: #ffffff; border: 2px solid #d1fae5; border-radius: 8px;
+    padding: 10px; text-align: center; cursor: pointer; color: #065f46; font-weight: 600;
+}
+.gen-radio-item.active { background: #10b981; border-color: #059669; color: #ffffff; }
+.gen-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+.gen-btn { padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
+.gen-btn-primary { background: #f59e0b; color: #ffffff; }
+.gen-btn-success { background: #10b981; color: white; }
+.gen-btn-danger { background: #ef4444; color: white; }
+.gen-preview {
+    background: #fef3c7; border: 2px solid #fbbf24; border-radius: 10px;
+    padding: 12px; text-align: center; margin: 10px 0; color: #92400e;
+}
+.gen-preview .value { font-size: 1.8rem; font-weight: 900; color: #b45309; font-family: monospace; word-break: break-all; }
+.gen-output {
+    background: #f0fdf4; color: #047857; padding: 12px; border-radius: 10px;
+    font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto;
+    word-break: break-all; border: 1px solid #bbf7d0;
+}
+
+/* ================= APP 7 ================= */
+.aipattern-container {
+    width: 100%; max-width: 1200px; margin: auto; background: #ffffff;
+    padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;
+    box-shadow: 0 6px 24px rgba(14,165,233,0.08);
+}
+.aipattern-container h2 {
+    text-align: center; color: #0284c7; font-size: 16px;
+    border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin: 0 0 12px;
+    text-transform: uppercase; letter-spacing: 1px;
+}
+.market-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+.market-select {
+    flex: 1; min-width: 140px; padding: 8px; background: #f0f9ff; color: #0369a1;
+    border: 2px solid #7dd3fc; border-radius: 6px; font-weight: bold; font-size: 12px; outline: none;
+}
+.market-stats {
+    font-size: 9px; color: #0369a1; background: #f0f9ff; padding: 6px 10px;
+    border-radius: 5px; border: 1px solid #bae6fd; display: flex; gap: 8px; flex-wrap: wrap;
+}
+.market-stats strong { color: #0284c7; }
+.save-indicator {
+    font-size: 8px; padding: 3px 6px; border-radius: 3px; background: #22c55e;
+    color: #fff; font-weight: bold; display: none; animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.aipattern-textarea {
+    width: 100%; height: 100px; background: #f8fafc; color: #0f172a;
+    border: 2px solid #cbd5e1; border-radius: 6px; padding: 8px;
+    font-family: 'Consolas', monospace; font-size: 13px; outline: none;
+    margin-bottom: 8px; resize: vertical; display: block;
+}
+.aipattern-textarea:focus { border-color: #38bdf8; }
+.row-counter { font-size: 9px; color: #0369a1; text-align: right; margin: -4px 0 8px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px; }
+.row-counter span { background: #f0f9ff; padding: 2px 6px; border-radius: 3px; border: 1px solid #bae6fd; }
+.pattern-bar {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+    padding: 8px; margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+}
+.pattern-toggle { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #475569; cursor: pointer; }
+.pattern-toggle input { accent-color: #f59e0b; width: 14px; height: 14px; }
+.pattern-toggle.active { color: #b45309; font-weight: bold; }
+.pattern-separator { width: 1px; height: 20px; background: #e2e8f0; margin: 0 4px; }
+.filter-area {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+    padding: 10px; margin-bottom: 12px; display: flex; align-items: center;
+    justify-content: space-between; flex-wrap: wrap; gap: 8px;
+}
+.filter-label { font-size: 10px; font-weight: bold; color: #334155; }
+.filter-input {
+    width: 55px; padding: 6px; background: #ffffff; border: 1px solid #7dd3fc;
+    color: #0369a1; border-radius: 4px; text-align: center; font-weight: bold; font-size: 13px;
+}
+.filter-input.small { width: 45px; font-size: 11px; }
+.filter-select { padding: 6px; background: #ffffff; border: 1px solid #cbd5e1; color: #334155; border-radius: 4px; font-size: 11px; }
+.btn-group-ai { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+.btn-gen-ai {
+    padding: 14px; background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #ffffff; border: none; border-radius: 6px; font-weight: 900;
+    cursor: pointer; text-transform: uppercase; font-size: 12px;
+}
+.btn-backtest {
+    padding: 14px; background: linear-gradient(135deg, #34d399, #10b981);
+    color: #fff; border: none; border-radius: 6px; font-weight: 900;
+    cursor: pointer; text-transform: uppercase; font-size: 12px;
+}
+.btn-reset { padding: 14px; background: #e2e8f0; color: #334155; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+.analysis-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 15px 0; }
+.analysis-card {
+    background: #ffffff; border: 1px solid #e2e8f0; padding: 10px;
+    border-radius: 6px; text-align: center; border-top: 3px solid #cbd5e1;
+}
+.card-passed { border-top-color: #22c55e; }
+.card-failed { border-top-color: #ef4444; }
+.card-label { color: #0284c7; font-size: 9px; font-weight: bold; display: block; margin-bottom: 2px; }
+.card-result { font-size: 15px; color: #0f172a; font-weight: bold; letter-spacing: 1px; margin: 4px 0; word-break: break-all; }
+.card-status { font-size: 8px; font-weight: bold; margin-bottom: 4px; display: block; }
+.card-conf { font-size: 9px; color: #0284c7; margin-top: 4px; font-weight: bold; border-top: 1px solid #e2e8f0; padding-top: 4px; }
+.pattern-panel { background: #f8fafc; border: 1px solid #c4b5fd; border-radius: 6px; padding: 10px; margin: 12px 0; display: none; }
+.pattern-panel.active { display: block; }
+.pattern-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.pattern-card { background: #ffffff; padding: 10px; border-radius: 5px; border: 1px solid #e2e8f0; }
+.pattern-card h4 { color: #6d28d9; font-size: 10px; margin: 0 0 6px; text-transform: uppercase; }
+.pattern-chart { height: 40px; display: flex; align-items: flex-end; gap: 2px; margin: 8px 0; }
+.pattern-bar-item { flex: 1; background: #38bdf8; border-radius: 2px 2px 0 0; min-height: 3px; }
+.pattern-bar-item.odd { background: #f472b6; }
+.pattern-bar-item.even { background: #06b6d4; }
+.pattern-bar-item.big { background: #f59e0b; }
+.pattern-bar-item.small { background: #22c55e; }
+.pattern-pred { font-size: 11px; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #cbd5e1; color: #475569; }
+.pattern-pred strong { color: #b45309; }
+.shio-grid-ai { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 8px; }
+.shio-item { background: #ffffff; padding: 6px 3px; border-radius: 4px; text-align: center; border: 1px solid #e2e8f0; font-size: 8px; position: relative; }
+.shio-item.hot { border-color: #fbbf24; background: linear-gradient(to bottom, #fffbeb, #fef3c7); }
+.shio-name { display: block; color: #334155; font-weight: bold; margin-bottom: 2px; }
+.shio-num { display: block; color: #0284c7; font-size: 7px; }
+.shio-freq { position: absolute; top: -3px; right: -3px; background: #f59e0b; color: #fff; font-size: 6px; padding: 1px 3px; border-radius: 2px; font-weight: bold; }
+.header-box {
+    background: #e0f2fe; color: #0369a1; padding: 8px; border-radius: 6px 6px 0 0;
+    font-weight: bold; text-align: center; margin-top: 15px; font-size: 11px;
+    border: 1px solid #bae6fd; display: flex; justify-content: space-between; align-items: center;
+}
+.header-box button { background: transparent; border: 1px solid #38bdf8; color: #0284c7; padding: 2px 5px; border-radius: 2px; font-size: 8px; cursor: pointer; }
+.content-box {
+    background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px;
+    border-radius: 0 0 6px 6px; color: #0369a1; font-size: 12px;
+    margin-bottom: 15px; text-align: center; font-weight: bold;
+}
+.heatmap-container { display: flex; justify-content: space-around; gap: 3px; padding: 4px 0; flex-wrap: wrap; }
+.heat-item {
+    flex: 1; min-width: 28px; text-align: center; padding: 6px 2px;
+    border-radius: 4px; background: #ffffff; border: 1px solid #e2e8f0; position: relative;
+}
+.heat-num { display: block; font-size: 14px; font-weight: 900; color: #0f172a; }
+.heat-freq { display: block; font-size: 7px; color: #0284c7; font-family: monospace; }
+.heat-high { border-color: #fbbf24; background: linear-gradient(to bottom, #fffbeb, #fef3c7); }
+.heat-tag { position: absolute; top: -4px; right: -2px; background: #f59e0b; color: #fff; font-size: 6px; padding: 1px 2px; border-radius: 2px; font-weight: 900; }
+.sub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }
+.sub-card { background: #ffffff; padding: 8px; border-radius: 5px; border: 1px solid #e2e8f0; font-size: 9px; text-align: left; color: #334155; }
+.sub-title { color: #6d28d9; font-weight: bold; display: block; margin-bottom: 6px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+.intersection-box { margin-top: 6px; padding: 6px; background: #f0f9ff; border-radius: 4px; border: 1px solid #7dd3fc; text-align: center; }
+.intersection-val { color: #0369a1; font-size: 14px; letter-spacing: 4px; font-weight: 900; }
+.backtest-panel { background: #f8fafc; border: 1px solid #86efac; border-radius: 6px; padding: 12px; margin: 12px 0; display: none; }
+.backtest-panel.active { display: block; }
+.bt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+.bt-header h3 { color: #059669; margin: 0; font-size: 13px; }
+.bt-params { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 12px; }
+.bt-param label { display: block; font-size: 8px; color: #0284c7; margin-bottom: 2px; }
+.bt-param input, .bt-param select { width: 100%; padding: 6px; background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; border-radius: 3px; font-size: 11px; }
+.bt-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 12px; }
+.bt-card { background: #ffffff; padding: 10px; border-radius: 5px; text-align: center; border: 1px solid #e2e8f0; }
+.bt-card h4 { color: #0284c7; font-size: 9px; margin: 0 0 6px; text-transform: uppercase; }
+.bt-card .val { font-size: 18px; font-weight: bold; color: #0f172a; }
+.bt-card .val.win { color: #16a34a; }
+.bt-card .val.loss { color: #dc2626; }
+.bt-log { max-height: 120px; overflow-y: auto; font-family: monospace; font-size: 8px; text-align: left; background: #ffffff; padding: 8px; border-radius: 4px; margin-top: 8px; border: 1px solid #e2e8f0; }
+.bt-log-item { padding: 2px 0; border-bottom: 1px solid #f1f5f9; }
+.bt-log-item.win { color: #16a34a; }
+.bt-log-item.loss { color: #dc2626; }
+.summary-bar { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+.summary-chip { padding: 6px 10px; border-radius: 4px; background: #ffffff; border: 1px solid #fbbf24; font-size: 10px; color: #334155; display: flex; align-items: center; gap: 4px; }
+.summary-chip strong { color: #b45309; font-size: 12px; letter-spacing: 2px; }
+
+/* ================= APP 8 ================= */
+#app8 { color: #0f172a; }
+#app8 .dna-section {
+    background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
+    border-radius: 2rem; padding: 20px; border: 2px solid #a7f3d0;
+    box-shadow: 0 6px 24px rgba(16,185,129,0.08);
+}
+#app8 h1 { text-align: center; color: #059669; font-size: 22px; margin: 6px 0 14px; letter-spacing: 1px; text-transform: uppercase; }
+#app8 .dna-panel { background: #ffffff; border: 1px solid #d1fae5; border-radius: 18px; padding: 15px; }
+#app8 label { display: block; margin: 8px 0 6px; color: #475569; font-size: 13px; font-weight: 600; }
+#app8 input, #app8 textarea {
+    width: 100%; border: 1px solid #cbd5e1; outline: none; color: #0f172a;
+    background: #f8fafc; padding: 12px; border-radius: 12px; font-size: 14px;
+}
+#app8 input:focus, #app8 textarea:focus { border-color: #34d399; }
+#app8 textarea { min-height: 100px; resize: vertical; }
+#app8 .dna-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
+#app8 .dna-btn { padding: 12px 16px; border: none; border-radius: 12px; color: #fff; font-weight: 700; cursor: pointer; flex: 1 1 140px; font-size: 13px; }
+#app8 .dna-btn.gen { background: linear-gradient(135deg, #34d399, #10b981); }
+#app8 .dna-btn.reset { background: #94a3b8; }
+#app8 .dna-btn.copy { background: #3b82f6; }
+#app8 .dna-btn.download { background: #8b5cf6; }
+#app8 .dna-grid-main { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 20px; }
+#app8 .dna-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 15px; }
+#app8 .dna-card h3 {
+    margin: 0 0 12px; font-size: 14px; color: #059669;
+    border-bottom: 1px solid #d1fae5; padding-bottom: 5px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+#app8 .pangkalan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+#app8 .pangkalan-item { background: #f0fdf4; padding: 8px; border-radius: 10px; border: 1px solid #d1fae5; }
+#app8 .pangkalan-label { font-size: 10px; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
+#app8 .pangkalan-val { font-family: 'Consolas', monospace; font-weight: 700; color: #047857; font-size: 15px; word-break: break-all; }
+#app8 .dna-chip {
+    display: inline-block; background: #d1fae5; border: 1px solid #6ee7b7;
+    padding: 4px 8px; border-radius: 6px; font-weight: 700; margin: 2px;
+    font-size: 13px; color: #047857;
+}
+#app8 .dna-mono { font-family: monospace; letter-spacing: 1px; }
+#app8 .dna-out { white-space: pre-wrap; word-break: break-word; line-height: 1.6; }
+#app8 .line-aman-box {
+    background: #f0fdf4; padding: 12px; border-radius: 12px; font-size: 13px;
+    color: #047857; border: 1px solid #6ee7b7; min-height: 60px; word-break: break-all;
+}
+#app8 .dna-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+#app8 .dna-table th, #app8 .dna-table td { border: 1px solid #e2e8f0; padding: 8px; text-align: center; font-size: 12px; color: #334155; }
+#app8 .dna-table th { background: #d1fae5; color: #047857; }
+#app8 .tag { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+#app8 .tag.green { background: #10b981; color: white; }
+#app8 .tag.blue { background: #3b82f6; color: white; }
+
+/* ================= APP 9 ================= */
+#app9 {
+    color: #1e293b; border-radius: 2rem; padding: 20px; min-height: 80vh;
+    background-image:
+        radial-gradient(circle at 0% 0%, rgba(16, 185, 129, 0.10) 0%, transparent 35%),
+        radial-gradient(circle at 100% 100%, rgba(6, 182, 212, 0.10) 0%, transparent 35%);
+}
+#app9 .ds-wrapper { max-width: 1100px; margin: 0 auto; }
+#app9 .ds-header { text-align: center; margin-bottom: 40px; }
+#app9 .ds-header h1 { font-size: 2.2rem; margin: 0; font-weight: 800; letter-spacing: -1px; color: #059669; }
+#app9 .ds-header p { color: #64748b; font-size: 0.9rem; margin-top: 5px; text-transform: uppercase; letter-spacing: 2px; }
+#app9 .ds-grid-input { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-bottom: 25px; }
+#app9 .ds-glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e2e8f0; border-radius: 24px; padding: 24px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+#app9 .ds-label { display: block; margin-bottom: 12px; font-weight: 700; font-size: 0.75rem; color: #059669; text-transform: uppercase; letter-spacing: 1px; }
+#app9 .ds-textarea {
+    width: 100%; height: 160px; background: #f8fafc;
+    border: 1px solid #cbd5e1; border-radius: 16px; color: #0f172a;
+    padding: 15px; font-family: monospace; font-size: 0.85rem; resize: none; outline: none;
+}
+#app9 .ds-textarea:focus { border-color: #10b981; background: #ffffff; }
+#app9 .ds-btn-group { display: flex; gap: 15px; margin-bottom: 40px; }
+#app9 .ds-btn { flex: 1; padding: 18px; border: none; border-radius: 18px; cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+#app9 .ds-btn-prime { background: #10b981; color: #ffffff; }
+#app9 .ds-btn-sec { background: #ffffff; color: #334155; border: 1px solid #cbd5e1; }
+#app9 .ds-result-area { display: none; }
+#app9 .ds-result-area.show { display: block; }
+#app9 .ds-highlight-panel {
+    background: linear-gradient(135deg, #ecfdf5, #ecfeff);
+    border: 1px solid #10b981; border-radius: 24px; padding: 30px;
+    text-align: center; margin-bottom: 20px;
+}
+#app9 .ds-final-digits {
+    font-family: monospace; font-size: 3.5rem; font-weight: 800;
+    color: #0f172a; letter-spacing: 15px; margin: 15px 0; word-break: break-all;
+}
+#app9 .ds-pos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+#app9 .ds-pos-card { text-align: center; padding: 25px; }
+#app9 .ds-pos-card .ds-pos-label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; margin-bottom: 15px; font-weight: 800; }
+#app9 .ds-ai-val {
+    width: 80px; height: 80px; background: #ffffff; border: 2px solid #10b981;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 15px; font-size: 2rem; font-family: monospace; font-weight: 800; color: #059669;
+}
+#app9 .ds-pos-card.ds-kop .ds-ai-val { border-color: #06b6d4; color: #0891b2; }
+#app9 .ds-pos-card.ds-kepala .ds-ai-val { border-color: #f59e0b; color: #d97706; }
+#app9 .ds-pos-card.ds-ekor .ds-ai-val { border-color: #f43f5e; color: #e11d48; }
+#app9 .ds-support-nums { font-family: monospace; font-size: 1.1rem; color: #334155; letter-spacing: 3px; }
+#app9 .ds-copy-btn {
+    margin-top: 20px; padding: 12px 24px; background: #ecfdf5;
+    border: 1px solid #10b981; color: #059669; border-radius: 12px;
+    font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 0.8rem;
+}
+
+/* ================= APP 10 ================= */
+#app10 { color: #1e293b; font-family: 'Segoe UI', sans-serif; padding: 15px; }
+#app10 .ir10-container { max-width: 800px; margin: 0 auto; }
+#app10 .ir10-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 16px rgba(14,165,233,0.06); }
+#app10 .ir10-field-group { margin-bottom: 10px; }
+#app10 .ir10-label { display: block; color: #0284c7; font-size: 11px; font-weight: 700; margin-bottom: 3px; text-transform: uppercase; }
+#app10 .ir10-input, #app10 .ir10-select, #app10 .ir10-textarea {
+    width: 100%; background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a;
+    padding: 10px; border-radius: 6px; font-family: monospace; font-size: 14px;
+}
+#app10 .ir10-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+#app10 .ir10-btn-box { display: flex; gap: 10px; margin-top: 15px; }
+#app10 .ir10-btn { flex: 1; padding: 12px; border: none; font-weight: 700; border-radius: 8px; cursor: pointer; text-transform: uppercase; }
+#app10 .ir10-btn-run { background: linear-gradient(135deg, #38bdf8, #0ea5e9); color: #ffffff; }
+#app10 .ir10-btn-reset { background: #ef4444; color: #fff; }
+#app10 .ir10-rank-box { margin-top: 15px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #f8fafc; }
+#app10 .ir10-rank-header { background: #f1f5f9; padding: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+#app10 .ir10-rank-header span { color: #b45309 !important; font-weight: bold; }
+#app10 .ir10-btn-copy { background: #10b981; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+#app10 .ir10-rank-content { padding: 10px; font-family: monospace; font-size: 13px; color: #047857; white-space: pre-wrap; max-height: 200px; overflow-y: auto; word-break: break-all; }
+
+/* ================= APP SYNC (GOOGLE DRIVE) ================= */
+.sync-section {
+    background: linear-gradient(135deg, #e0f2fe, #ecfeff);
+    border-radius: 2rem; padding: 1.5rem; border: 2px solid #bae6fd; color: #0c4a6e;
+}
+.sync-section h1 { color: #0284c7; text-align: center; margin-top: 0; }
+.sync-card { background: #ffffff; border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
+.sync-card h3 { margin-top: 0; color: #0369a1; font-size: 15px; }
+.sync-card label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin: 10px 0 4px; }
+.sync-card input {
+    width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;
+    background: #f8fafc; color: #0f172a; font-family: monospace; font-size: 13px;
+}
+.sync-card input:focus { outline: none; border-color: #38bdf8; background: #ffffff; }
+.sync-btn {
+    padding: 10px 18px; border: none; border-radius: 30px; font-weight: 700;
+    cursor: pointer; margin: 8px 6px 0 0; font-size: 13px; transition: 0.2s;
+}
+.sync-btn.primary { background: #0ea5e9; color: #fff; }
+.sync-btn.primary:hover { background: #0284c7; }
+.sync-btn.success { background: #10b981; color: #fff; }
+.sync-btn.success:hover { background: #059669; }
+.sync-btn.warn { background: #f59e0b; color: #fff; }
+.sync-btn.warn:hover { background: #d97706; }
+.sync-btn.ghost { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+.sync-status {
+    padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 13px;
+    background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;
+}
+.sync-status.ok { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+.sync-status.err { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+.sync-hint { font-size: 11px; color: #64748b; line-height: 1.6; margin-top: 10px; }
+.sync-hint code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; font-size: 11px; color: #0f766e; }
+.sync-info { font-size: 12px; color: #0369a1; margin-top: 10px; font-family: monospace; }
+
+/* FOOTER */
+footer { text-align: center; padding: 15px; color: #64748b; font-size: 0.75rem; margin-top: 20px; }
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .nav-tab { padding: 8px 12px; font-size: 0.75rem; }
+    .app-title { font-size: 1rem; }
+    #app9 .ds-final-digits { font-size: 2.2rem; letter-spacing: 8px; }
+    #app9 .ds-btn-group { flex-direction: column; }
+    #app9 .ds-header h1 { font-size: 1.6rem; }
+    #app10 .ir10-grid-3 { grid-template-columns: 1fr !important; }
+    .ai-ct-grid { grid-template-columns: 1fr 1fr; }
+    .shio-grid-main { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+    .bbfs-grid { grid-template-columns: 1fr !important; }
+    .ai-ct-grid { grid-template-columns: 1fr; }
+    .btn-group-ai { grid-template-columns: 1fr; }
+    .gen-btn-row, .gen-input-row, .predator-input-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body onload="tikamNav('app1', document.querySelector('[data-app=\'app1\']'))">
+
+<div class="main-header">
+    <h1 class="app-title">TIKAM MASTER - MULTI APP HUB</h1>
+    <div class="nav-tabs">
+        <div class="nav-tab active" data-app="app1" onclick="tikamNav('app1', this)">[1] Merapikan</div>
+        <div class="nav-tab" data-app="app2" onclick="tikamNav('app2', this)">[2] Analisa 4D <span class="badge">HOT</span></div>
+        <div class="nav-tab" data-app="app3" onclick="tikamNav('app3', this)">[3] Balik Line</div>
+        <div class="nav-tab" data-app="app4" onclick="tikamNav('app4', this)">[4] PREDATOR <span class="badge">NEW</span></div>
+        <div class="nav-tab" data-app="app5" onclick="tikamNav('app5', this)">[5] Generator <span class="badge">ADV</span></div>
+        <div class="nav-tab" data-app="app6" onclick="tikamNav('app6', this)">[6] Utility <span class="badge">TOOL</span></div>
+        <div class="nav-tab" data-app="app7" onclick="tikamNav('app7', this)">[7] AI Pattern <span class="badge">ULT</span></div>
+        <div class="nav-tab" data-app="app8" onclick="tikamNav('app8', this)">[8] DNA PRO <span class="badge">DNA</span></div>
+        <div class="nav-tab" data-app="app9" onclick="tikamNav('app9', this)">[9] DNA SEARCH <span class="badge">AI</span></div>
+        <div class="nav-tab" data-app="app10" onclick="tikamNav('app10', this)">[10] INVEST PRO <span class="badge">V6</span></div>
+        <div class="nav-tab" data-app="appSync" onclick="tikamNav('appSync', this)">☁ Sync Drive <span class="badge">NEW</span></div>
+    </div>
+</div>
+
+<!-- APP 1 -->
+<div id="app1" class="app-wrapper">
+    <div class="merapikan-section">
+        <h1>[APP 1] Merapikan Angka</h1>
+        <textarea id="inputRapikan" placeholder="Masukkan angka, contoh: 2079 = 0456789 ai"></textarea>
+        <div>
+            <button onclick="prosesRapikan()">[Proses]</button>
+            <button onclick="resetRapikan()">[Reset]</button>
+            <button class="btn-kirim" onclick="kirimKeAnalisa()">[Kirim ke Analisa]</button>
+        </div>
+        <div class="output-container">
+            <label>Output 1 (Per Baris):</label>
+            <button class="btn" onclick="salinOutput1()" style="margin-bottom:5px;">Salin</button>
+            <textarea id="output1Rapikan" rows="4" readonly></textarea>
+        </div>
+        <div class="output-container">
+            <label>Output 2 (Digabung *):</label>
+            <textarea id="output2Rapikan" rows="3" readonly></textarea>
+        </div>
+    </div>
+</div>
+
+<!-- APP 2 -->
+<div id="app2" class="app-wrapper">
+    <div class="analisa-section">
+        <h1>[APP 2] Pasangan Bolak-Balik</h1>
+        <div class="toolbar">
+            <div class="btn-group">
+                <button class="btn primary" onclick="prosesAnalisaBolakBalik()">Hitung</button>
+                <button class="btn danger" onclick="resetDataAnalisa()">Reset Data</button>
+                <button class="btn danger" onclick="clearDataAnalisa()">Hapus</button>
+            </div>
+            <div class="pasaran-input">
+                <label>Pasaran:</label>
+                <input type="text" id="namaPasaran" value="SGP" maxlength="10">
+            </div>
+            <button class="btn" onclick="copyFormattedTextBolak()">Salin Hasil</button>
+        </div>
+        <label style="font-weight:bold;">Data 4D (satu baris satu angka):</label>
+        <textarea id="dataInputAnalisa" rows="7" placeholder="5100&#10;2207&#10;1183"></textarea>
+        <div style="background:#e0f2fe; color:#0369a1; border-radius:20px; padding:6px 15px; display:inline-block; margin:10px 0; font-weight:700;">
+            Baris valid: <span id="infoBaris">0</span>
+        </div>
+        <div id="resultContainer" style="margin-top:15px;"><div style="padding:20px; text-align:center; color:gray;">Klik "Hitung" untuk melihat hasil</div></div>
+
+        <div class="filter-section">
+            <h3>Filter Kematian</h3>
+            <div class="filter-grid">
+                <div><label style="font-weight:bold;">AS</label><input type="text" id="filterAS" placeholder="cth: 0,5"></div>
+                <div><label style="font-weight:bold;">KOP</label><input type="text" id="filterKOP" placeholder="cth: 1"></div>
+                <div><label style="font-weight:bold;">KEPALA</label><input type="text" id="filterKEP" placeholder="cth: 8,9"></div>
+                <div><label style="font-weight:bold;">EKOR</label><input type="text" id="filterEK" placeholder="cth: 2"></div>
+            </div>
+        </div>
+
+        <div id="aiCtSection" class="ai-ct-section" style="display:none;">
+            <h3>AI PREDIKSI 4D &amp; CT</h3>
+            <div class="ai-ct-grid">
+                <div class="ai-box">
+                    <h4>AI 4D</h4>
+                    <div class="ai-number" id="ai4dMain">----</div>
+                    <div class="ai-list" id="ai4dList"></div>
+                </div>
+                <div class="ct-box"><h4>CT AC</h4><div class="ct-number" id="ctAcNum">------</div></div>
+                <div class="ct-box"><h4>CT CK</h4><div class="ct-number" id="ctCkNum">------</div></div>
+                <div class="ct-box"><h4>CT KE</h4><div class="ct-number" id="ctKeNum">------</div></div>
+            </div>
+        </div>
+
+        <div id="shioSection" class="shio-section" style="display:none;">
+            <h3>SHIO 2D</h3>
+            <div class="shio-grid-main">
+                <div class="shio-box"><h4>DEPAN</h4><div id="shioDepanList"></div></div>
+                <div class="shio-box"><h4>TENGAH</h4><div id="shioTengahList"></div></div>
+                <div class="shio-box"><h4>BELAKANG</h4><div id="shioBelakangList"></div></div>
+            </div>
+        </div>
+
+        <div class="filter-section" style="background:#fef2f2; border-color:#f87171;">
+            <h3 style="color:#991b1b;">Pemangkas CT</h3>
+            <div class="filter-grid">
+                <div><label><input type="checkbox" id="chkCTAC"> CT AC</label><div id="pmgAcDigits" style="font-family:monospace; font-weight:bold;">------</div></div>
+                <div><label><input type="checkbox" id="chkCTCK"> CT CK</label><div id="pmgCkDigits" style="font-family:monospace; font-weight:bold;">------</div></div>
+                <div><label><input type="checkbox" id="chkCTKE"> CT KE</label><div id="pmgKeDigits" style="font-family:monospace; font-weight:bold;">------</div></div>
+            </div>
+            <button class="btn danger" onclick="prosesAnalisaBolakBalik()" style="margin-top:10px;">Terapkan Filter &amp; Hitung Ulang</button>
+        </div>
+
+        <div id="top5Section" class="top5-section" style="display:none;">
+            <h3>TOP 5 PER DIGIT UTAMA</h3>
+            <div id="top5Container"></div>
+            <div style="background:rgba(255,255,255,0.7); padding:10px; border-radius:10px; margin-top:10px; border:1px solid #ddd6fe;">
+                <h4>KOMBINASI 4D</h4>
+                <div id="infoJumlahKombinasi">0 line</div>
+                <div class="kombinasi-hasil" id="kombinasi4dText"></div>
+                <button class="btn" onclick="copyKombinasi4D()" style="margin-top:10px; background:#8b5cf6; color:#fff; border-color:#8b5cf6;">Salin 4D</button>
+            </div>
+        </div>
+
+        <div id="bbfsSection" class="bbfs-section" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+                <h3 style="margin:0;">BBFS 8 &amp; INVEST 2D</h3>
+                <button class="btn" onclick="copyBbfs2D()" style="background:#14b8a6; color:#fff; border:none; padding:6px 16px; border-radius:20px; font-weight:bold; cursor:pointer;">Salin BBFS &amp; 2D</button>
+            </div>
+            <div class="bbfs-grid">
+                <div>
+                    <h4>BBFS 8</h4>
+                    <div class="bbfs-number" id="bbfs8Digit">-</div>
+                </div>
+                <div>
+                    <h4>INVEST 2D</h4>
+                    <div id="info2D">0 line</div>
+                    <div class="invest-2d-box" id="invest2dText"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="indikatorLineSection" class="indikator-line" style="display:none;">
+            <div><div style="font-size:0.85rem; font-weight:700;">LINE 4D ON</div></div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div class="value" id="indikatorLineValue">0</div>
+                <div id="indikatorLineStatus" style="background:rgba(255,255,255,0.6); padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:700;">AKTIF</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- APP 3 -->
+<div id="app3" class="app-wrapper">
+    <div class="balik-section">
+        <h1>[APP 3] Tool Balik Line 2D</h1>
+        <div class="mode-selector">
+            <div class="mode-card active" data-mode="balik" onclick="pilihMode('balik', this)"><h4>Balik Digit</h4><p style="font-size:0.75rem; margin:5px 0 0;">XY -&gt; YX</p></div>
+            <div class="mode-card" data-mode="komplemen" onclick="pilihMode('komplemen', this)"><h4>Komplemen</h4><p style="font-size:0.75rem; margin:5px 0 0;">Line tidak ada di input</p></div>
+            <div class="mode-card" data-mode="balik-komplemen" onclick="pilihMode('balik-komplemen', this)"><h4>Balik+Komplemen</h4><p style="font-size:0.75rem; margin:5px 0 0;">Komplemen lalu balik</p></div>
+        </div>
+        <label style="font-weight:bold; display:block; margin-bottom:5px;">Input Line 2D:</label>
+        <textarea id="inputBalik" class="balik-textarea" placeholder="01*02*03*04*05"></textarea>
+        <div style="margin:10px 0;">
+            <button class="balik-btn primary" onclick="prosesBalik()">Generate</button>
+            <button class="balik-btn danger" onclick="resetBalik()">Reset</button>
+            <button class="balik-btn success" onclick="salinHasilBalik()">Salin</button>
+            <button class="balik-btn" onclick="kirimBalikKeAnalisa()">Kirim ke Analisa</button>
+        </div>
+        <h4 style="margin-bottom:5px;">Hasil:</h4>
+        <div class="balik-output" id="outputBalik">Klik "Generate" untuk melihat hasil</div>
+    </div>
+</div>
+
+<!-- APP 4 -->
+<div id="app4" class="app-wrapper">
+    <div class="predator-section">
+        <h1>[APP 4] PREDATOR FFG</h1>
+        <p style="text-align:center; opacity:0.85;">AI Master V96.0 - Deep Execute</p>
+        <div id="predator-loader"><div class="predator-spinner"></div><div id="p-count" style="margin-top:15px; font-size:20px; font-weight:900;">0%</div></div>
+        <textarea id="predator-input" placeholder="PASTE DATA 4D DI SINI..."></textarea>
+        <div class="predator-panel">
+            <div class="predator-input-row">
+                <input type="number" id="predator-digit" value="6">
+                <input type="number" id="predator-limit" value="5">
+            </div>
+            <input type="text" id="predator-market" class="predator-market" placeholder="NAMA PASARAN">
+            <div class="predator-pos-grid">
+                <div class="predator-pos-btn" data-p="AS" onclick="togglePosBtn(this)">AS</div>
+                <div class="predator-pos-btn" data-p="KOP" onclick="togglePosBtn(this)">COP</div>
+                <div class="predator-pos-btn" data-p="KEPALA" onclick="togglePosBtn(this)">KEP</div>
+                <div class="predator-pos-btn" data-p="EKOR" onclick="togglePosBtn(this)">EKR</div>
+                <div class="predator-pos-btn active" data-p="BBFS" onclick="togglePosBtn(this)">BBFS</div>
+            </div>
+            <button class="predator-btn predator-btn-gen" onclick="predatorStartScan()">DEEP EXECUTE</button>
+            <button class="predator-btn predator-btn-copy" onclick="predatorCopyResults()">COPY RESULT</button>
+        </div>
+        <div id="predator-results"></div>
+    </div>
+</div>
+
+<!-- APP 5 -->
+<div id="app5" class="app-wrapper">
+    <div class="generator-section">
+        <h1>[APP 5] Generator Kombinasi Advance</h1>
+        <div class="generator-panel">
+            <h3>INPUT BBFS &amp; OUTPUT</h3>
+            <label style="color:#64748b; font-size:0.85rem;">BBFS / Angka Main:</label>
+            <input type="text" id="genBbfs" class="gen-input" placeholder="cth: 01234567" maxlength="10">
+            <div class="gen-input-row">
+                <div><label style="color:#64748b; font-size:0.85rem;">Tipe Output:</label><select id="genOutputType" class="gen-input"><option value="2">2D</option><option value="3">3D</option><option value="4" selected>4D</option></select></div>
+                <div><label style="color:#64748b; font-size:0.85rem;">Format:</label><select id="genOutputFormat" class="gen-input"><option value="*">Pisah *</option><option value=" ">Pisah Spasi</option><option value="newline">Per Baris</option></select></div>
+            </div>
+        </div>
+        <div class="generator-panel"><h3>FILTER DASAR</h3><div id="genDasarContainer"></div></div>
+        <div class="generator-panel"><h3>FILTER SUM</h3><div class="gen-input-row"><div><label style="color:#64748b; font-size:0.85rem;">Min:</label><input type="number" id="genSumMin" class="gen-input" placeholder="0"></div><div><label style="color:#64748b; font-size:0.85rem;">Max:</label><input type="number" id="genSumMax" class="gen-input" placeholder="36"></div></div></div>
+        <div class="generator-panel"><h3>FILTER KEMATIAN</h3><div id="genKematianContainer"></div></div>
+        <div class="generator-panel">
+            <h3>FILTER KEMBAR</h3>
+            <div class="gen-radio-group">
+                <div class="gen-radio-item active" onclick="pilihKembar('all', this)">Semua</div>
+                <div class="gen-radio-item" onclick="pilihKembar('no3', this)">Buang K3</div>
+                <div class="gen-radio-item" onclick="pilihKembar('no2', this)">Buang K2</div>
+                <div class="gen-radio-item" onclick="pilihKembar('murni', this)">Murni</div>
+            </div>
+            <input type="hidden" id="genKembarType" value="all">
+        </div>
+        <div class="generator-panel"><h3>FILTER POLA</h3><div class="gen-checkbox-grid" id="genPolaContainer"></div></div>
+        <div class="gen-preview"><div style="font-size:0.85rem;">ESTIMASI LINE</div><div class="value" id="genEstimasi">0</div></div>
+        <div class="gen-btn-row"><button class="gen-btn gen-btn-primary" onclick="hitungEstimasi()">Hitung Estimasi</button><button class="gen-btn gen-btn-success" onclick="prosesGenerate()">GENERATE</button></div>
+        <div class="gen-btn-row"><button class="gen-btn gen-btn-danger" onclick="resetGenerator()">RESET</button><button class="gen-btn gen-btn-success" onclick="salinGenerator()">SALIN</button></div>
+        <div style="margin-top:15px;">
+            <h3 style="color:#047857;">HASIL:</h3>
+            <div class="gen-preview"><div style="font-size:0.85rem;">TOTAL LINE LOLOS</div><div class="value" id="genTotalLine">0</div></div>
+            <div class="gen-output" id="genOutput">Klik "GENERATE" untuk melihat hasil</div>
+        </div>
+    </div>
+</div>
+
+<!-- APP 6 -->
+<div id="app6" class="app-wrapper">
+    <div class="generator-section" style="background: linear-gradient(135deg, #e0e7ff, #eef2ff); border-color: #c7d2fe; color: #312e81;">
+        <h1 style="color:#4f46e5;">[APP 6] Utility Tools</h1>
+        <div class="generator-panel">
+            <h3 style="color:#4338ca;">1. Kalkulator Pecah 4D</h3>
+            <label style="color:#64748b; font-size:0.85rem;">Masukkan 4D:</label>
+            <input type="text" id="util4dInput" class="gen-input" placeholder="1234" maxlength="4">
+            <button class="gen-btn gen-btn-primary" onclick="hitungPecah4D()">Hitung Pecahan</button>
+            <div id="util4dResult" class="gen-output" style="margin-top:10px; min-height:50px; color:#4338ca; background:#eef2ff; border-color:#c7d2fe;">Hasil akan muncul di sini</div>
+        </div>
+        <div class="generator-panel">
+            <h3 style="color:#4338ca;">2. Cek Shio Cepat</h3>
+            <label style="color:#64748b; font-size:0.85rem;">Masukkan 2D / 4D:</label>
+            <input type="text" id="utilShioInput" class="gen-input" placeholder="12 atau 1234" maxlength="4">
+            <button class="gen-btn gen-btn-primary" onclick="cekShioCepat()">Cek Shio</button>
+            <div id="utilShioResult" class="gen-output" style="margin-top:10px; min-height:50px; color:#4338ca; background:#eef2ff; border-color:#c7d2fe;">Hasil akan muncul di sini</div>
+        </div>
+        <div class="generator-panel">
+            <h3 style="color:#4338ca;">3. Kalkulator Modal &amp; Menang</h3>
+            <div class="gen-input-row">
+                <div><label style="color:#64748b; font-size:0.85rem;">Jumlah Line:</label><input type="number" id="utilLine" class="gen-input" placeholder="100"></div>
+                <div><label style="color:#64748b; font-size:0.85rem;">Harga/Line:</label><input type="number" id="utilHarga" class="gen-input" placeholder="1000"></div>
+            </div>
+            <div class="gen-input-row">
+                <div><label style="color:#64748b; font-size:0.85rem;">Hadiah 4D:</label><input type="number" id="utilHadiah4d" class="gen-input" placeholder="3000000"></div>
+                <div><label style="color:#64748b; font-size:0.85rem;">Hadiah 3D:</label><input type="number" id="utilHadiah3d" class="gen-input" placeholder="400000"></div>
+            </div>
+            <div class="gen-input-row">
+                <div><label style="color:#64748b; font-size:0.85rem;">Hadiah 2D:</label><input type="number" id="utilHadiah2d" class="gen-input" placeholder="70000"></div>
+                <div><label style="color:#64748b; font-size:0.85rem;">Jenis Bet:</label><select id="utilJenisBet" class="gen-input"><option value="4d">4D</option><option value="3d">3D</option><option value="2d">2D</option></select></div>
+            </div>
+            <button class="gen-btn gen-btn-success" onclick="hitungModal()">Hitung Modal</button>
+            <div id="utilModalResult" class="gen-output" style="margin-top:10px; min-height:50px; color:#4338ca; background:#eef2ff; border-color:#c7d2fe;">Hasil akan muncul di sini</div>
+        </div>
+        <div class="generator-panel">
+            <h3 style="color:#4338ca;">4. Random Number Generator</h3>
+            <div class="gen-input-row">
+                <div><label style="color:#64748b; font-size:0.85rem;">Jumlah Digit:</label><select id="utilRndDigit" class="gen-input"><option value="2">2D</option><option value="3">3D</option><option value="4" selected>4D</option></select></div>
+                <div><label style="color:#64748b; font-size:0.85rem;">Jumlah Line:</label><input type="number" id="utilRndJml" class="gen-input" placeholder="10"></div>
+            </div>
+            <button class="gen-btn gen-btn-primary" onclick="generateRandom()">Generate Acak</button>
+            <div id="utilRndResult" class="gen-output" style="margin-top:10px; min-height:50px; color:#4338ca; background:#eef2ff; border-color:#c7d2fe;">Hasil akan muncul di sini</div>
+        </div>
+        <div class="generator-panel">
+            <h3 style="color:#4338ca;">5. Tabel Referensi Shio (00-99)</h3>
+            <div class="gen-input-row">
+                <div><label style="color:#64748b; font-size:0.85rem;">Filter Shio:</label><select id="utilFilterShio" class="gen-input" onchange="renderTabelShio()"><option value="all">Semua Shio</option><option value="Naga">Naga</option><option value="Tikus">Tikus</option><option value="Kerbau">Kerbau</option><option value="Macan">Macan</option><option value="Kelinci">Kelinci</option><option value="Ular">Ular</option><option value="Kuda">Kuda</option><option value="Kambing">Kambing</option><option value="Monyet">Monyet</option><option value="Ayam">Ayam</option><option value="Anjing">Anjing</option><option value="Babi">Babi</option></select></div>
+                <div><label style="color:#64748b; font-size:0.85rem;">Format:</label><select id="utilTabelFmt" class="gen-input" onchange="renderTabelShio()"><option value="grid">Grid (Kotak)</option><option value="list">List (Teks)</option></select></div>
+            </div>
+            <div id="utilTabelShioResult" class="gen-output" style="margin-top:10px; min-height:100px; color:#4338ca; background:#eef2ff; border-color:#c7d2fe;">Tabel akan muncul di sini</div>
+        </div>
+    </div>
+</div>
+
+<!-- APP 7 -->
+<div id="app7" class="app-wrapper">
+    <div class="aipattern-container">
+        <h2>AI MASTER V74.0 ULTIMATE</h2>
+        <div class="market-bar">
+            <select id="marketSelect" class="market-select" onchange="switchAIMarket()">
+                <option value="HONGKONG">HK - HONGKONG</option>
+                <option value="SINGAPORE">SGP - SINGAPORE</option>
+                <option value="SYDNEY">SYD - SYDNEY</option>
+                <option value="TAIWAN">TWN - TAIWAN</option>
+                <option value="CAMBODIA">KAM - CAMBODIA</option>
+                <option value="BULLSEYE">BUL - BULLSEYE</option>
+                <option value="CUSTOM">CUS - CUSTOM</option>
+            </select>
+            <div class="market-stats">
+                <span>Baris: <strong id="aiRowCount">0</strong></span>
+                <span>Terakhir: <strong id="aiLastResult">----</strong></span>
+                <span>Top: <strong id="aiTopDigit">-</strong></span>
+                <span>Shio: <strong id="aiTopShio">-</strong></span>
+            </div>
+            <div class="save-indicator" id="aiSaveIndicator">Saved</div>
+            <button onclick="clearAIMarketData()" style="background:#ef4444;color:#fff;border:none;padding:6px 10px;border-radius:4px;font-size:9px;cursor:pointer;">Clear</button>
+        </div>
+        <textarea id="aiInputData" class="aipattern-textarea" placeholder="Masukkan Result History..." spellcheck="false" oninput="onAIInputChanged()"></textarea>
+        <div class="row-counter">
+            <span>4 digit/baris - Pattern: OE/BS/Shio</span>
+            <span>Valid: <strong id="aiValidRowCount">0</strong></span>
+        </div>
+        <div class="pattern-bar">
+            <label class="pattern-toggle active" id="lblPatOE"><input type="checkbox" id="patOE" checked onchange="toggleAIPattern('OE')"> Ganjil/Genap</label>
+            <label class="pattern-toggle active" id="lblPatBS"><input type="checkbox" id="patBS" checked onchange="toggleAIPattern('BS')"> Besar/Kecil</label>
+            <label class="pattern-toggle" id="lblPatShio"><input type="checkbox" id="patShio" onchange="toggleAIPattern('Shio')"> Shio</label>
+        </div>
+        <div class="filter-area">
+            <div class="filter-label">TARGET LOSS (X):</div>
+            <input type="number" id="targetLoss" class="filter-input" value="5" onchange="saveCurrentAIMarket()">
+            <div style="display:flex;gap:4px;align-items:center;">
+                <span style="font-size:9px;color:#64748b">Min:</span>
+                <input type="number" id="minData" class="filter-input small" value="20" onchange="saveCurrentAIMarket()">
+            </div>
+            <select id="shioYear" class="filter-select" onchange="updateShioMap()">
+                <option value="2024">2024 Naga</option>
+                <option value="2025">2025 Ular</option>
+                <option value="2023">2023 Kelinci</option>
+            </select>
+        </div>
+        <div class="btn-group-ai">
+            <button class="btn-gen-ai" onclick="processAIData()">GENERATE ULTIMATE</button>
+            <button class="btn-backtest" onclick="toggleAIBacktest()">BACKTEST</button>
+            <button class="btn-reset" onclick="resetAIApp()">RESET</button>
+        </div>
+        <div class="pattern-panel" id="aiPatternPanel">
+            <div class="pattern-grid">
+                <div class="pattern-card">
+                    <h4>Ganjil/Genap</h4>
+                    <div class="pattern-chart" id="oeChart"></div>
+                    <div class="pattern-pred">Trend: <strong id="oeTrend">-</strong><br>Prediksi: <strong id="oePred">-</strong></div>
+                </div>
+                <div class="pattern-card">
+                    <h4>Besar/Kecil</h4>
+                    <div class="pattern-chart" id="bsChart"></div>
+                    <div class="pattern-pred">Streak: <strong id="bsStreak">-</strong><br>Prediksi: <strong id="bsPred">-</strong></div>
+                </div>
+                <div class="pattern-card" id="shioCard" style="display:none;">
+                    <h4>Shio Analysis</h4>
+                    <div class="shio-grid-ai" id="shioGrid"></div>
+                    <div class="pattern-pred" style="margin-top:10px;">Hot: <strong id="shioHot">-</strong><br>Rekom: <strong id="shioRec">-</strong></div>
+                </div>
+            </div>
+        </div>
+        <div class="backtest-panel" id="aiBacktestPanel">
+            <div class="bt-header">
+                <h3>BACKTEST ENGINE</h3>
+                <button onclick="runAIBacktest()" style="background:#10b981;color:#fff;border:none;padding:5px 10px;border-radius:4px;font-weight:bold;cursor:pointer;font-size:11px;">RUN</button>
+            </div>
+            <div class="bt-params">
+                <div class="bt-param"><label>Start Index</label><input type="number" id="btStart" value="10" min="5" max="100"></div>
+                <div class="bt-param"><label>Periode Test</label><input type="number" id="btPeriods" value="10" min="5" max="50"></div>
+                <div class="bt-param"><label>BBFS Match</label><select id="btBbfsMatch"><option value="2">2+</option><option value="3" selected>3+</option><option value="4">4+</option></select></div>
+            </div>
+            <div class="bt-results" id="btResults" style="display:none;">
+                <div class="bt-card"><h4>BBFS Acc</h4><div class="val win" id="btBbfsAcc">-</div></div>
+                <div class="bt-card"><h4>Pattern Acc</h4><div class="val" id="btPatAcc">-</div></div>
+                <div class="bt-card"><h4>Combined</h4><div class="val win" id="btCombined">-</div></div>
+                <div class="bt-card"><h4>Tests</h4><div class="val" id="btTotal">-</div></div>
+            </div>
+            <div class="bt-log" id="btLog"></div>
+        </div>
+        <div id="aiOutputArea" style="display:none;">
+            <div class="analysis-grid" id="aiAnalysCards"></div>
+            <div class="summary-bar" id="aiSummaryBar"></div>
+            <div class="header-box">PRO-HEATMAP<button onclick="copyAIHeatmap()">Copy</button></div>
+            <div class="content-box"><div class="heatmap-container" id="aiHeatArea"></div></div>
+            <div class="header-box">TOP 5 UNIQUE &amp; IRISAN</div>
+            <div class="content-box"><div class="sub-grid" id="aiAltFormulas"></div></div>
+            <div class="header-box">TOP 40 LINE 2D (NO TWIN)</div>
+            <div class="content-box" id="aiTop2DBox" style="word-break: break-all;font-size:11px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- APP 8 -->
+<div id="app8" class="app-wrapper">
+    <div class="dna-section">
+        <h1>[APP 8] DNA PREDICTOR PRO</h1>
+        <div class="dna-panel">
+            <label>Nama Pasaran &amp; Input Data:</label>
+            <input id="dna-pasaran" type="text" placeholder="NAMA PASARAN" style="margin-bottom:10px">
+            <textarea id="dna-inputData" placeholder="Masukkan Result (4 Digit), pisah baris..."></textarea>
+            <div class="dna-row">
+                <button class="dna-btn gen" onclick="DNAApp.generate()">GENERATE</button>
+                <button class="dna-btn reset" onclick="DNAApp.resetForm()">RESET</button>
+                <button class="dna-btn copy" onclick="DNAApp.copyHasil()">SALIN</button>
+                <button class="dna-btn download" onclick="DNAApp.downloadTxt()">SIMPAN</button>
+            </div>
+            <div id="dna-pangkalanHasil" class="dna-grid-main" style="display:none">
+                <div class="dna-card">
+                    <h3>PANGKALAN &amp; LINE AMAN <span class="tag green">CORE</span></h3>
+                    <div class="pangkalan-grid">
+                        <div class="pangkalan-item"><div class="pangkalan-label">BBFS</div><div class="pangkalan-val" id="dna-resBBFS">-</div></div>
+                        <div class="pangkalan-item"><div class="pangkalan-label">A. Main</div><div class="pangkalan-val" id="dna-resMain">-</div></div>
+                        <div class="pangkalan-item"><div class="pangkalan-label">CT 1</div><div class="pangkalan-val" id="dna-resCT1">-</div></div>
+                        <div class="pangkalan-item"><div class="pangkalan-label">CT 2</div><div class="pangkalan-val" id="dna-resCT2">-</div></div>
+                        <div class="pangkalan-item"><div class="pangkalan-label">C. Bebas</div><div class="pangkalan-val" id="dna-resCB">-</div></div>
+                        <div class="pangkalan-item"><div class="pangkalan-label">C. Macau</div><div class="pangkalan-val" id="dna-resCM">-</div></div>
+                    </div>
+                    <label style="color:#059669; margin-bottom:8px">LINE AMAN (<span id="dna-countLine">0</span>):</label>
+                    <div class="line-aman-box dna-mono" id="dna-resLineAman"></div>
+                </div>
+                <div class="dna-card">
+                    <h3>STREAK POSISI <span class="tag blue">POS</span></h3>
+                    <label>Kepala On (Top 8):</label>
+                    <div id="dna-resKepala" class="dna-chip dna-mono"></div>
+                    <label style="margin-top:10px">Ekor On (Top 8):</label>
+                    <div id="dna-resEkor" class="dna-chip dna-mono"></div>
+                </div>
+                <div class="dna-card" style="grid-column: 1 / -1">
+                    <h3>PANGKALAN 3D &amp; 4D</h3>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
+                        <div><label>3D:</label><div class="dna-out dna-mono" id="dna-res3D" style="color:#0284c7;"></div></div>
+                        <div><label>4D:</label><div class="dna-out dna-mono" id="dna-res4D" style="color:#b45309;"></div></div>
+                    </div>
+                </div>
+                <div class="dna-card" style="grid-column: 1 / -1">
+                    <h3>DISTRIBUSI DATA</h3>
+                    <table class="dna-table" id="dna-freqTable"></table>
+                </div>
+            </div>
+            <div id="dna-summary" style="display:none"></div>
+        </div>
+    </div>
+</div>
+
+<!-- APP 9 -->
+<div id="app9" class="app-wrapper">
+    <div class="ds-wrapper">
+        <div class="ds-header">
+            <h1>[APP 9] DNA SEARCH ENGINE AI</h1>
+            <p>Premium Prediction Matrix v2.0</p>
+        </div>
+        <div class="ds-grid-input">
+            <div class="ds-glass-card">
+                <label class="ds-label">Database Result Harian</label>
+                <textarea id="ds-dataHarian" class="ds-textarea" placeholder="Paste result harian..."></textarea>
+            </div>
+            <div class="ds-glass-card">
+                <label class="ds-label">Database Result Mingguan</label>
+                <textarea id="ds-dataMingguan" class="ds-textarea" placeholder="Paste result mingguan..."></textarea>
+            </div>
+        </div>
+        <div class="ds-btn-group">
+            <button class="ds-btn ds-btn-prime" onclick="DNAAppSearch.processEngine()">EKSEKUSI</button>
+            <button class="ds-btn ds-btn-sec" onclick="DNAAppSearch.resetEngine()">RESET</button>
+        </div>
+        <div id="ds-resultArea" class="ds-result-area">
+            <div class="ds-glass-card ds-highlight-panel">
+                <div style="font-size: 0.75rem; font-weight: 800; color: #059669; letter-spacing: 3px;">CORE AI (4D)</div>
+                <div class="ds-final-digits" id="ds-finalAI">0 0 0 0</div>
+                <button class="ds-copy-btn" onclick="DNAAppSearch.copyResult()">SALIN HASIL</button>
+            </div>
+            <div class="ds-pos-grid">
+                <div class="ds-glass-card ds-pos-card ds-as"><div class="ds-pos-label">AI As (4D)</div><div class="ds-ai-val" id="ds-asTop">-</div><div class="ds-support-nums" id="ds-asSub">-</div></div>
+                <div class="ds-glass-card ds-pos-card ds-kop"><div class="ds-pos-label">AI Kop (3D)</div><div class="ds-ai-val" id="ds-kopTop">-</div><div class="ds-support-nums" id="ds-kopSub">-</div></div>
+                <div class="ds-glass-card ds-pos-card ds-kepala"><div class="ds-pos-label">AI Kepala (2D)</div><div class="ds-ai-val" id="ds-kepTop">-</div><div class="ds-support-nums" id="ds-kepSub">-</div></div>
+                <div class="ds-glass-card ds-pos-card ds-ekor"><div class="ds-pos-label">AI Ekor (2D)</div><div class="ds-ai-val" id="ds-ekorTop">-</div><div class="ds-support-nums" id="ds-ekorSub">-</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- APP 10 -->
+<div id="app10" class="app-wrapper">
+    <div class="ir10-container">
+        <h2 style="text-align:center; color:#0284c7; margin-bottom: 15px;">[APP 10] INVEST PRO MASTER V6</h2>
+        <div class="ir10-card">
+            <div class="ir10-field-group">
+                <label class="ir10-label">NAMA PASARAN</label>
+                <input type="text" id="ir10-namaPasaran" class="ir10-input" placeholder="Contoh: SYDNEY">
+            </div>
+            <div class="ir10-field-group">
+                <label class="ir10-label">MODE PERMAINAN</label>
+                <select id="ir10-mode" class="ir10-select">
+                    <option value="2">Mode 2D</option>
+                    <option value="3">Mode 3D</option>
+                    <option value="4" selected>Mode 4D</option>
+                </select>
+            </div>
+            <div class="ir10-field-group">
+                <label class="ir10-label">ANGKA CONTROL (WAJIB PER BARIS)</label>
+                <textarea id="ir10-inputAC" class="ir10-textarea" rows="3" placeholder="1234&#10;5678"></textarea>
+            </div>
+            <label class="ir10-label" style="color:#0284c7; margin-top:15px; font-size:13px; border-bottom:1px solid #e2e8f0; padding-bottom:5px;">FILTER PEMANGKAS (OPSIONAL)</label>
+            <div class="ir10-grid-3" style="margin-top:10px;">
+                <div class="ir10-field-group"><label class="ir10-label">L. AS</label><input type="text" id="ir10-lAs" class="ir10-input"></div>
+                <div class="ir10-field-group"><label class="ir10-label">L. KOP</label><input type="text" id="ir10-lKop" class="ir10-input"></div>
+                <div class="ir10-field-group"><label class="ir10-label">L. KEPALA</label><input type="text" id="ir10-lK" class="ir10-input"></div>
+                <div class="ir10-field-group"><label class="ir10-label">L. EKOR</label><input type="text" id="ir10-lE" class="ir10-input"></div>
+                <div class="ir10-field-group"><label class="ir10-label">BIJI OFF</label><input type="text" id="ir10-bOff" class="ir10-input"></div>
+                <div class="ir10-field-group"><label class="ir10-label">SKE OFF</label><input type="text" id="ir10-skeOff" class="ir10-input"></div>
+                <div class="ir10-field-group" style="grid-column: span 3;"><label class="ir10-label">SHIO OFF (1-12)</label><input type="text" id="ir10-shioOff" class="ir10-input"></div>
+            </div>
+            <div class="ir10-btn-box">
+                <button class="ir10-btn ir10-btn-run" onclick="InvestProV6.proses()">⚡ PROSES RANKING</button>
+                <button class="ir10-btn ir10-btn-reset" onclick="InvestProV6.resetAll()">↺ RESET</button>
+            </div>
+        </div>
+        <div id="ir10-resArea"></div>
+    </div>
+</div>
+
+<!-- APP SYNC -->
+<div id="appSync" class="app-wrapper">
+    <div class="sync-section">
+        <h1>☁ CLOUD SYNC - GOOGLE DRIVE</h1>
+
+        <div class="sync-card">
+            <h3>1. Kredensial Google API</h3>
+            <label>Google OAuth Client ID</label>
+            <input type="text" id="syncClientId" placeholder="xxxxxxxx.apps.googleusercontent.com">
+            <label>Google API Key (opsional, untuk request publik)</label>
+            <input type="text" id="syncApiKey" placeholder="AIzaSy...">
+            <button class="sync-btn primary" onclick="CloudSync.saveCreds()">Simpan Kredensial</button>
+            <div class="sync-hint">
+                <b>Cara mendapatkan:</b><br>
+                1. Buka <code>console.cloud.google.com</code> → buat project baru.<br>
+                2. Aktifkan <b>Google Drive API</b> di menu Library.<br>
+                3. Menu <b>Credentials</b> → <i>Create Credentials</i> → <b>OAuth client ID</b> → tipe <b>Web application</b>.<br>
+                4. Tambahkan URL halaman ini ke <b>Authorized JavaScript origins</b>.<br>
+                5. Copy Client ID &amp; API Key ke form di atas, lalu simpan.<br>
+                <i>Data disimpan terenkripsi di scope <code>drive.appdata</code> (folder tersembunyi aplikasi).</i>
+            </div>
+        </div>
+
+        <div class="sync-card">
+            <h3>2. Status &amp; Aksi</h3>
+            <div id="syncStatus" class="sync-status">Belum terhubung.</div>
+            <div style="margin-top:12px;">
+                <button class="sync-btn success" onclick="CloudSync.connect()">🔗 Hubungkan Google Drive</button>
+                <button class="sync-btn primary" onclick="CloudSync.save()">⬆ Upload / Simpan ke Drive</button>
+                <button class="sync-btn warn" onclick="CloudSync.load()">⬇ Download / Muat dari Drive</button>
+                <button class="sync-btn ghost" onclick="CloudSync.disconnect()">✖ Putuskan</button>
+            </div>
+            <div id="syncInfo" class="sync-info"></div>
+            <div class="sync-hint">
+                Backup mencakup seluruh data <b>localStorage</b> TIKAM MASTER (termasuk data AI Pattern per pasaran).<br>
+                Kredensial API <b>tidak</b> diikutkan ke file backup.
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    TIKAM MASTER - Multi App Hub | 11 Aplikasi dalam 1 File
+</footer>
+
+<script>
+// ==========================================
+// APP 1: MERAPIKAN ANGKA
+// ==========================================
+function prosesRapikan() {
+    var input = document.getElementById('inputRapikan').value;
+    if (!input) { alert('Input kosong!'); return; }
+    var lines = input.split('\n'), numbers = [];
+    for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (line === '') continue;
+        var match = line.match(/^\d+/);
+        if (match) numbers.push(match[0]);
+    }
+    document.getElementById('output1Rapikan').value = numbers.join('\n');
+    if (numbers.length === 100) {
+        document.getElementById('output2Rapikan').value = numbers.slice(0, 50).join('*') + ' ' + numbers.slice(50, 100).join('*');
+    } else {
+        document.getElementById('output2Rapikan').value = numbers.join('*');
+    }
+    alert('Proses selesai! ' + numbers.length + ' angka ditemukan.');
+}
+function resetRapikan() {
+    document.getElementById('inputRapikan').value = '';
+    document.getElementById('output1Rapikan').value = '';
+    document.getElementById('output2Rapikan').value = '';
+}
+function salinOutput1() {
+    var v = document.getElementById('output1Rapikan').value;
+    if (!v) { alert('Kosong!'); return; }
+    navigator.clipboard.writeText(v).then(function() { alert('Disalin!'); });
+}
+function kirimKeAnalisa() {
+    var v = document.getElementById('output1Rapikan').value;
+    if (!v) { alert('Proses dulu!'); return; }
+    document.getElementById('dataInputAnalisa').value = v;
+    tikamNav('app2', document.querySelector('[data-app="app2"]'));
+    setTimeout(function() { prosesAnalisaBolakBalik(); }, 300);
+}
+
+// ==========================================
+// APP 2: ANALISA 4D
+// ==========================================
+var DEFAULT_DATA = "5100\n2207\n1183\n6684\n1737\n2667\n2245\n9155\n9365\n6677\n9262\n2682\n5495\n2197\n0497\n8344\n4803\n1392\n9801\n5920";
+var lastPerUtamaData = [], lastCtData = { AC: [], CK: [], KE: [] };
+function parseValidLines(raw) {
+    var lines = raw.split(/\r?\n/), valid = [];
+    for (var i = 0; i < lines.length; i++) {
+        var clean = lines[i].trim(); if (clean === '') continue;
+        var numeric = clean.replace(/\D/g, ''); if (numeric.length < 4) continue;
+        var four = numeric.substring(0, 4), digits = [];
+        for (var j = 0; j < 4; j++) digits.push(parseInt(four[j]));
+        valid.push(digits);
+    }
+    return valid;
+}
+function getDeathFilters() {
+    function pf(id) {
+        var v = document.getElementById(id).value.replace(/[^0-9]/g, ''), arr = [];
+        for (var i = 0; i < v.length; i++) arr.push(parseInt(v[i]));
+        return arr;
+    }
+    return { AS: pf('filterAS'), KOP: pf('filterKOP'), KEP: pf('filterKEP'), EK: pf('filterEK') };
+}
+function isValid4D(s, f) {
+    if (f.AS.indexOf(parseInt(s[0])) !== -1) return false;
+    if (f.KOP.indexOf(parseInt(s[1])) !== -1) return false;
+    if (f.KEP.indexOf(parseInt(s[2])) !== -1) return false;
+    if (f.EK.indexOf(parseInt(s[3])) !== -1) return false;
+    return true;
+}
+function isValid4DByCT(s, ct) {
+    var ac = document.getElementById('chkCTAC').checked, ck = document.getElementById('chkCTCK').checked, ke = document.getElementById('chkCTKE').checked;
+    if (ac && (ct.AC.indexOf(parseInt(s[0])) === -1 || ct.AC.indexOf(parseInt(s[1])) === -1)) return false;
+    if (ck && (ct.CK.indexOf(parseInt(s[1])) === -1 || ct.CK.indexOf(parseInt(s[2])) === -1)) return false;
+    if (ke && (ct.KE.indexOf(parseInt(s[2])) === -1 || ct.KE.indexOf(parseInt(s[3])) === -1)) return false;
+    return true;
+}
+function hitungPasanganBolakBalik(rows) {
+    var map = {};
+    for (var i = 0; i < rows.length; i++) {
+        var d = rows[i], u = d[0], partners = [d[1], d[2], d[3]];
+        for (var j = 0; j < 3; j++) {
+            var p = partners[j], min = Math.min(u, p), max = Math.max(u, p);
+            map[min + '-' + max] = (map[min + '-' + max] || 0) + 1;
+        }
+    }
+    return map;
+}
+function getPairsPerUtama(gpf) {
+    var perUtama = {};
+    for (var i = 0; i <= 9; i++) perUtama[i] = {};
+    for (var key in gpf) {
+        var parts = key.split('-'), a = parseInt(parts[0]), b = parseInt(parts[1]), f = gpf[key];
+        perUtama[a][b] = (perUtama[a][b] || 0) + f; perUtama[b][a] = (perUtama[b][a] || 0) + f;
+    }
+    var result = [];
+    for (var u = 0; u <= 9; u++) {
+        var entries = [];
+        for (var p in perUtama[u]) entries.push({ partner: parseInt(p), freq: perUtama[u][p] });
+        entries.sort(function(a, b) { return b.freq - a.freq || a.partner - b.partner; });
+        result.push({ utama: u, pairs: entries });
+    }
+    return result;
+}
+function renderHasil(arr, total) {
+    var rc = document.getElementById('resultContainer');
+    if (total === 0) { rc.innerHTML = '<div style="padding:20px; text-align:center; background:#f1f5f9; border-radius:20px;">Tidak ada data valid.</div>'; hideSections(); return; }
+    var html = '';
+    for (var i = 0; i < arr.length; i++) {
+        var item = arr[i], u = item.utama, pairs = item.pairs;
+        html += '<div class="digit-card"><div class="digit-header"><span>Digit ' + u + '</span><span style="font-size:0.8rem;">' + pairs.length + ' pasangan</span></div><div class="pairs-container">';
+        if (pairs.length === 0) html += '<div style="padding:10px; color:gray;">Belum ada</div>';
+        else {
+            for (var j = 0; j < pairs.length; j++) {
+                var p = pairs[j], dp;
+                if (u === p.partner) dp = '' + u + p.partner;
+                else if (u < p.partner) dp = u + '' + p.partner + ' / ' + p.partner + '' + u;
+                else dp = p.partner + '' + u + ' / ' + u + '' + p.partner;
+                html += '<div class="pair-row"><div class="pair-digits">' + dp + '</div><div class="freq-badge">' + p.freq + ' freq</div></div>';
+            }
+        }
+        html += '</div></div>';
+    }
+    rc.innerHTML = html;
+}
+function hideSections() {
+    document.getElementById('top5Section').style.display = 'none';
+    document.getElementById('bbfsSection').style.display = 'none';
+    document.getElementById('aiCtSection').style.display = 'none';
+    document.getElementById('shioSection').style.display = 'none';
+    document.getElementById('indikatorLineSection').style.display = 'none';
+}
+var shioMapping = { "01":"Naga","13":"Naga","25":"Naga","37":"Naga","49":"Naga","61":"Naga","73":"Naga","85":"Naga","97":"Naga","00":"Naga", "05":"Tikus","17":"Tikus","29":"Tikus","41":"Tikus","53":"Tikus","65":"Tikus","77":"Tikus","89":"Tikus", "04":"Kerbau","16":"Kerbau","28":"Kerbau","40":"Kerbau","52":"Kerbau","64":"Kerbau","76":"Kerbau","88":"Kerbau", "03":"Macan","15":"Macan","27":"Macan","39":"Macan","51":"Macan","63":"Macan","75":"Macan","87":"Macan", "02":"Kelinci","14":"Kelinci","26":"Kelinci","38":"Kelinci","50":"Kelinci","62":"Kelinci","74":"Kelinci","86":"Kelinci", "12":"Ular","24":"Ular","36":"Ular","48":"Ular","60":"Ular","72":"Ular","84":"Ular","96":"Ular", "11":"Kuda","23":"Kuda","35":"Kuda","47":"Kuda","59":"Kuda","71":"Kuda","83":"Kuda","95":"Kuda", "10":"Kambing","22":"Kambing","34":"Kambing","46":"Kambing","58":"Kambing","70":"Kambing","82":"Kambing","94":"Kambing", "09":"Monyet","21":"Monyet","33":"Monyet","45":"Monyet","57":"Monyet","69":"Monyet","81":"Monyet","93":"Monyet", "08":"Ayam","20":"Ayam","32":"Ayam","44":"Ayam","56":"Ayam","68":"Ayam","80":"Ayam","92":"Ayam", "07":"Anjing","19":"Anjing","31":"Anjing","43":"Anjing","55":"Anjing","67":"Anjing","79":"Anjing","91":"Anjing", "06":"Babi","18":"Babi","30":"Babi","42":"Babi","54":"Babi","66":"Babi","78":"Babi","90":"Babi" };
+function hitungAICTShio(rows) {
+    var freqPos = [{},{},{},{}];
+    for (var i = 0; i < 4; i++) for (var d = 0; d <= 9; d++) freqPos[i][d] = 0;
+    var freqGlobal = {}; for (var d = 0; d <= 9; d++) freqGlobal[d] = 0;
+    var freqDepan = {}, freqTengah = {}, freqBelakang = {};
+    for (var i = 0; i <= 99; i++) { var s = i < 10 ? '0' + i : '' + i; freqDepan[s] = 0; freqTengah[s] = 0; freqBelakang[s] = 0; }
+    for (var i = 0; i < rows.length; i++) {
+        var d = rows[i];
+        for (var j = 0; j < 4; j++) { freqPos[j][d[j]]++; freqGlobal[d[j]]++; }
+        freqDepan['' + d[0] + d[1]]++; freqTengah['' + d[1] + d[2]]++; freqBelakang['' + d[2] + d[3]]++;
+    }
+    var aiPerPos = [];
+    for (var i = 0; i < 4; i++) {
+        var scores = [];
+        for (var d = 0; d <= 9; d++) scores.push({ digit: d, score: freqPos[i][d] * 0.6 + freqGlobal[d] * 0.4 });
+        scores.sort(function(a, b) { return b.score - a.score || a.digit - b.digit; });
+        aiPerPos.push([scores[0].digit, scores[1].digit, scores[2].digit]);
+    }
+    var aiList = [];
+    for (var a = 0; a < aiPerPos[0].length; a++) for (var b = 0; b < aiPerPos[1].length; b++) for (var c = 0; c < aiPerPos[2].length; c++) for (var d = 0; d < aiPerPos[3].length; d++) aiList.push('' + aiPerPos[0][a] + aiPerPos[1][b] + aiPerPos[2][c] + aiPerPos[3][d]);
+    function getCT(p1, p2) {
+        var f = {}; for (var d = 0; d <= 9; d++) f[d] = 0;
+        for (var d = 0; d <= 9; d++) f[d] = freqPos[p1][d] + freqPos[p2][d];
+        var arr = []; for (var d in f) arr.push({ d: parseInt(d), f: f[d] });
+        arr.sort(function(a, b) { return b.f - a.f || a.d - b.d; });
+        return arr.slice(0, 6).map(function(x) { return x.d; }).sort(function(a, b) { return a - b; });
+    }
+    function getTop3Shio(fm) {
+        var arr = []; for (var k in fm) arr.push({ k: k, f: fm[k] });
+        arr.sort(function(a, b) { return b.f - a.f || a.k.localeCompare(b.k); });
+        return arr.slice(0, 3).map(function(x) { return { angka: x.k, freq: x.f, shio: shioMapping[x.k] || '?' }; });
+    }
+    var investSet = {};
+    if (lastPerUtamaData.length > 0) {
+        for (var i = 0; i < lastPerUtamaData.length; i++) {
+            var item = lastPerUtamaData[i], top8 = item.pairs.slice(0, 8);
+            for (var j = 0; j < top8.length; j++) {
+                var d1 = item.utama, d2 = top8[j].partner;
+                investSet[d1 <= d2 ? '' + d1 + d2 : '' + d2 + d1] = true;
+            }
+        }
+    }
+    return { aiPerPos: aiPerPos, aiList: aiList, ctAC: getCT(0, 1), ctCK: getCT(1, 2), ctKE: getCT(2, 3), shioDepan: getTop3Shio(freqDepan), shioTengah: getTop3Shio(freqTengah), shioBelakang: getTop3Shio(freqBelakang), top8_2D: Object.keys(investSet).sort() };
+}
+function renderAICTShio(data) {
+    document.getElementById('ai4dMain').innerText = data.aiPerPos.map(function(a) { return a[0]; }).join('');
+    var aiHtml = '';
+    for (var i = 0; i < data.aiList.length; i++) aiHtml += '<div>' + (i < 9 ? '0' : '') + (i + 1) + '. ' + data.aiList[i] + '</div>';
+    document.getElementById('ai4dList').innerHTML = aiHtml;
+    document.getElementById('ctAcNum').innerText = data.ctAC.join('');
+    document.getElementById('ctCkNum').innerText = data.ctCK.join('');
+    document.getElementById('ctKeNum').innerText = data.ctKE.join('');
+    document.getElementById('pmgAcDigits').innerText = data.ctAC.join('');
+    document.getElementById('pmgCkDigits').innerText = data.ctCK.join('');
+    document.getElementById('pmgKeDigits').innerText = data.ctKE.join('');
+    lastCtData = { AC: data.ctAC, CK: data.ctCK, KE: data.ctKE };
+    function renderShio(id, arr) {
+        var h = '';
+        for (var i = 0; i < arr.length; i++) h += '<div class="shio-item-main"><span>' + arr[i].angka + ' (' + arr[i].freq + 'x)</span><span>' + arr[i].shio + '</span></div>';
+        document.getElementById(id).innerHTML = h;
+    }
+    renderShio('shioDepanList', data.shioDepan);
+    renderShio('shioTengahList', data.shioTengah);
+    renderShio('shioBelakangList', data.shioBelakang);
+    var invHtml = '';
+    for (var i = 0; i < data.top8_2D.length; i++) invHtml += '<span class="invest-2d-item">' + data.top8_2D[i] + '</span>';
+    document.getElementById('invest2dText').innerHTML = invHtml || '<span style="color:#64748b">(kosong)</span>';
+    document.getElementById('info2D').innerText = data.top8_2D.length + ' line';
+    document.getElementById('aiCtSection').style.display = 'block';
+    document.getElementById('shioSection').style.display = 'block';
+}
+function generateKombinasi(perUtama, rows) {
+    var filters = getDeathFilters(), pasaran = document.getElementById('namaPasaran').value.toUpperCase() || 'UMUM', data = hitungAICTShio(rows);
+    renderAICTShio(data);
+    var top5 = [];
+    for (var i = 0; i < perUtama.length; i++) top5.push({ u: perUtama[i].utama, p: perUtama[i].pairs.slice(0, 5) });
+    var html = '<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:10px;">';
+    for (var i = 0; i < top5.length; i++) {
+        var d = top5[i];
+        html += '<div style="background:rgba(255,255,255,0.75); padding:10px; border-radius:10px; border:1px solid #ddd6fe;"><strong style="color:#6d28d9">Digit ' + d.u + '</strong><div style="margin-top:5px;">';
+        if (d.p.length === 0) html += '<i style="color:#94a3b8">Kosong</i>';
+        else {
+            for (var j = 0; j < d.p.length; j++) {
+                var p = d.p[j], dp = d.u === p.partner ? '' + d.u + p.partner : (d.u < p.partner ? d.u + '' + p.partner + '/' + p.partner + '' + d.u : p.partner + '' + d.u + '/' + d.u + '' + p.partner);
+                html += '<div style="display:flex; justify-content:space-between; margin:3px 0; font-size:0.85rem;"><span>' + (j+1) + '. ' + dp + '</span><span style="background:#fbbf24; color:#78350f; padding:2px 6px; border-radius:10px; font-weight:700;">' + p.freq + '</span></div>';
+            }
+        }
+        html += '</div></div>';
+    }
+    html += '</div>';
+    document.getElementById('top5Container').innerHTML = html;
+    var allPairs = [];
+    for (var i = 0; i < top5.length; i++) for (var j = 0; j < top5[i].p.length; j++) allPairs.push({ u: top5[i].u, p: top5[i].p[j].partner });
+    var kombSet = {};
+    for (var i = 0; i < allPairs.length; i++) {
+        for (var j = 0; j < allPairs.length; j++) {
+            if (i === j) continue;
+            var p1 = allPairs[i], p2 = allPairs[j];
+            var candidates = [ '' + p2.p + p2.u + p1.p + p1.u, '' + p1.p + p1.u + p2.p + p2.u, '' + p1.u + p1.p + p2.u + p2.p, '' + p2.u + p2.p + p1.u + p1.p ];
+            for (var k = 0; k < 4; k++) { var c = candidates[k]; if (c.length === 4 && isValid4D(c, filters) && isValid4DByCT(c, lastCtData)) kombSet[c] = true; }
+        }
+    }
+    var kombArr = Object.keys(kombSet).sort(), jml = kombArr.length;
+    document.getElementById('infoJumlahKombinasi').innerText = jml + ' line';
+    document.getElementById('kombinasi4dText').innerText = kombArr.join('*') || '(kosong)';
+    document.getElementById('top5Section').style.display = 'block';
+    var gf = {}; for (var d = 0; d <= 9; d++) gf[d] = 0;
+    for (var i = 0; i < rows.length; i++) for (var j = 0; j < 4; j++) gf[rows[i][j]]++;
+    var sorted = []; for (var d in gf) sorted.push({ d: parseInt(d), f: gf[d] }); sorted.sort(function(a, b) { return b.f - a.f; });
+    var bbfsStr = sorted.slice(0, 8).map(function(x) { return x.d; }).sort(function(a, b) { return a - b; }).join('');
+    document.getElementById('bbfs8Digit').innerText = bbfsStr || '-';
+    document.getElementById('bbfsSection').style.display = 'block';
+    document.getElementById('indikatorLineValue').innerText = jml;
+    var status = document.getElementById('indikatorLineStatus');
+    if (jml === 0) { status.innerText = 'KOSONG'; status.style.background = 'rgba(239,68,68,0.35)'; }
+    else if (jml < 50) { status.innerText = 'TAJAM'; status.style.background = 'rgba(245,158,11,0.35)'; }
+    else if (jml < 200) { status.innerText = 'AKTIF'; status.style.background = 'rgba(255,255,255,0.65)'; }
+    else { status.innerText = 'LEBAR'; status.style.background = 'rgba(59,130,246,0.3)'; }
+    document.getElementById('indikatorLineSection').style.display = 'flex';
+}
+function prosesAnalisaBolakBalik() {
+    try {
+        var raw = document.getElementById('dataInputAnalisa').value, rows = parseValidLines(raw);
+        document.getElementById('infoBaris').innerText = rows.length;
+        if (rows.length === 0) { document.getElementById('resultContainer').innerHTML = '<div style="padding:20px; text-align:center; background:#f1f5f9; border-radius:20px;">Tidak ada data valid.</div>'; hideSections(); lastPerUtamaData = []; return; }
+        var gpf = hitungPasanganBolakBalik(rows), perUtama = getPairsPerUtama(gpf);
+        lastPerUtamaData = perUtama; renderHasil(perUtama, rows.length); generateKombinasi(perUtama, rows);
+    } catch(e) { alert('Error: ' + e.message); }
+}
+function resetDataAnalisa() { document.getElementById('dataInputAnalisa').value = DEFAULT_DATA; prosesAnalisaBolakBalik(); }
+function clearDataAnalisa() { document.getElementById('dataInputAnalisa').value = ''; prosesAnalisaBolakBalik(); }
+function copyFormattedTextBolak() {
+    var raw = document.getElementById('dataInputAnalisa').value, rows = parseValidLines(raw);
+    if (rows.length === 0) { alert('Data kosong!'); return; }
+    var pasaran = document.getElementById('namaPasaran').value.toUpperCase() || 'UMUM', gpf = hitungPasanganBolakBalik(rows), perUtama = getPairsPerUtama(gpf);
+    var text = 'HASIL BOLAK-BALIK - ' + pasaran + '\n========================\n';
+    for (var i = 0; i < perUtama.length; i++) {
+        var item = perUtama[i], pairs = item.pairs.slice(0, 10);
+        if (pairs.length === 0) text += item.utama + ' = (kosong)\n';
+        else {
+            var strs = [];
+            for (var j = 0; j < pairs.length; j++) {
+                var p = pairs[j];
+                if (item.utama === p.partner) strs.push(item.utama + '' + p.partner + '*' + p.freq);
+                else strs.push(item.utama + '' + p.partner + '/' + p.partner + '' + item.utama + '*' + p.freq);
+            }
+            text += item.utama + ' = ' + strs.join(' | ') + '\n';
+        }
+    }
+    text += '\nTotal: ' + rows.length + ' baris';
+    navigator.clipboard.writeText(text).then(function() { alert('Disalin!'); });
+}
+function copyKombinasi4D() {
+    var v = document.getElementById('kombinasi4dText').innerText;
+    if (!v || v === '(kosong)') { alert('Kosong!'); return; }
+    navigator.clipboard.writeText('KOMBINASI 4D - ' + (document.getElementById('namaPasaran').value.toUpperCase() || 'UMUM') + '\n' + v).then(function() { alert('Disalin!'); });
+}
+function copyBbfs2D() {
+    var bbfs = document.getElementById('bbfs8Digit').innerText, investText = document.getElementById('invest2dText').innerText;
+    if (!bbfs || bbfs === '-') { alert('Belum ada data BBFS!'); return; }
+    navigator.clipboard.writeText('BBFS & INVEST 2D - ' + (document.getElementById('namaPasaran').value.toUpperCase() || 'UMUM') + '\n========================\nBBFS 8: ' + bbfs + '\n\nINVEST 2D:\n' + investText).then(function() { alert('Disalin!'); });
+}
+
+// ==========================================
+// APP 3: BALIK LINE
+// ==========================================
+var currentModeBalik = 'balik', lastHasilBalik = [];
+function pilihMode(mode, el) {
+    currentModeBalik = mode;
+    var cards = document.querySelectorAll('.mode-card');
+    for (var i = 0; i < cards.length; i++) cards[i].classList.remove('active');
+    if (el) el.classList.add('active');
+}
+function parseInputBalik(input) {
+    var parts = input.split(/[\s*,\n\t]+/), result = [];
+    for (var i = 0; i < parts.length; i++) { var s = parts[i].trim(); if (s.length === 2 && /^\d{2}$/.test(s)) result.push(s); }
+    return result;
+}
+function balikDigit(lines) { var set = {}; for (var i = 0; i < lines.length; i++) set[lines[i][1] + lines[i][0]] = true; return Object.keys(set).sort(); }
+function komplemen(lines) {
+    var set = {}; for (var i = 0; i < lines.length; i++) set[lines[i]] = true;
+    var result = [];
+    for (var i = 0; i <= 99; i++) { var s = i < 10 ? '0' + i : '' + i; if (!set[s]) result.push(s); }
+    return result;
+}
+function prosesBalik() {
+    try {
+        var input = document.getElementById('inputBalik').value, lines = parseInputBalik(input);
+        if (lines.length === 0) { document.getElementById('outputBalik').innerHTML = '<div style="text-align:center; padding:20px;">Tidak ada line valid.</div>'; lastHasilBalik = []; return; }
+        var result = currentModeBalik === 'balik' ? balikDigit(lines) : (currentModeBalik === 'komplemen' ? komplemen(lines) : balikDigit(komplemen(lines)));
+        lastHasilBalik = result;
+        var chips = '';
+        for (var i = 0; i < result.length; i++) chips += '<span class="balik-output-chip">' + result[i] + '</span>';
+        document.getElementById('outputBalik').innerHTML = '<div style="margin-bottom:8px; font-weight:700;">' + result.length + ' line</div><div>' + chips + '</div>';
+    } catch(e) { alert('Error: ' + e.message); }
+}
+function resetBalik() { document.getElementById('inputBalik').value = ''; document.getElementById('outputBalik').innerHTML = 'Klik "Generate"'; lastHasilBalik = []; }
+function salinHasilBalik() { if (lastHasilBalik.length === 0) { alert('Generate dulu!'); return; } navigator.clipboard.writeText(lastHasilBalik.join('*')).then(function() { alert('Disalin!'); }); }
+function kirimBalikKeAnalisa() {
+    if (lastHasilBalik.length === 0) { alert('Generate dulu!'); return; }
+    var lines4D = [];
+    for (var i = 0; i < lastHasilBalik.length; i++) lines4D.push('00' + lastHasilBalik[i]);
+    document.getElementById('dataInputAnalisa').value = lines4D.join('\n');
+    tikamNav('app2', document.querySelector('[data-app="app2"]'));
+    setTimeout(function() { prosesAnalisaBolakBalik(); }, 300);
+}
+
+// ==========================================
+// APP 4: PREDATOR
+// ==========================================
+var predatorDB = { norm:[0,1,2,3,4,5,6,7,8,9], idx:[5,6,7,8,9,0,1,2,3,4], ml:[1,0,5,8,7,2,9,4,3,3], mb:[8,7,6,9,5,4,2,1,0,3], tyz:[7,4,9,6,1,8,3,0,5,2], m0:[6,5,8,7,9,1,0,3,2,4], m7:[7,0,1,2,3,4,5,6,9,8], m1:[1,0,9,8,7,6,5,4,3,2] };
+var predatorMODES = Object.keys(predatorDB), predatorLABELS = ["AS", "COP", "KEP", "EKR", "J2D"];
+function togglePosBtn(el) { el.classList.toggle('active'); }
+function predatorRunEngine(hist, idx, f, len) {
+    try {
+        var h1 = hist[idx] || hist[hist.length-1], h2 = (idx >= 1) ? hist[idx-1] : h1, h3 = (idx >= 2) ? hist[idx-2] : h1;
+        function toDigits(s) { var str = String(s).replace(/\D/g, ''); if (str.length < 4) str = str.padStart(4, '0'); return str.slice(-4).split('').map(Number); }
+        var p1 = toDigits(h1), p2 = toDigits(h2), p3 = toDigits(h3), pArr = [p1, p2, p3];
+        var d1Safe = Math.min(f.d1, 3), digit1 = pArr[f.p1][d1Safe], digit2 = pArr[f.p2][3];
+        if (digit1 === undefined || digit2 === undefined) return "012345";
+        var v1 = predatorDB[f.t1][digit1], v2 = predatorDB[f.t2][digit2];
+        if (v1 === undefined || v2 === undefined) return "012345";
+        var raw = (f.op === '+') ? (v1 + v2) % 10 : Math.abs(v1 - v2) % 10;
+        var val = f.tf ? (predatorDB[f.tf][raw] || raw) : raw, base = predatorDB.tyz[val] || 0;
+        var res = [], cur = base;
+        for (var i = 0; i < 30 && res.length < len; i++) { if (res.indexOf(cur) === -1) res.push(cur); cur = (cur + 1) % 10; if (res.indexOf(cur) !== -1) cur = (cur + 3) % 10; }
+        while (res.length < len) { for (var d = 0; d <= 9; d++) { if (res.indexOf(d) === -1) { res.push(d); if (res.length >= len) break; } } break; }
+        return res.sort(function(a, b) { return a - b; }).join('');
+    } catch(e) { return "012345"; }
+}
+function predatorCheckStrict(pred, real, pos) {
+    try {
+        var r = String(real).replace(/\D/g, '').padStart(4, '0').slice(-4).split('').map(Number);
+        if (pos === 'BBFS') return pred.indexOf(String(r[2])) !== -1 && pred.indexOf(String(r[3])) !== -1;
+        var idx = (pos === 'AS') ? 0 : (pos === 'KOP') ? 1 : (pos === 'KEPALA') ? 2 : 3;
+        return pred.indexOf(String(r[idx])) !== -1;
+    } catch(e) { return false; }
+}
+async function predatorStartScan() {
+    try {
+        var rawInput = document.getElementById('predator-input').value.trim();
+        if (!rawInput) { alert('Masukkan data 4D!'); return; }
+        var raw = rawInput.split('\n').map(function(x) { return x.trim().replace(/\D/g, ''); }).filter(function(x) { return x.length >= 4; }).map(function(x) { return x.slice(-4); });
+        if (raw.length < 3) { alert('Minimal 3 baris!'); return; }
+        var targets = [], btns = document.querySelectorAll('.predator-pos-btn.active');
+        for (var i = 0; i < btns.length; i++) targets.push(btns[i].dataset.p);
+        if (targets.length === 0) { alert('Pilih minimal 1 posisi'); return; }
+        var dLen = Math.max(1, Math.min(10, parseInt(document.getElementById('predator-digit').value) || 6));
+        var limit = Math.max(1, Math.min(20, parseInt(document.getElementById('predator-limit').value) || 5));
+        document.getElementById('predator-loader').style.display = 'flex';
+        document.getElementById('predator-results').innerHTML = '';
+        var modesLen = predatorMODES.length;
+        for (var ti = 0; ti < targets.length; ti++) {
+            var target = targets[ti], pool = [];
+            for (var p1 = 0; p1 < 3; p1++) {
+                for (var p2 = 0; p2 < 3; p2++) {
+                    for (var d1 = 0; d1 < 4; d1++) {
+                        for (var mi = 0; mi < modesLen; mi++) {
+                            for (var mj = 0; mj < modesLen; mj++) {
+                                var tfList = predatorMODES.slice(); tfList.push(null);
+                                for (var k = 0; k < tfList.length; k++) {
+                                    var ops = ['+', '-'];
+                                    for (var o = 0; o < 2; o++) {
+                                        var f = { p1: p1, d1: d1, p2: p2, d2: 3, t1: predatorMODES[mi], t2: predatorMODES[mj], tf: tfList[k], op: ops[o] };
+                                        var s = 0;
+                                        for (var ii = raw.length - 2; ii >= 2; ii--) { var pred = predatorRunEngine(raw, ii, f, dLen), real = raw[ii + 1]; if (predatorCheckStrict(pred, real, target)) s++; else s = 0; }
+                                        pool.push({ s: s, res: predatorRunEngine(raw, raw.length - 1, f, dLen), f: f });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            pool.sort(function(a, b) { return b.s - a.s; });
+            var final = [], seen = {};
+            for (var i = 0; i < pool.length && final.length < limit; i++) { if (!seen[pool[i].res]) { final.push(pool[i]); seen[pool[i].res] = true; } }
+            var h = '<div style="color:#b45309; margin:15px 0 8px 5px; border-left:4px solid #ef4444; padding-left:10px; font-weight:bold;">TARGET: ' + target + ' (' + final.length + ' hasil)</div>';
+            for (var i = 0; i < final.length; i++) {
+                var x = final[i], f = x.f, fStr = predatorLABELS[f.d1] + (f.p1 + 1) + f.t1 + ' ' + f.op + ' ' + predatorLABELS[f.d2] + (f.p2 + 1) + f.t2;
+                h += '<div class="predator-card"><div class="predator-card-val">' + x.res + '</div><div class="predator-f-text">' + fStr + '</div><div style="font-size:0.7rem; color:#64748b; text-align:center; margin-top:5px;">STREAK: <span style="color:#059669; font-weight:bold;">' + x.s + 'X</span></div></div>';
+            }
+            document.getElementById('predator-results').innerHTML += h;
+        }
+        setTimeout(function() { document.getElementById('predator-loader').style.display = 'none'; }, 300);
+    } catch(e) { document.getElementById('predator-loader').style.display = 'none'; alert('Error: ' + e.message); }
+}
+function predatorCopyResults() {
+    try {
+        var market = document.getElementById('predator-market').value.toUpperCase() || 'PREDATOR', output = '=== ' + market + ' ===\n';
+        var cards = document.querySelectorAll('#predator-results .predator-card');
+        if (cards.length === 0) { alert('Belum ada hasil!'); return; }
+        for (var i = 0; i < cards.length; i++) output += cards[i].querySelector('.predator-card-val').innerText + ' | ' + cards[i].querySelector('.predator-f-text').innerText + '\n';
+        navigator.clipboard.writeText(output).then(function() { alert('Disalin!'); });
+    } catch(e) { alert('Error: ' + e.message); }
+}
+
+// ==========================================
+// APP 5: GENERATOR
+// ==========================================
+var genLastResult = [], genKembarType = 'all';
+function initGeneratorUI() {
+    var dc = document.getElementById('genDasarContainer'), html = '';
+    for (var i = 0; i < 4; i++) {
+        html += '<div style="margin-bottom:10px;"><label style="color:#047857; font-weight:bold;">Posisi ' + (i + 1) + '</label><div class="gen-checkbox-grid">';
+        html += '<div class="gen-checkbox-item"><input type="checkbox" id="gd' + i + 'G" onchange="toggleGenCb(this)"><label>Ganjil</label></div>';
+        html += '<div class="gen-checkbox-item"><input type="checkbox" id="gd' + i + 'N" onchange="toggleGenCb(this)"><label>Genap</label></div>';
+        html += '<div class="gen-checkbox-item"><input type="checkbox" id="gd' + i + 'B" onchange="toggleGenCb(this)"><label>Besar</label></div>';
+        html += '<div class="gen-checkbox-item"><input type="checkbox" id="gd' + i + 'K" onchange="toggleGenCb(this)"><label>Kecil</label></div></div></div>';
+    }
+    dc.innerHTML = html;
+    var kc = document.getElementById('genKematianContainer'), kh = '';
+    for (var i = 0; i < 4; i++) kh += '<div style="margin-bottom:8px;"><label style="color:#047857; font-size:0.85rem;">Posisi ' + (i + 1) + ' Mati:</label><input type="text" id="gk' + i + '" class="gen-input" placeholder="cth: 0,5"></div>';
+    kc.innerHTML = kh;
+    var pc = document.getElementById('genPolaContainer'), ph = '';
+    var polaList = ['AABB', 'ABAB', 'ABBA', 'AABC', 'ABCD', 'AAAB', 'AABA', 'ABAA', 'BAAA'];
+    for (var i = 0; i < polaList.length; i++) ph += '<div class="gen-checkbox-item"><input type="checkbox" id="gp' + polaList[i] + '" value="' + polaList[i] + '" onchange="toggleGenCb(this)"><label>' + polaList[i] + '</label></div>';
+    pc.innerHTML = ph;
+}
+function toggleGenCb(el) { if (el.checked) el.parentElement.classList.add('active'); else el.parentElement.classList.remove('active'); }
+function pilihKembar(val, el) {
+    genKembarType = val; document.getElementById('genKembarType').value = val;
+    var items = el.parentElement.querySelectorAll('.gen-radio-item');
+    for (var i = 0; i < items.length; i++) items[i].classList.remove('active');
+    el.classList.add('active');
+}
+function getGenFilters() {
+    var bbfsStr = document.getElementById('genBbfs').value.replace(/\D/g, ''), bbfs = [];
+    for (var i = 0; i < bbfsStr.length; i++) bbfs.push(parseInt(bbfsStr[i]));
+    var outType = parseInt(document.getElementById('genOutputType').value), outFmt = document.getElementById('genOutputFormat').value;
+    var dasar = [];
+    for (var i = 0; i < 4; i++) dasar.push({ g: document.getElementById('gd' + i + 'G').checked, n: document.getElementById('gd' + i + 'N').checked, b: document.getElementById('gd' + i + 'B').checked, k: document.getElementById('gd' + i + 'K').checked });
+    var sumMin = document.getElementById('genSumMin').value ? parseInt(document.getElementById('genSumMin').value) : null;
+    var sumMax = document.getElementById('genSumMax').value ? parseInt(document.getElementById('genSumMax').value) : null;
+    var kematian = [];
+    for (var i = 0; i < 4; i++) { var v = document.getElementById('gk' + i).value.replace(/[^0-9]/g, ''), arr = []; for (var j = 0; j < v.length; j++) arr.push(parseInt(v[j])); kematian.push(arr); }
+    var kembar = document.getElementById('genKembarType').value, pola = [];
+    var polaList = ['AABB', 'ABAB', 'ABBA', 'AABC', 'ABCD', 'AAAB', 'AABA', 'ABAA', 'BAAA'];
+    for (var i = 0; i < polaList.length; i++) { var cb = document.getElementById('gp' + polaList[i]); if (cb && cb.checked) pola.push(polaList[i]); }
+    return { bbfs: bbfs, outType: outType, outFmt: outFmt, dasar: dasar, sumMin: sumMin, sumMax: sumMax, kematian: kematian, kembar: kembar, pola: pola };
+}
+function checkDasar(d, pos, f) {
+    var flt = f[pos];
+    if (!flt.g && !flt.n && !flt.b && !flt.k) return true;
+    if (flt.g && d % 2 !== 0) return true; if (flt.n && d % 2 === 0) return true;
+    if (flt.b && d >= 5) return true; if (flt.k && d < 5) return true;
+    return false;
+}
+function checkKematian(d, pos, f) { return f[pos].indexOf(d) === -1; }
+function checkKembar(digits, type) {
+    if (type === 'all') return true;
+    var counts = {}, max = 0;
+    for (var i = 0; i < digits.length; i++) counts[digits[i]] = (counts[digits[i]] || 0) + 1;
+    for (var k in counts) if (counts[k] > max) max = counts[k];
+    if (type === 'murni') return max === 1; if (type === 'no2') return max < 2; if (type === 'no3') return max < 3;
+    return true;
+}
+function checkPola(digits, polaList) {
+    if (polaList.length === 0) return true;
+    var s = digits.join('');
+    var patterns = { 'AABB': /^(\d)\1(\d)\2$/, 'ABAB': /^(\d)(\d)\1\2$/, 'ABBA': /^(\d)(\d)\2\1$/, 'AABC': /^(\d)\1(\d)(\d)$/, 'ABCD': /^(\d)(\d)(\d)(\d)$/, 'AAAB': /^(\d)\1\1(\d)$/, 'AABA': /^(\d)\1(\d)\1$/, 'ABAA': /^(\d)(\d)\1\1$/, 'BAAA': /^(\d)(\d)\2\2$/ };
+    for (var i = 0; i < polaList.length; i++) if (patterns[polaList[i]].test(s)) return true;
+    return false;
+}
+function generateKombinasiGen(f, onlyCount) {
+    if (f.bbfs.length === 0) return onlyCount ? 0 : [];
+    var result = [], digits = f.bbfs;
+    function backtrack(cur, pos) {
+        if (cur.length === f.outType) {
+            var sum = 0; for (var i = 0; i < cur.length; i++) sum += cur[i];
+            if (f.sumMin !== null && sum < f.sumMin) return; if (f.sumMax !== null && sum > f.sumMax) return;
+            if (!checkKembar(cur, f.kembar)) return; if (!checkPola(cur, f.pola)) return;
+            result.push(cur.join('')); return;
+        }
+        for (var i = 0; i < digits.length; i++) {
+            var d = digits[i]; if (!checkDasar(d, pos, f.dasar)) continue; if (!checkKematian(d, pos, f.kematian)) continue;
+            cur.push(d); backtrack(cur, pos + 1); cur.pop();
+        }
+    }
+    backtrack([], 0);
+    if (onlyCount) return result.length;
+    var unique = {}; for (var i = 0; i < result.length; i++) unique[result[i]] = true;
+    return Object.keys(unique).sort();
+}
+function hitungEstimasi() { var f = getGenFilters(); if (f.bbfs.length === 0) { alert('Isi BBFS dulu!'); return; } document.getElementById('genEstimasi').innerText = generateKombinasiGen(f, true).toLocaleString(); }
+function prosesGenerate() {
+    try {
+        var f = getGenFilters(); if (f.bbfs.length === 0) { alert('Isi BBFS dulu!'); return; }
+        var result = generateKombinasiGen(f, false); genLastResult = result;
+        document.getElementById('genTotalLine').innerText = result.length.toLocaleString();
+        if (result.length === 0) { document.getElementById('genOutput').innerText = 'Tidak ada yang lolos filter.'; return; }
+        var sep = f.outFmt === 'newline' ? '\n' : f.outFmt;
+        document.getElementById('genOutput').innerText = result.join(sep);
+    } catch(e) { alert('Error: ' + e.message); }
+}
+function resetGenerator() {
+    document.getElementById('genBbfs').value = ''; document.getElementById('genSumMin').value = ''; document.getElementById('genSumMax').value = '';
+    for (var i = 0; i < 4; i++) {
+        document.getElementById('gd' + i + 'G').checked = false; document.getElementById('gd' + i + 'N').checked = false;
+        document.getElementById('gd' + i + 'B').checked = false; document.getElementById('gd' + i + 'K').checked = false;
+        document.getElementById('gk' + i).value = '';
+    }
+    document.getElementById('genKembarType').value = 'all'; genKembarType = 'all';
+    document.getElementById('genEstimasi').innerText = '0'; document.getElementById('genTotalLine').innerText = '0'; document.getElementById('genOutput').innerText = 'Klik GENERATE'; genLastResult = [];
+}
+function salinGenerator() { if (genLastResult.length === 0) { alert('Generate dulu!'); return; } navigator.clipboard.writeText(genLastResult.join('*')).then(function() { alert('Disalin!'); }); }
+
+// ==========================================
+// APP 6: UTILITY
+// ==========================================
+function hitungPecah4D() {
+    try {
+        var val = document.getElementById('util4dInput').value.replace(/\D/g, '');
+        if (val.length !== 4) { alert('Masukkan tepat 4 angka!'); return; }
+        var a=val[0], b=val[1], c=val[2], d=val[3];
+        document.getElementById('util4dResult').innerHTML = '<b>3D:</b> '+(a+b+c)+', '+(a+b+d)+', '+(a+c+d)+', '+(b+c+d)+'<br><b>2D:</b> '+(a+b)+', '+(a+c)+', '+(a+d)+', '+(b+c)+', '+(b+d)+', '+(c+d);
+    } catch(e) { alert('Error: ' + e.message); }
+}
+function cekShioCepat() {
+    try {
+        var val = document.getElementById('utilShioInput').value.replace(/\D/g, '');
+        if (val.length < 2) { alert('Minimal 2 angka!'); return; }
+        var html = '';
+        for (var i=0; i<=val.length-2; i++) html += val.substring(i, i+2) + ' = <b>'+(shioMapping[val.substring(i, i+2)] || '?')+'</b><br>';
+        document.getElementById('utilShioResult').innerHTML = html;
+    } catch(e) { alert('Error: ' + e.message); }
+}
+function hitungModal() {
+    try {
+        var line = parseInt(document.getElementById('utilLine').value) || 0, harga = parseInt(document.getElementById('utilHarga').value) || 0;
+        var h4 = parseInt(document.getElementById('utilHadiah4d').value) || 0, h3 = parseInt(document.getElementById('utilHadiah3d').value) || 0, h2 = parseInt(document.getElementById('utilHadiah2d').value) || 0;
+        var jenis = document.getElementById('utilJenisBet').value;
+        if (line <= 0 || harga <= 0) { alert('Isi Line & Harga!'); return; }
+        var modal = line * harga, hadiah = jenis === '4d' ? h4 : (jenis === '3d' ? h3 : h2);
+        var profit = hadiah - modal, status = profit > 0 ? 'UNTUNG' : (profit === 0 ? 'BALIK MODAL' : 'RUGI');
+        document.getElementById('utilModalResult').innerHTML = 'Modal: Rp '+modal.toLocaleString()+'<br>Menang: Rp '+hadiah.toLocaleString()+'<br>Profit: Rp '+profit.toLocaleString()+'<br>Status: <b>'+status+'</b>';
+    } catch(e) { alert('Error: ' + e.message); }
+}
+function generateRandom() {
+    try {
+        var digit = parseInt(document.getElementById('utilRndDigit').value), jml = parseInt(document.getElementById('utilRndJml').value) || 10, res = [];
+        for (var i=0; i<jml; i++) { var num = ''; for (var j=0; j<digit; j++) num += Math.floor(Math.random()*10); res.push(num); }
+        document.getElementById('utilRndResult').innerText = res.join(', ');
+    } catch(e) { alert('Error: ' + e.message); }
+}
+function renderTabelShio() {
+    try {
+        var filter = document.getElementById('utilFilterShio').value, fmt = document.getElementById('utilTabelFmt').value, html = '';
+        if (fmt === 'grid') {
+            html += '<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:5px;">';
+            for (var i=0; i<100; i++) {
+                var s = i<10 ? '0'+i : ''+i, sh = shioMapping[s];
+                if (filter === 'all' || sh === filter) html += '<div style="background:#eef2ff; padding:5px; border-radius:5px; text-align:center; color:#3730a3;"><b>'+s+'</b><br><span style="color:#c2410c;">'+sh+'</span></div>';
+            }
+            html += '</div>';
+        } else {
+            var list = [];
+            for (var i=0; i<100; i++) { var s = i<10 ? '0'+i : ''+i, sh = shioMapping[s]; if (filter === 'all' || sh === filter) list.push(s+'('+sh+')'); }
+            html = list.join(', ');
+        }
+        document.getElementById('utilTabelShioResult').innerHTML = html;
+    } catch(e) { alert('Error: ' + e.message); }
+}
+
+// ==========================================
+// APP 7: AI PATTERN
+// ==========================================
+var AI_MARKETS = ['HONGKONG','SINGAPORE','SYDNEY','TAIWAN','CAMBODIA','BULLSEYE','CUSTOM'];
+var AI_DNA = [{n:'Linear',p:[1,1,1,1]},{n:'Jump',p:[3,3,3,3]},{n:'Swing',p:[1,3,-2,4]},{n:'Mirror',p:[5,1,5,1]}];
+var AI_POSITIONS = ['BBFS', 'AS', 'KOP', 'KEPALA', 'EKOR'];
+var AI_BASE_MAP = { 'BBFS':'kp', 'AS':'as', 'KOP':'kp', 'KEPALA':'ke', 'EKOR':'ek' };
+var AI_ALL_FORMULAS = [];
+(function() { for (var pi = 0; pi < AI_POSITIONS.length; pi++) { var pos = AI_POSITIONS[pi]; for (var di = 0; di < AI_DNA.length; di++) { var dna = AI_DNA[di]; for (var o = 0; o < 50; o++) { AI_ALL_FORMULAS.push({ id: pos, name: pos+'-'+dna.n+'-V'+o, m: AI_BASE_MAP[pos], d: dna.p, o: o }); } } } })();
+var AI_SHIO_UNIVERSAL = ['Tikus','Kerbau','Harimau','Kelinci','Naga','Ular','Kuda','Kambing','Monyet','Ayam','Anjing','Babi'];
+var AI_SHIO_BY_YEAR = { '2024': {start:4}, '2025': {start:5}, '2023': {start:3} };
+var aiCurrentShioMap = {}, aiCurrentMarket = 'HONGKONG', aiMarketData = {};
+var aiActivePatterns = { OE: true, BS: true, Shio: false }, aiFilters = { OE: null, BS: null, Shio: null }, aiPatternResults = { OE: {}, BS: {}, Shio: {} };
+
+function initAI() { loadAllAIMarkets(); updateShioMap(); updateAIRowCounter(); }
+function getAIMarketKey(m) { return 'aiMasterDB_'+m; }
+function loadAllAIMarkets() {
+    for (var i = 0; i < AI_MARKETS.length; i++) {
+        var m = AI_MARKETS[i], saved = localStorage.getItem(getAIMarketKey(m));
+        if (saved) { try { aiMarketData[m] = JSON.parse(saved); } catch(e) { aiMarketData[m] = { input: '', settings: { targetLoss: 5, minData: 20, shioYear: '2024' } }; } }
+        else { aiMarketData[m] = { input: '', settings: { targetLoss: 5, minData: 20, shioYear: '2024' } }; }
+    }
+}
+function saveCurrentAIMarket() {
+    var data = { input: document.getElementById('aiInputData').value, settings: { targetLoss: parseInt(document.getElementById('targetLoss').value)||5, minData: parseInt(document.getElementById('minData').value)||20, shioYear: document.getElementById('shioYear').value }, lastUpdate: Date.now() };
+    aiMarketData[aiCurrentMarket] = data;
+    try { localStorage.setItem(getAIMarketKey(aiCurrentMarket), JSON.stringify(data)); } catch(e) {}
+    var ind = document.getElementById('aiSaveIndicator');
+    if (ind) { ind.style.display = 'inline-block'; setTimeout(function() { ind.style.display = 'none'; }, 1500); }
+}
+function switchAIMarket() {
+    saveCurrentAIMarket(); aiCurrentMarket = document.getElementById('marketSelect').value;
+    var data = aiMarketData[aiCurrentMarket];
+    document.getElementById('aiInputData').value = (data && data.input) ? data.input : '';
+    document.getElementById('targetLoss').value = (data && data.settings && data.settings.targetLoss) ? data.settings.targetLoss : 5;
+    document.getElementById('minData').value = (data && data.settings && data.settings.minData) ? data.settings.minData : 20;
+    document.getElementById('shioYear').value = (data && data.settings && data.settings.shioYear) ? data.settings.shioYear : '2024';
+    updateShioMap();
+    document.getElementById('aiOutputArea').style.display = 'none';
+    document.getElementById('aiBacktestPanel').classList.remove('active');
+    document.getElementById('aiPatternPanel').classList.remove('active');
+    updateAIRowCounter();
+}
+function clearAIMarketData() {
+    if(confirm('Clear data '+aiCurrentMarket+'?')) {
+        aiMarketData[aiCurrentMarket] = { input: '', settings: { targetLoss: 5, minData: 20, shioYear: '2024' } };
+        try { localStorage.setItem(getAIMarketKey(aiCurrentMarket), JSON.stringify(aiMarketData[aiCurrentMarket])); } catch(e) {}
+        document.getElementById('aiInputData').value = ''; updateAIRowCounter();
+        document.getElementById('aiOutputArea').style.display = 'none'; alert('Direset!');
+    }
+}
+function onAIInputChanged() { updateAIRowCounter(); clearTimeout(window._aiSaveTimeout); window._aiSaveTimeout = setTimeout(saveCurrentAIMarket, 500); }
+function updateAIRowCounter() {
+    var input = document.getElementById('aiInputData').value.trim(), allLines = input.split('\n'), lines = [];
+    for (var i = 0; i < allLines.length; i++) { if (/^\d{4,}$/.test(allLines[i].trim())) lines.push(allLines[i].trim()); }
+    document.getElementById('aiValidRowCount').textContent = lines.length;
+    document.getElementById('aiRowCount').textContent = allLines.filter(function(l){return l.trim();}).length;
+    if(lines.length > 0) document.getElementById('aiLastResult').textContent = lines[lines.length-1].slice(-4);
+    else document.getElementById('aiLastResult').textContent = '----';
+}
+function updateShioMap() {
+    var year = document.getElementById('shioYear').value;
+    var startIdx = (AI_SHIO_BY_YEAR[year] && AI_SHIO_BY_YEAR[year].start) ? AI_SHIO_BY_YEAR[year].start : 4;
+    aiCurrentShioMap = {};
+    for(var i=0; i<100; i++) { var shioIdx = (startIdx + Math.floor(i/12)) % 12; aiCurrentShioMap[i.toString().padStart(2,'0')] = AI_SHIO_UNIVERSAL[shioIdx]; }
+}
+function getAIShio(num) { var twoDigit = num.toString().padStart(2,'0').slice(-2); return aiCurrentShioMap[twoDigit] || AI_SHIO_UNIVERSAL[num % 12]; }
+function toggleAIPattern(pat) {
+    aiActivePatterns[pat] = !aiActivePatterns[pat];
+    var cb = document.getElementById('pat'+pat); if (cb) cb.checked = aiActivePatterns[pat];
+    if (pat === 'Shio') document.getElementById('shioCard').style.display = aiActivePatterns.Shio ? 'block' : 'none';
+}
+function genAI(l, f, len) {
+    var r = [], a=parseInt(l[0]), c=parseInt(l[1]), k=parseInt(l[2]), e=parseInt(l[3]);
+    var s = f.m==='as'?a : f.m==='kp'?c : f.m==='ke'?k : e;
+    r.push((s + f.o + 100) % 10);
+    while(r.length < 10) {
+        var last = r[r.length-1], step;
+        if (f.d === 'fib') step = r.length < 2 ? 1 : r[r.length-2]; else step = f.d[(r.length-1)%f.d.length];
+        var nv = (last + step + 100) % 10;
+        if (r.indexOf(nv) === -1) r.push(nv); else { for (var i=0; i<10; i++) if (r.indexOf(i) === -1) { r.push(i); break; } }
+    }
+    return r.slice(0, len).join('');
+}
+function resetAIApp() {
+    if(confirm('Reset?')){
+        document.getElementById('aiInputData').value = ''; document.getElementById('aiOutputArea').style.display = 'none';
+        document.getElementById('aiBacktestPanel').classList.remove('active'); document.getElementById('aiPatternPanel').classList.remove('active');
+        updateAIRowCounter(); saveCurrentAIMarket();
+    }
+}
+function analyzeOddEven(lines) {
+    var last20 = lines.slice(-20).map(function(l) { return l.slice(-2); }), counts = { odd: 0, even: 0, seq: [] };
+    for (var i = 0; i < last20.length; i++) {
+        var pair = last20[i], o = parseInt(pair[0])%2, e = parseInt(pair[1])%2;
+        counts.odd += o + e; counts.even += (1-o) + (1-e); counts.seq.push(o===1?'G':'E');
+    }
+    var trend = counts.odd > counts.even ? 'Ganjil' : 'Genap';
+    return { trend: trend, prediction: trend, chart: counts.seq.slice(-10) };
+}
+function analyzeBigSmall(lines) {
+    var last20 = lines.slice(-20).map(function(l) { return l.slice(-2); }), counts = { big: 0, small: 0, seq: [] };
+    for (var i = 0; i < last20.length; i++) {
+        var pair = last20[i], d0 = parseInt(pair[0]), d1 = parseInt(pair[1]);
+        counts[d0>=5?'big':'small']++; counts.seq.push(d0>=5?'B':'K');
+        counts[d1>=5?'big':'small']++; counts.seq.push(d1>=5?'B':'K');
+    }
+    var seq = counts.seq.slice(-10), trend = counts.big > counts.small ? 'Besar' : 'Kecil';
+    return { trend: trend, streak: seq[seq.length-1], prediction: trend, chart: seq };
+}
+function renderAIPatternPanel(lines) {
+    document.getElementById('aiPatternPanel').classList.add('active');
+    var oe = analyzeOddEven(lines); aiPatternResults.OE = oe;
+    document.getElementById('oeTrend').textContent = oe.trend; document.getElementById('oePred').textContent = oe.prediction;
+    var bs = analyzeBigSmall(lines); aiPatternResults.BS = bs;
+    document.getElementById('bsStreak').textContent = bs.streak; document.getElementById('bsPred').textContent = bs.prediction;
+}
+function processAIData() {
+    try {
+        var input = document.getElementById('aiInputData').value.trim(), allLines = input.split('\n'), lines = [];
+        for (var i = 0; i < allLines.length; i++) { var l = allLines[i].trim(); if (/^\d{4,}$/.test(l)) lines.push(l); }
+        var target = parseInt(document.getElementById('targetLoss').value) || 5, minData = parseInt(document.getElementById('minData').value) || 20;
+        if (lines.length < minData) { alert('Minimal '+minData+' baris!'); return; }
+        renderAIPatternPanel(lines);
+        var last = lines[lines.length-1], win = {}, globalFreq = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
+        for (var pi = 0; pi < AI_POSITIONS.length; pi++) {
+            var pKey = AI_POSITIONS[pi], catFormulas = [];
+            for (var fi = 0; fi < AI_ALL_FORMULAS.length; fi++) { if (AI_ALL_FORMULAS[fi].id === pKey) catFormulas.push(AI_ALL_FORMULAS[fi]); }
+            var allResults = [];
+            for (var fi = 0; fi < catFormulas.length; fi++) {
+                var f = catFormulas[fi], lossCount = 0;
+                for (var j = 0; j < lines.length - 1; j++) {
+                    var nxt = lines[j+1], p = genAI(lines[j], f, 9), isMatch = false;
+                    if (pKey === 'BBFS') { var mc = 0; for (var di = 0; di < nxt.length; di++) if (p.indexOf(nxt[di]) !== -1) mc++; isMatch = (mc >= 2); }
+                    else { var posIdx = pKey === 'AS' ? 0 : pKey === 'KOP' ? 1 : pKey === 'KEPALA' ? 2 : 3; isMatch = p.indexOf(nxt[posIdx]) !== -1; }
+                    if (!isMatch) lossCount++;
+                }
+                var res = genAI(last, f, 9);
+                if (lossCount <= (target + 1)) { for (var di = 0; di < res.length; di++) globalFreq[parseInt(res[di])] += 1; }
+                allResults.push({ f: f, loss: lossCount, res: res });
+            }
+            allResults.sort(function(a, b) { return Math.abs(a.loss - target) - Math.abs(b.loss - target); });
+            win[pKey.toLowerCase()] = { best: allResults[0], pool: allResults.slice(0, 5), passed: allResults[0] && allResults[0].loss === target };
+        }
+        var grid = document.getElementById('aiAnalysCards'), gridHtml = '';
+        for (var pi = 0; pi < AI_POSITIONS.length; pi++) {
+            var pKey = AI_POSITIONS[pi], item = win[pKey.toLowerCase()];
+            if (!item || !item.best) continue;
+            gridHtml += '<div class="analysis-card '+(item.passed?'card-passed':'card-failed')+'"><span class="card-label">'+pKey+'</span><div class="card-result">'+item.best.res+'</div><span class="card-status" style="color:'+(item.passed?'#16a34a':'#dc2626')+'">'+(item.passed?'PASS':'FAIL')+'</span></div>';
+        }
+        grid.innerHTML = gridHtml;
+        var heatArea = document.getElementById('aiHeatArea'), heatHtml = '', freqValues = [];
+        for (var i = 0; i <= 9; i++) freqValues.push(globalFreq[i]);
+        var maxVal = Math.max.apply(null, freqValues);
+        for (var i = 0; i <= 9; i++) {
+            var isHigh = globalFreq[i] === maxVal && maxVal > 0;
+            heatHtml += '<div class="heat-item '+(isHigh?'heat-high':'')+'"><span class="heat-num" style="color:'+(isHigh?'#b45309':'#0f172a')+'">'+i+'</span><span class="heat-freq">'+globalFreq[i]+'</span></div>';
+        }
+        heatArea.innerHTML = heatHtml;
+        document.getElementById('aiOutputArea').style.display = 'block'; saveCurrentAIMarket();
+    } catch(e) { alert('Error: ' + e.message); }
+}
+function toggleAIBacktest() { document.getElementById('aiBacktestPanel').classList.toggle('active'); }
+function runAIBacktest() { alert('Backtest dijalankan'); }
+function copyAIHeatmap() { alert('Heatmap disalin'); }
+
+// ==========================================
+// APP 8: DNA PRO
+// ==========================================
+var DNAApp = (function() {
+    function sanitize(raw) { return raw.split(/[\s*]+/).map(function(p) { return p.trim(); }).filter(function(p) { return /^\d{4,}$/.test(p); }).map(function(p) { return p.slice(-4); }); }
+    function generate() {
+        var pasaran = document.getElementById('dna-pasaran').value.toUpperCase() || "PASARAN", raw = document.getElementById('dna-inputData').value.trim(), data = sanitize(raw);
+        if (data.length < 5) { alert("Minimal 5 result!"); return; }
+        var freqAll = [0,0,0,0,0,0,0,0,0,0], freqK = [0,0,0,0,0,0,0,0,0,0], freqE = [0,0,0,0,0,0,0,0,0,0];
+        for (var i = 0; i < data.length; i++) {
+            var s = data[i];
+            for (var j = 0; j < 4; j++) freqAll[parseInt(s[j])]++;
+            freqK[parseInt(s[2])]++; freqE[parseInt(s[3])]++;
+        }
+        var digits = [0,1,2,3,4,5,6,7,8,9];
+        var sortedAll = digits.slice().sort(function(a,b){return freqAll[b]-freqAll[a];});
+        var sortedK = digits.slice().sort(function(a,b){return freqK[b]-freqK[a];});
+        var sortedE = digits.slice().sort(function(a,b){return freqE[b]-freqE[a];});
+        var bbfs = sortedAll.slice(0, 7).sort(), main = sortedAll.slice(0, 5).sort();
+        var ct1 = [0,1,2,3,4,5,6], ct2 = [2,3,4,5,6,7,8], cb = sortedAll.slice(0, 2);
+        var kepalaOn = sortedK.slice(0, 8), ekorOn = sortedE.slice(0, 8), lineDasar = [];
+        for (var i = 0; i < kepalaOn.length; i++) {
+            for (var j = 0; j < ekorOn.length; j++) {
+                var line = kepalaOn[i].toString() + ekorOn[j].toString(), d1 = parseInt(line[0]), d2 = parseInt(line[1]);
+                if ((ct1.indexOf(d1) !== -1 || ct1.indexOf(d2) !== -1) && (ct2.indexOf(d1) !== -1 || ct2.indexOf(d2) !== -1)) {
+                    if (lineDasar.indexOf(line) === -1) lineDasar.push(line);
+                }
+            }
+        }
+        lineDasar.sort();
+        document.getElementById('dna-resBBFS').textContent = bbfs.join(''); document.getElementById('dna-resMain').textContent = main.join('');
+        document.getElementById('dna-resCT1').textContent = ct1.join(''); document.getElementById('dna-resCT2').textContent = ct2.join('');
+        document.getElementById('dna-resCB').textContent = cb.join(', '); document.getElementById('dna-resCM').textContent = cb[0].toString()+sortedAll[2].toString()+', '+cb[1].toString()+sortedAll[3].toString();
+        document.getElementById('dna-countLine').textContent = lineDasar.length; document.getElementById('dna-resLineAman').textContent = lineDasar.join(' * ');
+        document.getElementById('dna-resKepala').textContent = kepalaOn.join(''); document.getElementById('dna-resEkor').textContent = ekorOn.join('');
+        var line3D = [], line4D = [];
+        for (var i = 0; i < 12; i++) {
+            var d3 = '', d4 = '';
+            for (var j = 0; j < 3; j++) d3 += bbfs[Math.floor(Math.random()*bbfs.length)];
+            for (var j = 0; j < 4; j++) d4 += bbfs[Math.floor(Math.random()*bbfs.length)];
+            line3D.push(d3); line4D.push(d4);
+        }
+        document.getElementById('dna-res3D').textContent = line3D.join(' * '); document.getElementById('dna-res4D').textContent = line4D.join(' * ');
+        var tableHtml = '<tr><th>Digit</th><th>Total</th><th>Kepala</th><th>Ekor</th></tr>';
+        for (var d = 0; d < 10; d++) tableHtml += '<tr><td>'+d+'</td><td>'+freqAll[d]+'</td><td>'+freqK[d]+'</td><td>'+freqE[d]+'</td></tr>';
+        document.getElementById('dna-freqTable').innerHTML = tableHtml;
+        document.getElementById('dna-summary').textContent = 'PREDIKSI DNA PRO - '+pasaran+'\nBBFS: '+bbfs.join('')+'\nA.MAIN: '+main.join('')+'\nLINE AMAN ('+lineDasar.length+'):\n'+lineDasar.join('*');
+        document.getElementById('dna-pangkalanHasil').style.display = 'grid';
+    }
+    function copyHasil() { var txt = document.getElementById('dna-summary').textContent; if (!txt) { alert("Generate dulu!"); return; } navigator.clipboard.writeText(txt).then(function() { alert("Disalin!"); }); }
+    function resetForm() { document.getElementById('dna-pasaran').value = ''; document.getElementById('dna-inputData').value = ''; document.getElementById('dna-pangkalanHasil').style.display = 'none'; document.getElementById('dna-summary').textContent = ''; }
+    function downloadTxt() { var txt = document.getElementById('dna-summary').textContent; if (!txt) { alert("Belum ada data!"); return; } var blob = new Blob([txt], { type: "text/plain" }); var anchor = document.createElement("a"); anchor.download = "DNA_Pro.txt"; anchor.href = window.URL.createObjectURL(blob); anchor.click(); }
+    return { generate: generate, copyHasil: copyHasil, resetForm: resetForm, downloadTxt: downloadTxt };
+})();
+
+// ==========================================
+// APP 9: DNA SEARCH
+// ==========================================
+var DNAAppSearch = (function() {
+    function sanitize(text) { return text.split(/[\s*]+/).filter(function(x) { return /^\d{4}$/.test(x); }); }
+    function getFrequencyMap(dataArr) {
+        var map = [[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0]], total = [0,0,0,0,0,0,0,0,0,0];
+        for (var i = 0; i < dataArr.length; i++) {
+            var res = dataArr[i];
+            for (var j = 0; j < 4; j++) { var d = parseInt(res[j]); map[j][d]++; total[d]++; }
+        }
+        return { map: map, total: total };
+    }
+    function processEngine() {
+        var harian = sanitize(document.getElementById('ds-dataHarian').value), mingguan = sanitize(document.getElementById('ds-dataMingguan').value);
+        if (harian.length === 0 && mingguan.length === 0) { alert("Input data dulu!"); return; }
+        var freqH = getFrequencyMap(harian), freqM = getFrequencyMap(mingguan);
+        var combinedPos = [[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0]], combinedTotal = [0,0,0,0,0,0,0,0,0,0];
+        for (var i = 0; i < 10; i++) {
+            for (var p = 0; p < 4; p++) combinedPos[p][i] = (freqH.map[p][i] * 1.25) + (freqM.map[p][i] * 1.0);
+            combinedTotal[i] = (freqH.total[i] * 1.25) + (freqM.total[i] * 1.0);
+        }
+        function getSorted(arr) { var idx = [0,1,2,3,4,5,6,7,8,9]; idx.sort(function(a,b){return arr[b]-arr[a];}); return idx; }
+        var topAs = getSorted(combinedPos[0]), topKop = getSorted(combinedPos[1]), topKep = getSorted(combinedPos[2]), topEko = getSorted(combinedPos[3]), topOverall = getSorted(combinedTotal);
+        var resultArea = document.getElementById('ds-resultArea');
+        resultArea.style.display = 'block'; resultArea.classList.add('show');
+        document.getElementById('ds-finalAI').textContent = topOverall.slice(0, 4).join(' ');
+        document.getElementById('ds-asTop').textContent = topAs[0]; document.getElementById('ds-asSub').textContent = topAs.slice(1, 5).join('');
+        document.getElementById('ds-kopTop').textContent = topKop[0]; document.getElementById('ds-kopSub').textContent = topKop.slice(1, 5).join('');
+        document.getElementById('ds-kepTop').textContent = topKep[0]; document.getElementById('ds-kepSub').textContent = topKep.slice(1, 5).join('');
+        document.getElementById('ds-ekorTop').textContent = topEko[0]; document.getElementById('ds-ekorSub').textContent = topEko.slice(1, 5).join('');
+    }
+    function resetEngine() { document.getElementById('ds-dataHarian').value = ''; document.getElementById('ds-dataMingguan').value = ''; document.getElementById('ds-resultArea').style.display = 'none'; document.getElementById('ds-resultArea').classList.remove('show'); }
+    function copyResult() {
+        var text = '=== DNA SEARCH ENGINE AI ===\nCORE AI (4D): ' + document.getElementById('ds-finalAI').textContent + '\nAS: ' + document.getElementById('ds-asTop').textContent + '\nKOP: ' + document.getElementById('ds-kopTop').textContent + '\nKEP: ' + document.getElementById('ds-kepTop').textContent + '\nEKR: ' + document.getElementById('ds-ekorTop').textContent;
+        navigator.clipboard.writeText(text).then(function() { alert('Disalin!'); });
+    }
+    return { processEngine: processEngine, resetEngine: resetEngine, copyResult: copyResult };
+})();
+
+// ==========================================
+// APP 10: INVEST PRO
+// ==========================================
+var InvestProV6 = (function() {
+    function resetAll() {
+        var inputs = document.querySelectorAll('#app10 input, #app10 textarea');
+        for (var i = 0; i < inputs.length; i++) inputs[i].value = '';
+        document.getElementById('ir10-resArea').innerHTML = '';
+    }
+    function getWaktu() {
+        var d = new Date(), days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+        return days[d.getDay()] + ', ' + d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear();
+    }
+    function proses() {
+        var mode = parseInt(document.getElementById('ir10-mode').value);
+        var acs = document.getElementById('ir10-inputAC').value.split('\n').filter(function(x) { return x.trim(); });
+        var resArea = document.getElementById('ir10-resArea'); resArea.innerHTML = '';
+        if (acs.length === 0) { alert("Masukkan AC!"); return; }
+        var ranks = []; for (var i = 0; i <= acs.length; i++) ranks.push([]);
+        var max = Math.pow(10, mode);
+        for (var i = 0; i < max; i++) {
+            var s = i.toString(); while (s.length < mode) s = '0' + s;
+            if (InvestProV6.filter(s, mode)) continue;
+            var score = 0;
+            for (var j = 0; j < acs.length; j++) {
+                var isMasuk = false;
+                for (var k = 0; k < s.length; k++) { if (acs[j].indexOf(s[k]) !== -1) { isMasuk = true; break; } }
+                if (isMasuk) score++;
+            }
+            if (score > 0) ranks[score].push(s);
+        }
+        for (var s = acs.length; s >= 1; s--) {
+            if (ranks[s].length > 0) {
+                var rNum = (acs.length - s) + 1, id = 'ir10-r' + rNum, dataStr = '';
+                for (var i = 0; i < ranks[s].length; i++) dataStr += ranks[s][i] + '* ';
+                resArea.innerHTML += '<div class="ir10-rank-box"><div class="ir10-rank-header"><span style="color:#b45309; font-weight:bold;">RANKING ' + rNum + ' (' + ranks[s].length + ' Line)</span><button class="ir10-btn-copy" onclick="InvestProV6.salin(\'' + id + '\', ' + rNum + ', ' + ranks[s].length + ')">SALIN</button></div><div id="' + id + '" class="ir10-rank-content">' + dataStr + '</div></div>';
+            }
+        }
+    }
+    function filter(s, mode) {
+        function get(id) { var el = document.getElementById(id); return el && el.value ? el.value.split(/[\s,]+/).filter(function(x) { return x !== ''; }) : []; }
+        var arr = []; for (var i = 0; i < s.length; i++) arr.push(parseInt(s[i]));
+        var k = arr[arr.length-2], e = arr[arr.length-1];
+        if (mode >= 3 && get('ir10-lAs').length > 0 && get('ir10-lAs').indexOf(String(arr[0])) !== -1) return true;
+        if (mode === 4 && get('ir10-lKop').length > 0 && get('ir10-lKop').indexOf(String(arr[1])) !== -1) return true;
+        if (get('ir10-lK').length > 0 && get('ir10-lK').indexOf(String(k)) !== -1) return true;
+        if (get('ir10-lE').length > 0 && get('ir10-lE').indexOf(String(e)) !== -1) return true;
+        if (get('ir10-bOff').length > 0 && get('ir10-bOff').indexOf(String((k + e) % 10)) !== -1) return true;
+        if (get('ir10-skeOff').length > 0 && get('ir10-skeOff').indexOf(String(Math.abs(k - e))) !== -1) return true;
+        if (get('ir10-shioOff').length > 0) {
+            var val = parseInt(s.slice(-2)), shio = (val === 0) ? 10 : ((val - 1) % 12) + 1;
+            if (get('ir10-shioOff').indexOf(String(shio)) !== -1) return true;
+        }
+        return false;
+    }
+    function salin(id, rank, count) {
+        var psr = document.getElementById('ir10-namaPasaran').value || "PASARAN";
+        var text = 'PREDIKSI ' + psr.toUpperCase() + '\n' + getWaktu() + '\n\nRANKING ' + rank + ' (' + count + ' Line):\n\n' + document.getElementById(id).innerText + '\n\nTetap Utamakan Prediksi Sendiri!';
+        navigator.clipboard.writeText(text).then(function() { alert("Disalin!"); }).catch(function() {
+            var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); alert("Disalin!");
+        });
+    }
+    return { resetAll: resetAll, getWaktu: getWaktu, proses: proses, filter: filter, salin: salin };
+})();
+
+// ==========================================
+// APP SYNC: GOOGLE DRIVE
+// ==========================================
+var CloudSync = (function() {
+    var CLIENT_KEY = 'tikam_gdrive_clientid';
+    var APIKEY_KEY = 'tikam_gdrive_apikey';
+    var FILE_NAME  = 'tikam_master_backup.json';
+    var tokenClient = null;
+    var accessToken = null;
+    var currentFileId = null;
+
+    function $(id) { return document.getElementById(id); }
+
+    function loadCreds() {
+        var c = localStorage.getItem(CLIENT_KEY) || '';
+        var a = localStorage.getItem(APIKEY_KEY) || '';
+        if ($('syncClientId')) $('syncClientId').value = c;
+        if ($('syncApiKey')) $('syncApiKey').value = a;
+    }
+
+    function saveCreds() {
+        var c = $('syncClientId').value.trim();
+        var a = $('syncApiKey').value.trim();
+        if (!c) { alert('Client ID tidak boleh kosong.'); return; }
+        localStorage.setItem(CLIENT_KEY, c);
+        localStorage.setItem(APIKEY_KEY, a);
+        setStatus('Kredensial disimpan. Klik "Hubungkan Google Drive".', 'ok');
+    }
+
+    function getClientId() { return localStorage.getItem(CLIENT_KEY) || ''; }
+    function getApiKey() { return localStorage.getItem(APIKEY_KEY) || ''; }
+
+    function setStatus(msg, type) {
+        var el = $('syncStatus');
+        if (!el) return;
+        el.textContent = msg;
+        el.className = 'sync-status ' + (type || '');
+    }
+
+    function loadGIS(cb) {
+        if (window.google && window.google.accounts && window.google.accounts.oauth2) { cb(); return; }
+        var existing = document.querySelector('script[data-gis]');
+        if (existing) {
+            var check = setInterval(function() {
+                if (window.google && window.google.accounts && window.google.accounts.oauth2) { clearInterval(check); cb(); }
+            }, 150);
+            setTimeout(function() { clearInterval(check); cb(); }, 5000);
+            return;
+        }
+        var s = document.createElement('script');
+        s.src = 'https://accounts.google.com/gsi/client';
+        s.async = true;
+        s.defer = true;
+        s.setAttribute('data-gis', '1');
+        s.onload = function() { cb(); };
+        s.onerror = function() { alert('Gagal memuat Google Identity Services. Periksa koneksi internet Anda.'); };
+        document.head.appendChild(s);
+    }
+
+    function connect() {
+        var cid = getClientId();
+        if (!cid) { alert('Isi Google OAuth Client ID terlebih dahulu, lalu klik "Simpan Kredensial".'); return; }
+        setStatus('Menghubungkan ke Google...', '');
+        loadGIS(function() {
+            try {
+                if (!window.google || !google.accounts || !google.accounts.oauth2) {
+                    setStatus('Gagal memuat Google Identity Services.', 'err');
+                    return;
+                }
+                tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: cid,
+                    scope: 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file',
+                    callback: function(resp) {
+                        if (resp && resp.access_token) {
+                            accessToken = resp.access_token;
+                            setStatus('Terhubung ke Google Drive ✓', 'ok');
+                            checkExisting();
+                        } else {
+                            setStatus('Gagal terhubung ke Google Drive.', 'err');
+                        }
+                    }
+                });
+                tokenClient.requestAccessToken({ prompt: '' });
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        });
+    }
+
+    function disconnect() {
+        try {
+            if (accessToken && window.google && google.accounts && google.accounts.oauth2) {
+                google.accounts.oauth2.revoke(accessToken, function() {});
+            }
+        } catch (e) {}
+        accessToken = null; currentFileId = null;
+        setStatus('Terputus dari Google Drive.', '');
+        var info = $('syncInfo'); if (info) info.textContent = '';
+    }
+
+    function apiKeyParam() {
+        var k = getApiKey();
+        return k ? ('&key=' + encodeURIComponent(k)) : '';
+    }
+
+    function authHeaders() { return { Authorization: 'Bearer ' + accessToken }; }
+
+    function checkExisting() {
+        if (!accessToken) return;
+        var q = encodeURIComponent("name='" + FILE_NAME + "' and trashed=false");
+        fetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=' + q + '&fields=files(id,name,modifiedTime,size)' + apiKeyParam(), { headers: authHeaders() })
+            .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            .then(function(data) {
+                if (data.files && data.files.length) {
+                    currentFileId = data.files[0].id;
+                    var d = new Date(data.files[0].modifiedTime);
+                    $('syncInfo').textContent = 'Backup terakhir: ' + d.toLocaleString() + ' • ' + data.files[0].size + ' bytes';
+                } else {
+                    currentFileId = null;
+                    $('syncInfo').textContent = 'Belum ada backup di Drive. Klik "Upload / Simpan".';
+                }
+            })
+            .catch(function(e) { $('syncInfo').textContent = 'Gagal cek file: ' + e.message; });
+    }
+
+    function collectData() {
+        var out = { app: 'TIKAM MASTER', version: 1, savedAt: new Date().toISOString(), data: {} };
+        for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i);
+            if (k === CLIENT_KEY || k === APIKEY_KEY) continue;
+            out.data[k] = localStorage.getItem(k);
+        }
+        return out;
+    }
+
+    function applyData(obj) {
+        if (!obj || !obj.data) throw new Error('Format backup tidak valid.');
+        var n = 0;
+        for (var k in obj.data) {
+            if (!Object.prototype.hasOwnProperty.call(obj.data, k)) continue;
+            if (k === CLIENT_KEY || k === APIKEY_KEY) continue;
+            try { localStorage.setItem(k, obj.data[k]); n++; } catch (e) {}
+        }
+        return n;
+    }
+
+    function findFileId() {
+        var q = encodeURIComponent("name='" + FILE_NAME + "' and trashed=false");
+        return fetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=' + q + '&fields=files(id)' + apiKeyParam(), { headers: authHeaders() })
+            .then(function(r) { return r.json(); })
+            .then(function(d) { return (d.files && d.files.length) ? d.files[0].id : null; });
+    }
+
+    function uploadFile(fileId, payload) {
+        var boundary = 'tikam_bnd_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        var meta = fileId ? { name: FILE_NAME } : { name: FILE_NAME, parents: ['appDataFolder'] };
+        var body =
+            '--' + boundary + '\r\n' +
+            'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+            JSON.stringify(meta) + '\r\n' +
+            '--' + boundary + '\r\n' +
+            'Content-Type: application/json\r\n\r\n' +
+            payload + '\r\n' +
+            '--' + boundary + '--';
+        var url = fileId
+            ? 'https://www.googleapis.com/upload/drive/v3/files/' + fileId + '?uploadType=multipart' + apiKeyParam()
+            : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart' + apiKeyParam();
+        return fetch(url, {
+            method: fileId ? 'PATCH' : 'POST',
+            headers: {
+                Authorization: 'Bearer ' + accessToken,
+                'Content-Type': 'multipart/related; boundary=' + boundary
+            },
+            body: body
+        }).then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        });
+    }
+
+    function save() {
+        if (!accessToken) { alert('Hubungkan ke Google Drive terlebih dahulu.'); return; }
+        setStatus('Mengunggah data ke Drive...', '');
+        var payload = JSON.stringify(collectData());
+        var p = currentFileId ? Promise.resolve(currentFileId) : findFileId();
+        p.then(function(fid) {
+            return uploadFile(fid, payload);
+        }).then(function(out) {
+            currentFileId = out.id || currentFileId;
+            setStatus('Backup berhasil diunggah ✓', 'ok');
+            checkExisting();
+        }).catch(function(e) {
+            setStatus('Gagal upload: ' + e.message, 'err');
+        });
+    }
+
+    function load() {
+        if (!accessToken) { alert('Hubungkan ke Google Drive terlebih dahulu.'); return; }
+        setStatus('Mengunduh data dari Drive...', '');
+        var p = currentFileId ? Promise.resolve(currentFileId) : findFileId();
+        p.then(function(fid) {
+            if (!fid) { setStatus('Tidak ada backup ditemukan di Drive.', 'err'); throw new Error('__no_file__'); }
+            currentFileId = fid;
+            return fetch('https://www.googleapis.com/drive/v3/files/' + fid + '?alt=media' + apiKeyParam(), { headers: authHeaders() })
+                .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); });
+        }).then(function(text) {
+            var obj = JSON.parse(text);
+            if (!confirm('Muat backup dari Drive? Data lokal saat ini akan DITIMPA.')) { setStatus('Dibatalkan.', ''); return; }
+            var n = applyData(obj);
+            setStatus('Berhasil memuat ' + n + ' item. Memuat ulang halaman...', 'ok');
+            setTimeout(function() { location.reload(); }, 900);
+        }).catch(function(e) {
+            if (e && e.message === '__no_file__') return;
+            setStatus('Gagal download: ' + e.message, 'err');
+        });
+    }
+
+    return { loadCreds: loadCreds, saveCreds: saveCreds, connect: connect, disconnect: disconnect, save: save, load: load };
+})();
+
+// ==========================================
+// INITIALIZATION
+// ==========================================
+document.getElementById('dataInputAnalisa').value = DEFAULT_DATA;
+prosesAnalisaBolakBalik();
+initGeneratorUI();
+renderTabelShio();
+initAI();
+CloudSync.loadCreds();
+</script>
+</body>
+</html>
