@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POLA BBFS & Backtest Pro</title>
+    <style>
+        :root {
+            --bg-main: #0b0c10;
+            --bg-card: #141a24;
+            --primary: #FFC107; /* Kuning Kunyit */
+            --secondary: #FF9800; /* Oranye Kunyit */
+            --text-main: #ffffff;
+            --text-muted: #c5c6c7;
+            --accent-as: #FFD700;
+            --accent-cop: #FFC107;
+            --accent-kepala: #FFB300;
+            --accent-ekor: #FF8F00;
+            --accent-kontrol: #FFC107;
+            --border: #233142;
+            --danger: #ff4d6a;
+            --success: #4caf50;
+            --input-bg: #070a0f;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        /* TABS NAVIGATION */
+        .main-tabs {
+            display: flex; gap: 6px; margin-bottom: 15px; background: var(--bg-card); padding: 6px; border-radius: 10px; border: 1px solid var(--border); width: 100%; max-width: 1200px;
+        }
+        .main-tab-btn {
+            flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-muted); font-weight: 700; font-size: 13px; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .main-tab-btn.active { background: linear-gradient(90deg, #FF8F00, #FFC107); color: #000; box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3); }
+        .tab-content { display: none; width: 100%; max-width: 1200px; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== TAB 1: POLA BBFS (GENERATOR) ===== */
+        .container-gen {
+            width: 100%; max-width: 600px; margin: 0 auto; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+        .container-gen h1 {
+            text-align: center; color: var(--primary); margin-top: 5px; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px;
+        }
+        .section-title {
+            font-size: 11px; font-weight: bold; color: var(--secondary); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .pasaran-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+        .pasaran-group label { font-weight: bold; color: var(--primary); font-size: 12px; letter-spacing: 0.5px; }
+        .pasaran-group input {
+            width: 100%; height: 38px; padding: 0 10px; font-size: 14px; font-weight: bold; background: var(--input-bg); border: 1.5px solid var(--border); color: #fff; border-radius: 6px; text-transform: uppercase;
+        }
+        .pasaran-group input:focus { outline: none; border-color: var(--primary); }
+        .input-section {
+            display: flex; justify-content: space-between; gap: 8px; margin: 10px 0 15px 0; background: var(--bg-card); padding: 12px; border-radius: 8px; border: 1px solid #1e2733;
+        }
+        .input-group { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 5px; }
+        .input-group label { font-weight: bold; color: var(--primary); font-size: 11px; letter-spacing: 0.5px; }
+        .input-group input {
+            width: 100%; max-width: 55px; height: 40px; text-align: center; font-size: 20px; font-weight: bold; background: var(--input-bg); border: 1.5px solid var(--border); color: #fff; border-radius: 6px;
+        }
+        .position-row {
+            display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); margin-bottom: 8px; border-radius: 6px; padding: 8px 12px; border-left: 4px solid #fff;
+        }
+        .as-row { border-left-color: var(--accent-as); }
+        .cop-row { border-left-color: var(--accent-cop); }
+        .kepala-row { border-left-color: var(--accent-kepala); }
+        .ekor-row { border-left-color: var(--accent-ekor); }
+        .title-label { font-weight: bold; font-size: 12px; width: 55px; }
+        .as-row .title-label { color: var(--accent-as); }
+        .cop-row .title-label { color: var(--accent-cop); }
+        .kepala-row .title-label { color: var(--accent-kepala); }
+        .ekor-row .title-label { color: var(--accent-ekor); }
+        .switch-container { display: flex; align-items: center; margin-right: 8px; }
+        .switch-container input { cursor: pointer; width: 16px; height: 16px; accent-color: var(--secondary); }
+        .select-pola {
+            background: var(--input-bg); color: #fff; border: 1px solid var(--border); padding: 6px; border-radius: 4px; font-size: 12px; font-weight: bold; width: 100px;
+        }
+        .digit-display {
+            width: 35px; height: 35px; line-height: 33px; background: var(--input-bg); text-align: center; border-radius: 4px; font-size: 16px; font-weight: bold; border: 1px solid var(--border); color: var(--primary);
+        }
+        .op-select {
+            background: var(--input-bg); color: var(--primary); border: 1px solid var(--primary); padding: 5px; border-radius: 4px; font-weight: bold; font-size: 13px;
+        }
+        .btn-calc {
+            width: 100%; padding: 12px; background: linear-gradient(90deg, #FF8F00, #FFC107); color: #000; border: none; border-radius: 6px; font-size: 14px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .card-panel {
+            background: var(--bg-card); border: 1px solid #1e2733; border-radius: 8px; padding: 12px; margin-bottom: 15px;
+        }
+        .textarea-backtest {
+            width: 100%; height: 100px; background: var(--input-bg); color: var(--secondary); border: 1px solid var(--border); border-radius: 6px; padding: 8px; font-family: monospace; font-size: 12px; resize: none;
+        }
+        .backtest-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; font-size: 11px; }
+        .stat-box { background: #0d1117; padding: 6px; border-radius: 4px; border: 1px solid #1e2733; text-align: center; }
+        .result-panel {
+            margin-top: 20px; background: #111622; border: 1px dashed var(--border); border-radius: 8px; padding: 15px;
+        }
+        .result-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 15px; }
+        .result-header-left { display: flex; flex-direction: column; gap: 2px; }
+        .result-title { font-size: 13px; font-weight: bold; color: var(--primary); text-transform: uppercase; }
+        .display-pasaran { font-size: 14px; font-weight: 900; color: var(--accent-kontrol); text-transform: uppercase; letter-spacing: 1px; }
+        .final-box {
+            background: #1a233a; padding: 5px 12px; border-radius: 4px; font-size: 18px; font-weight: bold; color: #fff; border: 1px solid var(--primary);
+        }
+        .tier-row { margin-bottom: 12px; }
+        .tier-label { font-weight: bold; color: var(--primary); font-size: 11px; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .boxes-wrapper { display: flex; gap: 5px; flex-wrap: wrap; }
+        .classic-box {
+            width: 32px; height: 32px; line-height: 30px; text-align: center; background: linear-gradient(180deg, #1e293b, #0f172a); border: 1.5px solid var(--accent-kontrol); color: #ffffff; font-size: 15px; font-weight: bold; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+        .tier-small .classic-box { width: 28px; height: 28px; line-height: 26px; font-size: 13px; border-color: var(--secondary); }
+        .tier-top-kontrol .classic-box {
+            background: linear-gradient(180deg, #FF8F00, #FFC107); border-color: #FFD700; color: #000; font-weight: 900; box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+        }
+        .action-buttons { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .action-buttons button {
+            flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; min-width: 80px;
+        }
+        .btn-reset { background: #334155; color: #fff; }
+        .btn-reset:hover { background: #475569; transform: translateY(-2px); }
+        .btn-copy { background: #1e293b; color: var(--primary); border: 1px solid var(--primary) !important; }
+        .btn-copy:hover { transform: translateY(-2px); box-shadow: 0 0 12px var(--primary); }
+        .btn-copy.copied { background: var(--success); color: #000; border-color: var(--success) !important; }
+        .flex-row { display: flex; gap: 8px; margin-bottom: 8px; }
+        .flex-row .btn-calc { flex: 1; margin-top: 0; }
+        .btn-scan-lengkap { background: linear-gradient(90deg, #FF5722, #FF9800) !important; color: #fff !important; }
+        .btn-scan-lengkap:hover { box-shadow: 0 0 20px rgba(255, 87, 34, 0.5); }
+
+        /* ===== TAB 2: BACKTEST MULTI ===== */
+        .app-bt {
+            width: 100%; background: var(--bg-card); border-radius: 12px; padding: 20px 24px 28px; border: 1px solid var(--border); box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+        }
+        .app-bt h1 { text-align: center; color: var(--primary); font-size: 20px; letter-spacing: 2px; text-transform: uppercase; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 18px; }
+        .app-bt h1 small { display: block; font-size: 11px; color: var(--text-muted); letter-spacing: 1px; font-weight: 400; text-transform: none; margin-top: 4px; }
+        .top-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px; background: #1a1a24; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); }
+        .top-bar label { font-size: 13px; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .top-bar select, .top-bar input { background: var(--input-bg); border: 1px solid var(--border); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 13px; outline: none; }
+        .top-bar select:focus, .top-bar input:focus { border-color: var(--primary); }
+        .top-bar select { min-width: 160px; }
+        .top-bar .btn-sm { padding: 6px 14px; border: none; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer; transition: 0.2s; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border); }
+        .top-bar .btn-sm:hover { border-color: var(--primary); }
+        .top-bar .btn-sm.primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #000; border: none; font-weight: 800; }
+        .top-bar .btn-sm.primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 193, 7, 0.25); }
+        .top-bar .btn-sm.danger { background: #b71c1c; color: #fff; border: none; }
+        .top-bar .btn-sm.danger:hover { background: #d32f2f; }
+        .sumber-row, .pasaran-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .mode-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+        .mode-tabs .tab { padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .mode-tabs .tab:hover { border-color: var(--primary); }
+        .mode-tabs .tab.active { background: var(--primary); color: #000; border-color: var(--primary); font-weight: 800; }
+        .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+        .toolbar button { padding: 7px 16px; border: none; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer; transition: 0.2s; background: #1a1a24; color: var(--text-main); border: 1px solid var(--border); }
+        .toolbar button:hover { background: var(--input-bg); border-color: var(--primary); }
+        .toolbar button.primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #000; border: none; font-weight: 800; }
+        .toolbar button.primary:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(255, 193, 7, 0.3); }
+        .toolbar button.danger { background: #b71c1c; color: #fff; border: none; }
+        .toolbar button.danger:hover { background: #d32f2f; }
+        .toolbar button.export { background: #1a3a5e; color: #88ddff; border-color: #1a3a5e; }
+        .toolbar button.export:hover { background: #1a4a7e; }
+        .toolbar button.import { background: #3a5e1a; color: #a5d6a7; border-color: #3a5e1a; }
+        .toolbar button.import:hover { background: #4a7e2a; }
+        .toolbar button.excel { background: #1d6f42; color: #a5d6a7; border-color: #1d6f42; }
+        .toolbar button.excel:hover { background: #2a8a55; }
+        .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 900px; }
+        table th { background: #1f1f2a; color: var(--primary); font-weight: 700; padding: 8px 5px; text-align: center; border-bottom: 2px solid var(--border); font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 2; }
+        table td { padding: 5px 3px; text-align: center; border-bottom: 1px solid #2a2a38; vertical-align: middle; }
+        table tr:hover td { background: #28283a; }
+        table input { background: var(--input-bg); border: 1px solid var(--border); color: #fff; padding: 5px 6px; border-radius: 4px; font-size: 12px; width: 100%; max-width: 90px; text-align: center; font-family: 'Courier New', monospace; outline: none; transition: border 0.2s; }
+        table input:focus { border-color: var(--primary); }
+        table input.bbfs-input { max-width: 120px; font-size: 11px; }
+        .no-col { width: 40px; color: var(--text-muted); font-size: 11px; font-weight: 600; }
+        .status-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-weight: 700; font-size: 9px; letter-spacing: 0.3px; text-transform: uppercase; white-space: nowrap; min-width: 50px; }
+        .status-badge.jp { background: #1b5e20; color: #a5d6a7; }
+        .status-badge.zonk { background: #4a1515; color: #ef9a9a; }
+        .status-badge.waiting { background: #5d5d1a; color: #ffff88; }
+        .status-badge.na { background: #333; color: #666; }
+        .del-btn { background: transparent; border: none; color: var(--danger); font-size: 14px; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+        .del-btn:hover { background: rgba(255,77,106,0.15); }
+        .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; background: #14141c; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border); }
+        .summary .stat { text-align: center; }
+        .summary .stat .label { font-size: 8px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
+        .summary .stat .value { font-weight: 700; font-size: 18px; color: var(--primary); margin-top: 2px; }
+        .summary .stat .sub { font-size: 9px; color: #666; }
+        .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 10px; color: var(--text-muted); justify-content: center; }
+        .legend span { display: inline-flex; align-items: center; gap: 4px; }
+        .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
+        .dot.green { background: #1b5e20; } .dot.red { background: #4a1515; } .dot.yellow { background: #5d5d1a; }
+        .info-foot { font-size: 9px; color: #555; text-align: center; margin-top: 12px; letter-spacing: 0.3px; }
+        #fileInput { display: none; }
+
+        /* ===== TAB 3: SYNC DRIVE ===== */
+        .sync-container {
+            width: 100%; max-width: 600px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+        .sync-container h2 { color: var(--primary); text-align: center; margin-bottom: 20px; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .sync-group { margin-bottom: 15px; }
+        .sync-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
+        .sync-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: var(--input-bg); color: #fff; }
+        .sync-group input:focus { outline: none; border-color: var(--primary); }
+        .btn-sync { width: 100%; padding: 12px; background: linear-gradient(90deg, #FF8F00, #FFC107); color: #000; border: none; border-radius: 6px; font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
+        .btn-sync:hover { box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4); }
+        .sync-status { margin-top: 15px; font-size: 13px; font-weight: 600; text-align: center; padding: 10px; border-radius: 6px; background: #0d1117; }
+
+        @media (max-width: 700px) {
+            .app-bt { padding: 12px; }
+            table { font-size: 11px; min-width: 650px; }
+            table input { max-width: 60px; font-size: 10px; }
+            table input.bbfs-input { max-width: 80px; }
+            .summary { grid-template-columns: 1fr 1fr; }
+            .top-bar { flex-direction: column; align-items: stretch; }
+            .mode-tabs .tab { font-size: 10px; padding: 4px 10px; }
+            .sumber-row, .pasaran-row { width: 100%; }
+            .container-gen { padding: 12px; }
+            .classic-box { width: 28px; height: 28px; line-height: 26px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- MAIN TABS -->
+<div class="main-tabs">
+    <button class="main-tab-btn active" onclick="openMainTab('tab-gen')">🔮 POLA BBFS</button>
+    <button class="main-tab-btn" onclick="openMainTab('tab-bt')">📊 BACKTEST MULTI</button>
+    <button class="main-tab-btn" onclick="openMainTab('tab-sync')">☁️ SYNC DRIVE</button>
+</div>
+
+<!-- TAB 1: POLA BBFS GENERATOR -->
+<div id="tab-gen" class="tab-content active">
+    <div class="container-gen">
+        <h1>POLA BBFS</h1>
+        
+        <div class="pasaran-group">
+            <label>NAMA PASARAN</label>
+            <input type="text" id="input_pasaran" value="SGP - SINGAPORE" placeholder="Contoh: HONGKONG, SYDNEY" oninput="updatePasaranView()">
+        </div>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label>AS</label>
+                <input type="text" id="input_as" maxlength="1" value="1" oninput="calculateKontrol()">
+            </div>
+            <div class="input-group">
+                <label>COP</label>
+                <input type="text" id="input_cop" maxlength="1" value="1" oninput="calculateKontrol()">
+            </div>
+            <div class="input-group">
+                <label>KEPALA</label>
+                <input type="text" id="input_kepala" maxlength="1" value="4" oninput="calculateKontrol()">
+            </div>
+            <div class="input-group">
+                <label>EKOR</label>
+                <input type="text" id="input_ekor" maxlength="1" value="5" oninput="calculateKontrol()">
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="position-row as-row">
+                <div class="switch-container"><input type="checkbox" id="switch_as" checked onchange="calculateKontrol()"></div>
+                <div class="title-label">AS</div>
+                <select class="select-pola" id="mode_as" onchange="calculateKontrol()">
+                    <option value="NORMAL">NORMAL</option>
+                    <script>
+                        const rumusList = ['IX','TY','ML','MB','M0','M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12','M13','M14','M15','M16','M17','M18','M19'];
+                        rumusList.forEach(r => document.write(`<option value="${r}">MISTIK ${r}</option>`));
+                    </script>
+                </select>
+                <div class="digit-display" id="val_as">1</div>
+                <select class="op-select" id="op_as_cop" onchange="calculateKontrol()"><option value="+">+</option><option value="-">-</option></select>
+            </div>
+
+            <div class="position-row cop-row">
+                <div class="switch-container"><input type="checkbox" id="switch_cop" checked onchange="calculateKontrol()"></div>
+                <div class="title-label">COP</div>
+                <select class="select-pola" id="mode_cop" onchange="calculateKontrol()">
+                    <option value="NORMAL">NORMAL</option>
+                    <script>rumusList.forEach(r => document.write(`<option value="${r}">MISTIK ${r}</option>`));</script>
+                </select>
+                <div class="digit-display" id="val_cop">1</div>
+                <select class="op-select" id="op_cop_kep" onchange="calculateKontrol()"><option value="+">+</option><option value="-">-</option></select>
+            </div>
+
+            <div class="position-row kepala-row">
+                <div class="switch-container"><input type="checkbox" id="switch_kepala" checked onchange="calculateKontrol()"></div>
+                <div class="title-label">KEPALA</div>
+                <select class="select-pola" id="mode_kepala" onchange="calculateKontrol()">
+                    <option value="NORMAL">NORMAL</option>
+                    <script>rumusList.forEach(r => document.write(`<option value="${r}">MISTIK ${r}</option>`));</script>
+                </select>
+                <div class="digit-display" id="val_kepala">4</div>
+                <select class="op-select" id="op_kep_ekor" onchange="calculateKontrol()"><option value="+">+</option><option value="-">-</option></select>
+            </div>
+
+            <div class="position-row ekor-row">
+                <div class="switch-container"><input type="checkbox" id="switch_ekor" checked onchange="calculateKontrol()"></div>
+                <div class="title-label">EKOR</div>
+                <select class="select-pola" id="mode_ekor" onchange="calculateKontrol()">
+                    <option value="NORMAL">NORMAL</option>
+                    <script>rumusList.forEach(r => document.write(`<option value="${r}">MISTIK ${r}</option>`));</script>
+                </select>
+                <div class="digit-display" id="val_ekor">5</div>
+                <div style="width:28px; text-align:center; color:#555; font-weight:bold;">=</div>
+            </div>
+        </div>
+
+        <button class="btn-calc" onclick="calculateKontrol()">Hitung Pola Kontrol</button>
+
+        <div class="section-title" style="margin-top: 20px;">
+            <span>History Data & Backtesting (Last 30)</span>
+            <button onclick="ambilDataDariSheets()" style="background: var(--secondary); color: #000; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer;">🔄 Tarik Data</button>
+        </div>
+        <div class="card-panel">
+            <textarea class="textarea-backtest" id="area_backtest" placeholder="Masukkan data 4D di sini..." oninput="calculateKontrol()">1145
+2389
+9012
+5471
+8823
+1234
+5678
+9012</textarea>
+            <div class="backtest-stats">
+                <div class="stat-box">Total Diuji: <strong id="bt_total" style="color:var(--secondary)">0</strong></div>
+                <div class="stat-box">Akurasi Kontrol (7D): <strong id="bt_rate" style="color:var(--primary)">0%</strong></div>
+            </div>
+        </div>
+
+        <div class="card-panel">
+            <div class="section-title">
+                <span>Auto Finder Rumus AI</span>
+                <select id="auto_scope" style="background:var(--input-bg);color:var(--primary);border:1px solid var(--primary);padding:4px;border-radius:4px;font-size:11px;font-weight:bold;">
+                    <option value="cepat">Mode Cepat (6)</option>
+                    <option value="lengkap" selected>Mode Lengkap (26)</option>
+                </select>
+            </div>
+            <div class="flex-row">
+                <button class="btn-calc" onclick="jalankanAutoFinder()" style="background: linear-gradient(90deg, #FF8F00, #FFC107);">🔍 Scan Auto Finder</button>
+                <button class="btn-calc btn-scan-lengkap" onclick="jalankanAutoFinderLengkap()">⚡ Scan Lengkap (26)</button>
+            </div>
+            <div id="auto_status" style="font-size:11px;color:var(--text-muted);margin-bottom:4px;"></div>
+            <div id="auto_result" style="font-size:12px;color:var(--secondary);white-space:pre-wrap;"></div>
+        </div>
+
+        <div class="result-panel">
+            <div class="result-header">
+                <div class="result-header-left">
+                    <div class="result-title">Angka Pangkal Kontrol</div>
+                    <div class="display-pasaran" id="view_pasaran">PASARAN: SGP - SINGAPORE</div>
+                </div>
+                <div class="final-box" id="final_base">1</div>
+            </div>
+
+            <div class="bbfs-tier-container">
+                <div class="tier-row"><div class="tier-label">KONTROL 7 DIGIT</div><div class="boxes-wrapper" id="tier_7"></div></div>
+                <div class="tier-row"><div class="tier-label">KONTROL 6 DIGIT</div><div class="boxes-wrapper" id="tier_6"></div></div>
+                <div class="tier-row"><div class="tier-label">KONTROL 5 DIGIT</div><div class="boxes-wrapper" id="tier_5"></div></div>
+                <div class="tier-row tier-small"><div class="tier-label">KONTROL 4 DIGIT</div><div class="boxes-wrapper" id="tier_4"></div></div>
+                <div class="tier-row tier-small"><div class="tier-label">KONTROL 3 DIGIT</div><div class="boxes-wrapper" id="tier_3"></div></div>
+                <div class="tier-row tier-small tier-top-kontrol"><div class="tier-label" style="color: #000; font-weight: 900;">KONTROL 2 DIGIT (FINAL)</div><div class="boxes-wrapper" id="tier_2"></div></div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-reset" onclick="resetAll()">🔄 Reset</button>
+                <button class="btn-copy" id="btnCopy" onclick="copyAllDigits()">📋 Salin Hasil</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TAB 2: BACKTEST MULTI-PASARAN -->
+<div id="tab-bt" class="tab-content">
+    <div class="app-bt">
+        <h1>📊 BACKTEST MULTI-PASARAN <small>BBFS · KEPALA · EKOR · ANGKA KONTROL</small></h1>
+
+        <div class="top-bar">
+            <div class="pasaran-row">
+                <label>📌 Pasaran <select id="pasaranSelect" onchange="switchPasaran()"></select></label>
+                <button class="btn-sm primary" onclick="tambahPasaran()">+ Tambah</button>
+                <button class="btn-sm danger" onclick="hapusPasaran()">✕ Hapus</button>
+            </div>
+            <div class="sumber-row">
+                <label>📖 Sumber <select id="sumberSelect" onchange="switchSumber()"></select></label>
+                <button class="btn-sm primary" onclick="tambahSumber()">+ Tambah</button>
+                <button class="btn-sm danger" onclick="hapusSumber()">✕ Hapus</button>
+            </div>
+            <label style="margin-left:auto; color:var(--text-muted); font-weight:400;" id="rowCount">0 baris</label>
+        </div>
+
+        <div class="mode-tabs" id="modeTabs">
+            <span class="tab active" data-mode="bbfs" onclick="setMode('bbfs')">BBFS (4 Kolom)</span>
+            <span class="tab" data-mode="kepala" onclick="setMode('kepala')">KEPALA</span>
+            <span class="tab" data-mode="ekor" onclick="setMode('ekor')">EKOR</span>
+            <span class="tab" data-mode="angkontrol" onclick="setMode('angkontrol')">ANGKA KONTROL</span>
+        </div>
+
+        <div class="toolbar">
+            <button class="primary" onclick="addRow()">➕ Tambah Baris</button>
+            <button onclick="removeLastRow()">➖ Hapus Terakhir</button>
+            <button class="danger" onclick="clearAll()">🗑️ Hapus Semua</button>
+            <button onclick="loadSample()">📥 Contoh Data</button>
+            <button class="export" onclick="exportJSON()">📤 Ekspor JSON</button>
+            <button class="import" onclick="document.getElementById('fileInput').click()">📥 Impor JSON</button>
+            <button class="excel" onclick="exportExcel()">📊 Ekspor Excel</button>
+            <input type="file" id="fileInput" accept=".json" onchange="importJSON(event)">
+        </div>
+
+        <div class="table-wrap">
+            <table id="backtestTable">
+                <thead id="tableHead"></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="summary" id="summaryBox">
+            <div class="stat"><div class="label" id="label1">BBFS 1</div><div class="value" id="sum1">0</div><div class="sub" id="sub1">0 test</div></div>
+            <div class="stat"><div class="label" id="label2">BBFS 2</div><div class="value" id="sum2">0</div><div class="sub" id="sub2">0 test</div></div>
+            <div class="stat"><div class="label" id="label3">BBFS 3</div><div class="value" id="sum3">0</div><div class="sub" id="sub3">0 test</div></div>
+            <div class="stat"><div class="label" id="label4">BBFS 4</div><div class="value" id="sum4">0</div><div class="sub" id="sub4">0 test</div></div>
+        </div>
+
+        <div class="legend" id="legendBox">
+            <span><span class="dot green"></span> JP</span>
+            <span><span class="dot red"></span> ZONK</span>
+            <span><span class="dot yellow"></span> MENUNGGU</span>
+        </div>
+        <div class="info-foot" id="infoFoot">* Status dihitung dari result baris berikutnya sesuai mode yang dipilih.</div>
+    </div>
+</div>
+
+<!-- TAB 3: SYNC GOOGLE DRIVE -->
+<div id="tab-sync" class="tab-content">
+    <div class="sync-container">
+        <h2>☁️ Sinkronisasi Google Drive</h2>
+        <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid var(--primary); border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+            <strong style="color: var(--primary);">Petunjuk:</strong><br>
+            1. Buat Google Apps Script baru di Google Drive.<br>
+            2. Paste kode Webhook handler (terima POST JSON).<br>
+            3. Deploy sebagai Web App, atur akses "Anyone".<br>
+            4. Copy URL Web App dan paste di kolom di bawah.
+        </div>
+
+        <div class="sync-group">
+            <label>Google Apps Script Webhook URL</label>
+            <input type="text" id="sync_webhook" placeholder="https://script.google.com/macros/s/.../exec">
+        </div>
+        <div class="sync-group">
+            <label>Google Drive Folder ID (Opsional)</label>
+            <input type="text" id="sync_folder_id" placeholder="1da8mze28...">
+        </div>
+
+        <button class="btn-sync" onclick="syncToGoogleDrive()">🚀 Sinkronisasi Data ke Google Drive</button>
+        <div class="sync-status" id="sync_status">Menunggu aksi...</div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // TAB NAVIGATION
+    // ==========================================
+    function openMainTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+        if(tabId === 'tab-bt') { render(); } // Refresh table when tab opened
+    }
+
+    // ==========================================
+    // TAB 1: POLA BBFS LOGIC
+    // ==========================================
+    let lastAutoFinderResults = [];
+    let lastAutoFinderSw = [];
+    const MISTIK_TABLE = {
+        'IX':  { '0': 5, '1': 6, '2': 7, '3': 8, '4': 9, '5': 0, '6': 1, '7': 2, '8': 3, '9': 4 },
+        'TY':  { '0': 7, '1': 4, '2': 9, '3': 6, '4': 1, '5': 8, '6': 3, '7': 0, '8': 5, '9': 2 },
+        'ML':  { '0': 1, '1': 0, '2': 5, '3': 8, '4': 7, '5': 2, '6': 9, '7': 4, '8': 3, '9': 6 }, 
+        'MB':  { '0': 8, '1': 7, '2': 6, '3': 9, '4': 5, '5': 4, '6': 2, '7': 1, '8': 0, '9': 3 },
+        'M0':  { '0': 6, '1': 5, '2': 8, '3': 7, '4': 9, '5': 1, '6': 0, '7': 3, '8': 2, '9': 4 }, 
+        'M1':  { '0': 1, '1': 0, '2': 9, '3': 8, '4': 7, '5': 6, '6': 5, '7': 4, '8': 3, '9': 2 },
+        'M2':  { '0': 2, '1': 8, '2': 0, '3': 9, '4': 7, '5': 6, '6': 5, '7': 4, '8': 1, '9': 3 }, 
+        'M3':  { '0': 3, '1': 2, '2': 1, '3': 0, '4': 9, '5': 8, '6': 7, '7': 6, '8': 5, '9': 4 },
+        'M4':  { '0': 6, '1': 5, '2': 3, '3': 2, '4': 7, '5': 1, '6': 0, '7': 4, '8': 9, '9': 8 }, 
+        'M5':  { '0': 5, '1': 4, '2': 3, '3': 2, '4': 1, '5': 0, '6': 9, '7': 8, '8': 7, '9': 6 },
+        'M6':  { '0': 6, '1': 8, '2': 4, '3': 5, '4': 2, '5': 3, '6': 0, '7': 9, '8': 1, '9': 7 }, 
+        'M7':  { '0': 7, '1': 6, '2': 5, '3': 4, '4': 3, '5': 2, '6': 1, '7': 0, '8': 9, '9': 8 },
+        'M8':  { '0': 8, '1': 7, '2': 6, '3': 5, '4': 9, '5': 3, '6': 2, '7': 1, '8': 0, '9': 4 }, 
+        'M9':  { '0': 9, '1': 8, '2': 7, '3': 6, '4': 5, '5': 4, '6': 3, '7': 2, '8': 1, '9': 0 },
+        'M10': { '0': 4, '1': 2, '2': 1, '3': 8, '4': 0, '5': 6, '6': 5, '7': 9, '8': 3, '9': 7 }, 
+        'M11': { '0': 1, '1': 0, '2': 5, '3': 4, '4': 3, '5': 2, '6': 8, '7': 9, '8': 6, '9': 7 }, 
+        'M12': { '0': 2, '1': 7, '2': 0, '3': 8, '4': 6, '5': 9, '6': 4, '7': 1, '8': 3, '9': 5 }, 
+        'M13': { '0': 3, '1': 9, '2': 7, '3': 0, '4': 6, '5': 8, '6': 4, '7': 2, '8': 5, '9': 1 },
+        'M14': { '0': 6, '1': 5, '2': 4, '3': 7, '4': 2, '5': 1, '6': 0, '7': 3, '8': 9, '9': 8 }, 
+        'M15': { '0': 5, '1': 6, '2': 4, '3': 9, '4': 2, '5': 0, '6': 1, '7': 8, '8': 7, '9': 3 },
+        'M16': { '0': 3, '1': 8, '2': 7, '3': 0, '4': 9, '5': 6, '6': 5, '7': 2, '8': 1, '9': 4 }, 
+        'M17': { '0': 9, '1': 4, '2': 8, '3': 6, '4': 1, '5': 7, '6': 3, '7': 5, '8': 2, '9': 0 },
+        'M18': { '0': 8, '1': 9, '2': 7, '3': 4, '4': 3, '5': 6, '6': 5, '7': 2, '8': 0, '9': 1 }, 
+        'M19': { '0': 7, '1': 8, '2': 3, '3': 2, '4': 9, '5': 6, '6': 5, '7': 0, '8': 1, '9': 4 }
+    };
+
+    function updatePasaranView() {
+        let pName = document.getElementById("input_pasaran").value;
+        document.getElementById("view_pasaran").innerText = pName ? "PASARAN: " + pName : "PASARAN: -";
+    }
+
+    function getMistikValue(num, mode) {
+        if (mode === "NORMAL") return parseInt(num) || 0;
+        let cleanChar = num.toString().trim().slice(-1);
+        if (MISTIK_TABLE[mode] && MISTIK_TABLE[mode][cleanChar] !== undefined) return MISTIK_TABLE[mode][cleanChar];
+        return parseInt(num) || 0;
+    }
+
+    function bulatkanSatuDigit(nilai) {
+        if (nilai < 0) nilai = Math.abs(nilai);
+        if (nilai === 10) return 1; if (nilai === 11) return 2;
+        while (nilai >= 10) { let str = nilai.toString(); nilai = parseInt(str[0]) + parseInt(str[1]); }
+        return nilai;
+    }
+
+    function generateHtmlBoxes(containerId, digitsArray) {
+        let container = document.getElementById(containerId); container.innerHTML = "";
+        digitsArray.forEach(d => {
+            let box = document.createElement("div"); box.className = "classic-box"; box.innerText = d; container.appendChild(box);
+        });
+    }
+
+    function calculateKontrol() {
+        let raw_as = document.getElementById("input_as").value || "0";
+        let raw_cop = document.getElementById("input_cop").value || "0";
+        let raw_kepala = document.getElementById("input_kepala").value || "0";
+        let raw_ekor = document.getElementById("input_ekor").value || "0";
+
+        let mode_as = document.getElementById("mode_as").value;
+        let mode_cop = document.getElementById("mode_cop").value;
+        let mode_kepala = document.getElementById("mode_kepala").value;
+        let mode_ekor = document.getElementById("mode_ekor").value;
+
+        let sw_as = document.getElementById("switch_as").checked;
+        let sw_cop = document.getElementById("switch_cop").checked;
+        let sw_kepala = document.getElementById("switch_kepala").checked;
+        let sw_ekor = document.getElementById("switch_ekor").checked;
+
+        let val_as = sw_as ? getMistikValue(raw_as, mode_as) : 0;
+        let val_cop = sw_cop ? getMistikValue(raw_cop, mode_cop) : 0;
+        let val_kepala = sw_kepala ? getMistikValue(raw_kepala, mode_kepala) : 0;
+        let val_ekor = sw_ekor ? getMistikValue(raw_ekor, mode_ekor) : 0;
+
+        document.getElementById("val_as").innerText = sw_as ? val_as : "X";
+        document.getElementById("val_cop").innerText = sw_cop ? val_cop : "X";
+        document.getElementById("val_kepala").innerText = sw_kepala ? val_kepala : "X";
+        document.getElementById("val_ekor").innerText = sw_ekor ? val_ekor : "X";
+
+        let op_as_cop = document.getElementById("op_as_cop").value;
+        let op_cop_kep = document.getElementById("op_cop_kep").value;
+        let op_kep_ekor = document.getElementById("op_kep_ekor").value;
+
+        let res1 = (op_as_cop === "+") ? (val_as + val_cop) : Math.abs(val_as - val_cop);
+        let res2 = (op_cop_kep === "+") ? (res1 + val_kepala) : Math.abs(res1 - val_kepala);
+        let total_akhir = (op_kep_ekor === "+") ? (res2 + val_ekor) : Math.abs(res2 - val_ekor);
+
+        let hasil_pangkat = bulatkanSatuDigit(total_akhir);
+        document.getElementById("final_base").innerText = hasil_pangkat;
+
+        let p = hasil_pangkat;
+        let k7 = [p, (p+1)%10, (p+2)%10, (p+3)%10, (p+5)%10, (p+7)%10, (p+8)%10];
+        
+        generateHtmlBoxes("tier_7", k7);
+        generateHtmlBoxes("tier_6", k7.slice(0, 6));
+        generateHtmlBoxes("tier_5", k7.slice(0, 5));
+        generateHtmlBoxes("tier_4", k7.slice(0, 4));
+        generateHtmlBoxes("tier_3", k7.slice(0, 3));
+        generateHtmlBoxes("tier_2", k7.slice(0, 2));
+
+        runBacktestEngine(mode_as, mode_cop, mode_kepala, mode_ekor, op_as_cop, op_cop_kep, op_kep_ekor, sw_as, sw_cop, sw_kepala, sw_ekor);
+    }
+
+    function runBacktestEngine(mAs, mCop, mKep, mEkor, op1, op2, op3, swAs, swCop, swKep, swEkor) {
+        let lines = document.getElementById("area_backtest").value.split('\n');
+        let validRows = [];
+        lines.forEach(line => { let clean = line.replace(/\D/g, ''); if (clean.length === 4) validRows.push(clean); });
+        let limitedRows = validRows.slice(0, 30);
+        if (limitedRows.length === 0) { document.getElementById("bt_total").innerText = "0"; document.getElementById("bt_rate").innerText = "0%"; return; }
+
+        let totalHits = 0;
+        limitedRows.forEach(num4d => {
+            let dAs = num4d[0], dCop = num4d[1], dKep = num4d[2], dEkor = num4d[3];
+            let vAs = swAs ? getMistikValue(dAs, mAs) : 0;
+            let vCop = swCop ? getMistikValue(dCop, mCop) : 0;
+            let vKep = swKep ? getMistikValue(dKep, mKep) : 0;
+            let vEkor = swEkor ? getMistikValue(dEkor, mEkor) : 0;
+
+            let r1 = (op1 === "+") ? (vAs + vCop) : Math.abs(vAs - vCop);
+            let r2 = (op2 === "+") ? (r1 + vKep) : Math.abs(r1 - vKep);
+            let tot = (op3 === "+") ? (r2 + vEkor) : Math.abs(r2 - vEkor);
+            let p = bulatkanSatuDigit(tot);
+            let targetK7 = [p, (p+1)%10, (p+2)%10, (p+3)%10, (p+5)%10, (p+7)%10, (p+8)%10];
+            if (targetK7.includes(parseInt(dEkor))) totalHits++;
+        });
+
+        let rate = Math.round((totalHits / limitedRows.length) * 100);
+        document.getElementById("bt_total").innerText = limitedRows.length + " Baris";
+        document.getElementById("bt_rate").innerText = rate + "% Rate JP";
+    }
+
+    function ambilDataDariSheets() {
+        const areaBacktest = document.getElementById("area_backtest");
+        const loaderTombol = document.querySelector(".section-title button");
+        loaderTombol.innerText = "⏳ Memproses..."; loaderTombol.style.opacity = "0.6";
+        const primaryUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://sheetdb.io/api/v1/1da8mze28?cast_numbers=true");
+        const fallbackUrl = "https://sheetdb.io/api/v1/1da8mze28?cast_numbers=true"; 
+
+        function parseDanMasukkanData(rawJsonStringOrArray) {
+            let data = typeof rawJsonStringOrArray === 'string' ? JSON.parse(rawJsonStringOrArray) : rawJsonStringOrArray;
+            if(!Array.isArray(data)) return false;
+            let kumpulan4D = [];
+            data.slice().reverse().forEach(row => {
+                let targetVal = row.ragilbagus || row.Ragilbagus || row.RAGILBAGUS || Object.values(row)[0];
+                if (targetVal) {
+                    let angkaClean = targetVal.toString().trim().replace(/\D/g, '');
+                    if (angkaClean.length === 4) kumpulan4D.push(angkaClean);
+                }
+            });
+            if (kumpulan4D.length === 0) return false;
+            areaBacktest.value = kumpulan4D.join("\n");
+            calculateKontrol();
+            alert("Mantap bosq! Berhasil menarik " + kumpulan4D.length + " data terbaru.");
+            return true;
+        }
+
+        fetch(primaryUrl).then(res => { if(!res.ok) throw new Error(); return res.json(); })
+        .then(wrapper => { if(!parseDanMasukkanData(wrapper.contents)) throw new Error(); resetTombol(); })
+        .catch(() => {
+            fetch(fallbackUrl).then(res => res.json()).then(data => {
+                if(!parseDanMasukkanData(data)) alert("Data kosong atau format berubah bosq.");
+                resetTombol();
+            }).catch(err => { console.error(err); alert("Koneksi ditolak sistem lokal bosq!"); resetTombol(); });
+        });
+
+        function resetTombol() { loaderTombol.innerText = "🔄 Tarik Data"; loaderTombol.style.opacity = "1"; }
+    }
+
+    function bacaHistoryRows(maxRow = 30) {
+        const lines = document.getElementById("area_backtest").value.split('\n');
+        const rows = [];
+        for (let line of lines) {
+            const clean = line.replace(/\D/g, '');
+            if (clean.length === 4) { rows.push(clean); if (rows.length >= maxRow) break; }
+        }
+        return rows;
+    }
+
+    function buatModeList(scope) {
+        const base = ["NORMAL", "IX", "TY", "ML", "MB", "M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", "M11", "M12", "M13", "M14", "M15", "M16", "M17", "M18", "M19"];
+        if (scope === "cepat") return ["NORMAL", "IX", "TY", "ML", "MB", "M0"];
+        return base;
+    }
+
+    function buatTabelTransform(mode) {
+        const arr = new Array(10);
+        for (let d = 0; d < 10; d++) arr[d] = getMistikValue(d, mode);
+        return arr;
+    }
+
+    function digitSumCepat(n) {
+        n = Math.abs(n);
+        while (n >= 10) n = Math.floor(n / 10) + (n % 10);
+        return n;
+    }
+
+    function formatRumusAuto(modesActive, ops, sw) {
+        const posNames = ["AS", "COP", "KEPALA", "EKOR"];
+        const parts = []; let activeIdx = 0;
+        for (let i = 0; i < 4; i++) {
+            if (!sw[i]) { parts.push(posNames[i] + "(OFF)"); continue; }
+            const mode = modesActive[activeIdx++];
+            parts.push(posNames[i] + (mode === "NORMAL" ? "" : "[" + mode + "]"));
+        }
+        let expr = parts[0];
+        for (let i = 1; i < parts.length; i++) expr += " " + ops[i - 1] + " " + parts[i];
+        return expr;
+    }
+
+    function jalankanAutoFinder(forcedScope) {
+        const scope = forcedScope || document.getElementById("auto_scope").value;
+        const modeList = buatModeList(scope);
+        const rows = bacaHistoryRows(30);
+        const statusEl = document.getElementById("auto_status");
+        const resultEl = document.getElementById("auto_result");
+        resultEl.innerHTML = "";
+
+        if (rows.length === 0) { statusEl.innerText = "❌ Data history kosong!"; return; }
+
+        const sw = [document.getElementById("switch_as").checked, document.getElementById("switch_cop").checked, document.getElementById("switch_kepala").checked, document.getElementById("switch_ekor").checked];
+        const nActive = sw.filter(Boolean).length;
+        if (nActive === 0) { statusEl.innerText = "❌ Minimal satu posisi harus aktif!"; return; }
+
+        if (scope === "lengkap" && nActive === 4) statusEl.innerText = "⏳ Mode Lengkap 26 mode dengan 4 posisi aktif. Proses sekitar 10-20 detik...";
+        else statusEl.innerText = "⏳ Menyiapkan data...";
+
+        const hitMasks = rows.map(row => {
+            const dE = parseInt(row[3]); const mask = new Array(10);
+            for (let p = 0; p < 10; p++) {
+                const k7 = [p, (p+1)%10, (p+2)%10, (p+3)%10, (p+5)%10, (p+7)%10, (p+8)%10];
+                mask[p] = k7.includes(dE);
+            }
+            return mask;
+        });
+
+        const transformTables = {};
+        modeList.forEach(mode => { transformTables[mode] = buatTabelTransform(mode); });
+
+        const zeroArray = new Array(rows.length).fill(0);
+        const valuePos = [null, null, null, null];
+        for (let i = 0; i < 4; i++) {
+            if (!sw[i]) { valuePos[i] = { zero: zeroArray }; continue; }
+            const mapByMode = {};
+            modeList.forEach(mode => { mapByMode[mode] = rows.map(row => transformTables[mode][parseInt(row[i])]); });
+            valuePos[i] = mapByMode;
+        }
+
+        const opCombos = [["+", "+", "+"], ["+", "+", "-"], ["+", "-", "+"], ["+", "-", "-"], ["-", "+", "+"], ["-", "+", "-"], ["-", "-", "+"], ["-", "-", "-"]];
+
+        function generateCombinations(activeIndices, modeList) {
+            const combos = []; const total = modeList.length ** activeIndices.length;
+            const indices = activeIndices.map(() => 0);
+            for (let i = 0; i < total; i++) {
+                combos.push(indices.map(idx => modeList[idx]));
+                let carry = 1;
+                for (let j = indices.length - 1; j >= 0 && carry; j--) {
+                    indices[j] += carry;
+                    if (indices[j] >= modeList.length) { indices[j] = 0; carry = 1; } else { carry = 0; }
+                }
+            }
+            return combos;
+        }
+
+        const activeIndices = [];
+        for (let i = 0; i < 4; i++) if (sw[i]) activeIndices.push(i);
+        const allCombos = generateCombinations(activeIndices, modeList);
+        const totalCombos = allCombos.length;
+        statusEl.innerText = `⏳ Scanning ${totalCombos} kombinasi mode... (0%)`;
+
+        const topResults = []; const MAX_TOP = 5; let processed = 0; const BATCH_SIZE = 2000;
+
+        function evaluateCombo(modesActive) {
+            const allVals = []; let activeCounter = 0;
+            for (let i = 0; i < 4; i++) {
+                if (sw[i]) { allVals.push(valuePos[i][modesActive[activeCounter]]); activeCounter++; }
+                else { allVals.push(zeroArray); }
+            }
+            for (let oc = 0; oc < opCombos.length; oc++) {
+                const op1 = opCombos[oc][0], op2 = opCombos[oc][1], op3 = opCombos[oc][2];
+                const bPerRow = new Array(rows.length);
+                for (let r = 0; r < rows.length; r++) {
+                    const v0 = allVals[0][r], v1 = allVals[1][r], v2 = allVals[2][r], v3 = allVals[3][r];
+                    const r1 = (op1 === "+") ? (v0 + v1) : Math.abs(v0 - v1);
+                    const r2 = (op2 === "+") ? (r1 + v2) : Math.abs(r1 - v2);
+                    const tot = (op3 === "+") ? (r2 + v3) : Math.abs(r2 - v3);
+                    bPerRow[r] = digitSumCepat(tot);
+                }
+                for (let f = 0; f < modeList.length; f++) {
+                    const finalMode = modeList[f]; const table = transformTables[finalMode];
+                    let hits = 0;
+                    for (let r = 0; r < rows.length; r++) {
+                        const p = table[bPerRow[r]];
+                        if (hitMasks[r][p]) hits++;
+                    }
+                    const result = { modes: modesActive.slice(), ops: opCombos[oc].slice(), final: finalMode, hits, total: rows.length, accuracy: hits / rows.length };
+                    topResults.push(result);
+                    topResults.sort((a, b) => b.accuracy - a.accuracy || b.hits - a.hits);
+                    if (topResults.length > MAX_TOP) topResults.pop();
+                }
+            }
+        }
+
+        function processBatch(startIndex) {
+            const endIndex = Math.min(startIndex + BATCH_SIZE, totalCombos);
+            for (let i = startIndex; i < endIndex; i++) evaluateCombo(allCombos[i]);
+            processed = endIndex;
+            statusEl.innerText = `⏳ Scanning ${totalCombos} kombinasi mode... (${Math.round((processed / totalCombos) * 100)}%)`;
+            if (processed < totalCombos) setTimeout(() => processBatch(processed), 0);
+            else {
+                const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+                tampilkanHasilAutoFinder(topResults, sw, elapsed);
+                statusEl.innerText = `✅ Selesai dalam ${elapsed} detik. Top ${topResults.length} rumus terbaik:`;
+            }
+        }
+        const startTime = performance.now();
+        setTimeout(() => processBatch(0), 50);
+    }
+
+    function jalankanAutoFinderLengkap() { jalankanAutoFinder('lengkap'); }
+
+    function tampilkanHasilAutoFinder(topResults, sw, elapsed) {
+        lastAutoFinderResults = topResults; lastAutoFinderSw = sw;
+        const resultEl = document.getElementById("auto_result");
+        let html = "";
+        topResults.forEach((res, idx) => {
+            const rumus = formatRumusAuto(res.modes, res.ops, sw);
+            html += `<div style="margin-bottom:8px;padding:8px;background:#0d1117;border-radius:6px;border:1px solid #1e2733;">
+                <div style="color:var(--primary);font-weight:bold;margin-bottom:4px;">#${idx + 1} Akurasi Kontrol (7D): ${(res.accuracy * 100).toFixed(1)}% (${res.hits}/${res.total})</div>
+                <div style="color:#fff;font-family:monospace;font-size:11px;margin-bottom:8px;line-height:1.4;">${rumus} => Final [${res.final}]</div>
+                <button onclick="terapkanRumus(${idx})" style="width:100%;padding:8px;background:var(--secondary);color:#000;border:none;border-radius:4px;font-weight:bold;cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">⚡ Terapkan Rumus Ini</button>
+            </div>`;
+        });
+        resultEl.innerHTML = html;
+    }
+
+    function terapkanRumus(idx) {
+        const res = lastAutoFinderResults[idx]; const sw = lastAutoFinderSw; if (!res) return;
+        document.getElementById("switch_as").checked = sw[0]; document.getElementById("switch_cop").checked = sw[1];
+        document.getElementById("switch_kepala").checked = sw[2]; document.getElementById("switch_ekor").checked = sw[3];
+        let activeIdx = 0;
+        if (sw[0]) { document.getElementById("mode_as").value = res.modes[activeIdx]; activeIdx++; }
+        if (sw[1]) { document.getElementById("mode_cop").value = res.modes[activeIdx]; activeIdx++; }
+        if (sw[2]) { document.getElementById("mode_kepala").value = res.modes[activeIdx]; activeIdx++; }
+        if (sw[3]) { document.getElementById("mode_ekor").value = res.modes[activeIdx]; activeIdx++; }
+        document.getElementById("op_as_cop").value = res.ops[0];
+        document.getElementById("op_cop_kep").value = res.ops[1];
+        document.getElementById("op_kep_ekor").value = res.ops[2];
+        calculateKontrol();
+        const btn = event.target; const originalText = btn.innerText;
+        btn.innerText = "✅ Berhasil Diterapkan!"; btn.style.background = "var(--success)"; btn.style.color = "#fff";
+        setTimeout(() => { btn.innerText = originalText; btn.style.background = "var(--secondary)"; btn.style.color = "#000"; }, 1500);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetAll() {
+        document.getElementById("input_as").value = "1"; document.getElementById("input_cop").value = "1";
+        document.getElementById("input_kepala").value = "4"; document.getElementById("input_ekor").value = "5";
+        document.getElementById("input_pasaran").value = "SGP - SINGAPORE";
+        ["switch_as", "switch_cop", "switch_kepala", "switch_ekor"].forEach(id => document.getElementById(id).checked = true);
+        ["mode_as", "mode_cop", "mode_kepala", "mode_ekor"].forEach(id => document.getElementById(id).value = "NORMAL");
+        ["op_as_cop", "op_cop_kep", "op_kep_ekor"].forEach(id => document.getElementById(id).value = "+");
+        calculateKontrol(); updatePasaranView();
+        document.getElementById("auto_status").innerText = ""; document.getElementById("auto_result").innerHTML = "";
+        lastAutoFinderResults = []; window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function copyAllDigits() {
+        const tiers = ['tier_7', 'tier_6', 'tier_5', 'tier_4', 'tier_3', 'tier_2'];
+        let allDigits = [];
+        tiers.forEach(id => {
+            const boxes = document.getElementById(id).querySelectorAll('.classic-box');
+            const digits = Array.from(boxes).map(box => box.innerText);
+            if (digits.length) allDigits.push(digits.join(' '));
+        });
+        const result = allDigits.join('\n');
+        if (!result) { alert("Tidak ada angka untuk disalin."); return; }
+        navigator.clipboard.writeText(result).then(() => {
+            const btn = document.getElementById('btnCopy'); btn.classList.add('copied'); btn.innerText = '✅ Disalin!';
+            setTimeout(() => { btn.classList.remove('copied'); btn.innerText = '📋 Salin Hasil'; }, 2000);
+        });
+    }
+
+    // ==========================================
+    // TAB 2: BACKTEST MULTI-PASARAN LOGIC
+    // ==========================================
+    const STORAGE_KEY = 'backtestMultiPasaran';
+    const SUMBER_KEY = 'backtestSumberList';
+    let btData = {};
+    let currentPasaran = 'P1';
+    let currentMode = 'bbfs';
+    let sumberList = [];
+
+    const $ = id => document.getElementById(id);
+    const pasaranSelect = $('pasaranSelect');
+    const sumberSelect = $('sumberSelect');
+    const tbody = $('tableBody');
+    const thead = $('tableHead');
+    const rowCount = $('rowCount');
+    const sumEls = {
+        1: { val: $('sum1'), sub: $('sub1'), label: $('label1') },
+        2: { val: $('sum2'), sub: $('sub2'), label: $('label2') },
+        3: { val: $('sum3'), sub: $('sub3'), label: $('label3') },
+        4: { val: $('sum4'), sub: $('sub4'), label: $('label4') }
+    };
+    const infoFoot = $('infoFoot');
+
+    function loadSumberList() {
+        try {
+            const raw = localStorage.getItem(SUMBER_KEY);
+            if (raw) { sumberList = JSON.parse(raw); if (!Array.isArray(sumberList)) sumberList = []; return; }
+        } catch (e) {}
+        sumberList = []; saveSumberList();
+    }
+    function saveSumberList() { localStorage.setItem(SUMBER_KEY, JSON.stringify(sumberList)); }
+    
+    function populateSumberDropdown() {
+        sumberSelect.innerHTML = '';
+        const optKosong = document.createElement('option'); optKosong.value = ''; optKosong.textContent = '— (kosong) —';
+        sumberSelect.appendChild(optKosong);
+        sumberList.forEach(s => {
+            const opt = document.createElement('option'); opt.value = s; opt.textContent = s; sumberSelect.appendChild(opt);
+        });
+        const currentSumber = getSumber();
+        if (currentSumber && sumberList.includes(currentSumber)) sumberSelect.value = currentSumber;
+        else sumberSelect.value = '';
+    }
+
+    function tambahSumber() {
+        const nama = prompt('Masukkan nama sumber baru:');
+        if (!nama || !nama.trim()) return;
+        const s = nama.trim();
+        if (sumberList.includes(s)) return alert('Sumber sudah ada!');
+        sumberList.push(s); saveSumberList(); populateSumberDropdown();
+        sumberSelect.value = s; switchSumber();
+    }
+    function hapusSumber() {
+        const selected = sumberSelect.value;
+        if (!selected) return alert('Pilih sumber yang ingin dihapus.');
+        if (!confirm(`Hapus sumber "${selected}" dari daftar?`)) return;
+        sumberList = sumberList.filter(s => s !== selected); saveSumberList();
+        if (getSumber() === selected) setSumber('');
+        populateSumberDropdown();
+    }
+    function switchSumber() { setSumber(sumberSelect.value); }
+
+    function loadStorage() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                btData = JSON.parse(raw);
+                for (const p in btData) {
+                    if (!btData[p].rows) btData[p].rows = [];
+                    if (!btData[p].mode) btData[p].mode = 'bbfs';
+                    if (btData[p].sumber === undefined) btData[p].sumber = '';
+                }
+                return;
+            }
+        } catch (e) {}
+        btData = { 'P1': { rows: [], mode: 'bbfs', sumber: '' }, 'P2': { rows: [], mode: 'bbfs', sumber: '' }, 'P3': { rows: [], mode: 'bbfs', sumber: '' } };
+        saveStorage();
+    }
+    function saveStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(btData)); }
+    function getPasaranList() { return Object.keys(btData).sort(); }
+    function getRows() { return btData[currentPasaran]?.rows || []; }
+    function setRows(rows) {
+        if (!btData[currentPasaran]) btData[currentPasaran] = { rows: [], mode: currentMode, sumber: '' };
+        btData[currentPasaran].rows = rows; btData[currentPasaran].mode = currentMode; saveStorage();
+    }
+    function getMode() { return btData[currentPasaran]?.mode || 'bbfs'; }
+    function setModePasaran(mode) {
+        if (!btData[currentPasaran]) btData[currentPasaran] = { rows: [], mode: mode, sumber: '' };
+        btData[currentPasaran].mode = mode; saveStorage();
+    }
+    function getSumber() { return btData[currentPasaran]?.sumber || ''; }
+    function setSumber(val) {
+        if (!btData[currentPasaran]) btData[currentPasaran] = { rows: [], mode: 'bbfs', sumber: '' };
+        btData[currentPasaran].sumber = val ? val.trim() : ''; saveStorage();
+    }
+
+    function getKepala(s) { if (!s || s.length < 4) return null; return parseInt(s[2]); }
+    function getEkor(s) { if (!s || s.length < 4) return null; return parseInt(s[3]); }
+    function isDigitInBbfs(bbfs, digit) { if (!bbfs || digit === null || digit === undefined) return false; return bbfs.includes(String(digit)); }
+
+    function getKey(mode, b) {
+        switch(mode) {
+            case 'bbfs': return 'bbfs' + b; case 'kepala': return 'kepala' + b;
+            case 'ekor': return 'ekor' + b; case 'angkontrol': return 'ai' + b;
+            default: return 'bbfs' + b;
+        }
+    }
+    function getColumnLabel(mode, index) {
+        const base = { 'bbfs': 'BBFS', 'kepala': 'KEPALA', 'ekor': 'EKOR', 'angkontrol': 'AI 2D' }[mode] || 'BBFS';
+        return `${base} ${index}`;
+    }
+    function getColumnPlaceholder(mode, index) { return getColumnLabel(mode, index); }
+
+    function getStatus(mode, bbfs, nextResult) {
+        if (!bbfs || !nextResult || nextResult.length < 4) return { label: '—', cls: 'na' };
+        if (mode === 'bbfs') {
+            const kep = getKepala(nextResult); const ekor = getEkor(nextResult); let match = 0;
+            if (kep !== null && bbfs.includes(String(kep))) match++;
+            if (ekor !== null && bbfs.includes(String(ekor))) match++;
+            if (match >= 2) return { label: 'JP', cls: 'jp' };
+            return { label: 'ZONK', cls: 'zonk' };
+        }
+        if (mode === 'kepala') {
+            const kep = getKepala(nextResult); if (kep === null) return { label: '—', cls: 'na' };
+            return isDigitInBbfs(bbfs, kep) ? { label: 'JP', cls: 'jp' } : { label: 'ZONK', cls: 'zonk' };
+        }
+        if (mode === 'ekor') {
+            const ekor = getEkor(nextResult); if (ekor === null) return { label: '—', cls: 'na' };
+            return isDigitInBbfs(bbfs, ekor) ? { label: 'JP', cls: 'jp' } : { label: 'ZONK', cls: 'zonk' };
+        }
+        if (mode === 'angkontrol') {
+            const kep = getKepala(nextResult); const ekor = getEkor(nextResult); let match = 0;
+            if (kep !== null && bbfs.includes(String(kep))) match++;
+            if (ekor !== null && bbfs.includes(String(ekor))) match++;
+            if (match >= 1) return { label: 'JP', cls: 'jp' };
+            return { label: 'ZONK', cls: 'zonk' };
+        }
+        return { label: '—', cls: 'na' };
+    }
+
+    function render() {
+        const rows = getRows(); const mode = getMode(); const n = rows.length;
+        rowCount.textContent = n + ' baris';
+
+        let headHtml = `<tr><th style="width:40px;">No</th><th style="min-width:90px;">Result</th>`;
+        for (let b = 1; b <= 4; b++) {
+            headHtml += `<th style="min-width:100px;">${getColumnLabel(mode, b)}</th><th style="min-width:70px;">Status</th>`;
+        }
+        headHtml += `<th style="width:36px;"></th></tr>`;
+        thead.innerHTML = headHtml;
+
+        let bodyHtml = '';
+        rows.forEach((row, idx) => {
+            const num = idx + 1;
+            bodyHtml += `<tr>`;
+            bodyHtml += `<td class="no-col">${num}</td>`;
+            bodyHtml += `<td><input type="text" class="result-input" value="${row.result || ''}" maxlength="4" placeholder="4d" data-index="${idx}"></td>`;
+            for (let b = 1; b <= 4; b++) {
+                const key = getKey(mode, b); const val = row[key] || '';
+                bodyHtml += `<td><input type="text" class="bbfs-input" value="${val}" placeholder="${getColumnPlaceholder(mode, b)}" data-index="${idx}" data-bbfs="${b}"></td>`;
+                bodyHtml += `<td><span class="status-badge" id="status-${idx}-${b}">—</span></td>`;
+            }
+            bodyHtml += `<td><button class="del-btn" onclick="removeRow(${idx})">✕</button></td></tr>`;
+        });
+        tbody.innerHTML = bodyHtml;
+
+        document.querySelectorAll('.result-input').forEach(inp => {
+            inp.addEventListener('input', function() {
+                const idx = parseInt(this.dataset.index);
+                const rows2 = getRows(); rows2[idx].result = this.value.trim().toUpperCase();
+                setRows(rows2); updateAllStatuses(); renderSummary();
+            });
+        });
+        document.querySelectorAll('.bbfs-input').forEach(inp => {
+            inp.addEventListener('input', function() {
+                const idx = parseInt(this.dataset.index); const b = parseInt(this.dataset.bbfs);
+                const rows2 = getRows(); rows2[idx][getKey(currentMode, b)] = this.value.trim();
+                setRows(rows2); updateAllStatuses(); renderSummary();
+            });
+        });
+
+        for (let b = 1; b <= 4; b++) {
+            const el = sumEls[b]; if (el.label) el.label.textContent = getColumnLabel(mode, b);
+        }
+        const modeNames = {
+            'bbfs': 'BBFS: minimal 2 digit cocok di Kepala + Ekor',
+            'kepala': 'KEPALA: digit ke-3 muncul di BBFS',
+            'ekor': 'EKOR: digit ke-4 muncul di BBFS',
+            'angkontrol': 'ANGKA KONTROL: 1 atau 2 digit di Kepala/Ekor muncul di BBFS'
+        };
+        infoFoot.textContent = '* ' + (modeNames[mode] || modeNames.bbfs);
+        updateAllStatuses(); renderSummary();
+    }
+
+    function updateAllStatuses() {
+        const rows = getRows(); const mode = getMode(); const n = rows.length; if (n === 0) return;
+        for (let i = 0; i < n; i++) {
+            const nextResult = (i < n - 1) ? rows[i + 1].result : null;
+            for (let b = 1; b <= 4; b++) {
+                const statusEl = document.getElementById(`status-${i}-${b}`); if (!statusEl) continue;
+                if (i === n - 1) { statusEl.textContent = 'MENUNGGU'; statusEl.className = 'status-badge waiting'; continue; }
+                if (!nextResult || nextResult.length < 4) { statusEl.textContent = '—'; statusEl.className = 'status-badge na'; continue; }
+                const status = getStatus(mode, rows[i][getKey(mode, b)] || '', nextResult);
+                statusEl.textContent = status.label; statusEl.className = 'status-badge ' + status.cls;
+            }
+        }
+    }
+
+    function renderSummary() {
+        const rows = getRows(); const mode = getMode(); const n = rows.length;
+        const stats = { 1: { jp: 0, test: 0 }, 2: { jp: 0, test: 0 }, 3: { jp: 0, test: 0 }, 4: { jp: 0, test: 0 } };
+        for (let i = 0; i < n - 1; i++) {
+            const nextResult = rows[i + 1].result; if (!nextResult || nextResult.length < 4) continue;
+            for (let b = 1; b <= 4; b++) {
+                const key = getKey(mode, b); const bbfs = rows[i][key] || ''; if (!bbfs) continue;
+                stats[b].test++; if (getStatus(mode, bbfs, nextResult).label === 'JP') stats[b].jp++;
+            }
+        }
+        for (let b = 1; b <= 4; b++) { sumEls[b].val.textContent = stats[b].jp; sumEls[b].sub.textContent = stats[b].test + ' test'; }
+    }
+
+    function addRow() {
+        const rows = getRows(); const newRow = { result: '' };
+        ['bbfs', 'kepala', 'ekor', 'angkontrol'].forEach(m => { for(let b=1; b<=4; b++) newRow[getKey(m, b)] = ''; });
+        rows.push(newRow); setRows(rows); render();
+    }
+    function removeLastRow() { const rows = getRows(); if (rows.length === 0) return; rows.pop(); setRows(rows); render(); }
+    function removeRow(index) { const rows = getRows(); rows.splice(index, 1); setRows(rows); render(); }
+    function clearAll() { if (getRows().length === 0) return; if (confirm('Hapus semua baris di pasaran ini?')) { setRows([]); render(); } }
+    function loadSample() {
+        const sample = [
+            { result: '7547', bbfs1: '0123569', bbfs2: '0123569', bbfs3: '0123569', bbfs4: '0123569' },
+            { result: '7058', bbfs1: '0125689', bbfs2: '0125689', bbfs3: '0125689', bbfs4: '0125689' },
+            { result: '8654', bbfs1: '0123589', bbfs2: '0123589', bbfs3: '0123589', bbfs4: '0123589' },
+            { result: '4114', bbfs1: '1235689', bbfs2: '1235689', bbfs3: '1235689', bbfs4: '1235689' }
+        ];
+        sample.forEach(row => { ['kepala', 'ekor', 'angkontrol'].forEach(m => { for(let b=1; b<=4; b++) if(!row[getKey(m, b)]) row[getKey(m, b)] = ''; }); });
+        setRows(sample); render();
+    }
+
+    function exportExcel() {
+        try {
+            const rows = getRows(); const mode = getMode(); const n = rows.length;
+            if (n === 0) { alert('Tidak ada data untuk diekspor.'); return; }
+            let tableHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+            <head><meta charset="UTF-8"><style>
+                table { border-collapse: collapse; font-size: 11pt; font-family: 'Segoe UI', Arial, sans-serif; }
+                th { background: #1a1a2e; color: #FFC107; font-weight: 700; padding: 6px 10px; border: 1px solid #444; text-align: center; }
+                td { padding: 4px 10px; border: 1px solid #666; text-align: center; }
+                .jp { background: #1b5e20; color: #a5d6a7; font-weight: 700; } .zonk { background: #4a1515; color: #ef9a9a; font-weight: 700; }
+                .waiting { background: #5d5d1a; color: #ffff88; font-weight: 700; } .na { background: #333; color: #999; }
+                .title { font-size: 14pt; font-weight: 700; color: #FFC107; background: #0f0f1a; padding: 8px; }
+                .subtitle { font-size: 10pt; color: #aaa; background: #1a1a28; padding: 4px 8px; }
+                .summary-row td { background: #1a1a28; color: #FFC107; font-weight: 700; }
+            </style></head><body><table>
+                <tr><td colspan="10" class="title">📊 BACKTEST MULTI-PASARAN</td></tr>
+                <tr><td colspan="10" class="subtitle">Pasaran: ${currentPasaran} | Mode: ${mode.toUpperCase()} | Sumber: ${getSumber() || '-'} | Tanggal: ${new Date().toLocaleDateString('id-ID')}</td></tr>
+                <tr><th>No</th><th>Result</th>`;
+            for (let b = 1; b <= 4; b++) tableHtml += `<th>${getColumnLabel(mode, b)}</th><th>Status ${b}</th>`;
+            tableHtml += `</tr>`;
+            for (let i = 0; i < n; i++) {
+                const row = rows[i]; tableHtml += `<tr><td>${i + 1}</td><td>${row.result || ''}</td>`;
+                for (let b = 1; b <= 4; b++) {
+                    const key = getKey(mode, b); const val = row[key] || '';
+                    let statusLabel = '—'; let statusCls = 'na';
+                    if (i === n - 1) { statusLabel = 'MENUNGGU'; statusCls = 'waiting'; }
+                    else {
+                        const nextResult = rows[i + 1]?.result;
+                        if (nextResult && nextResult.length >= 4) { const st = getStatus(mode, val, nextResult); statusLabel = st.label; statusCls = st.cls; }
+                    }
+                    tableHtml += `<td>${val}</td><td class="${statusCls}">${statusLabel}</td>`;
+                }
+                tableHtml += `</tr>`;
+            }
+            const stats = { 1: { jp: 0, test: 0 }, 2: { jp: 0, test: 0 }, 3: { jp: 0, test: 0 }, 4: { jp: 0, test: 0 } };
+            for (let i = 0; i < n - 1; i++) {
+                const nextResult = rows[i + 1]?.result; if (!nextResult || nextResult.length < 4) continue;
+                for (let b = 1; b <= 4; b++) {
+                    const key = getKey(mode, b); const bbfs = rows[i][key] || ''; if (!bbfs) continue;
+                    stats[b].test++; if (getStatus(mode, bbfs, nextResult).label === 'JP') stats[b].jp++;
+                }
+            }
+            tableHtml += `<tr class="summary-row"><td colspan="2"><b>JP / Test</b></td>`;
+            for (let b = 1; b <= 4; b++) tableHtml += `<td colspan="2"><b>${stats[b].jp} / ${stats[b].test}</b></td>`;
+            tableHtml += `</tr></table></body></html>`;
+            const bom = '\uFEFF';
+            const blob = new Blob([bom + tableHtml], { type: 'application/vnd.ms-excel' });
+            const url = URL.createObjectURL(blob); const a = document.createElement('a');
+            a.href = url; a.download = `backtest_${currentPasaran}_${new Date().toISOString().slice(0,10)}.xls`;
+            document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+        } catch (err) { alert('Terjadi kesalahan saat ekspor Excel: ' + err.message); }
+    }
+
+    function exportJSON() {
+        const exportData = { _sumberList: sumberList, ...btData };
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob); const a = document.createElement('a');
+        a.href = url; a.download = `backtest_data_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
+    }
+
+    function importJSON(event) {
+        const file = event.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const imported = JSON.parse(e.target.result);
+                if (typeof imported !== 'object' || Array.isArray(imported)) throw new Error('Format tidak valid.');
+                let importedSumberList = [];
+                if (Array.isArray(imported._sumberList)) { importedSumberList = imported._sumberList; delete imported._sumberList; }
+                for (const p in imported) {
+                    if (!imported[p].rows || !Array.isArray(imported[p].rows)) throw new Error(`Pasaran "${p}" tidak memiliki rows array.`);
+                    if (!imported[p].mode) imported[p].mode = 'bbfs';
+                    if (imported[p].sumber === undefined) imported[p].sumber = '';
+                }
+                if (confirm(`Data dari ${file.name} akan MENIMPA semua data saat ini. Lanjutkan?`)) {
+                    btData = imported; sumberList = importedSumberList;
+                    saveStorage(); saveSumberList();
+                    const list = getPasaranList();
+                    if (list.length > 0) { currentPasaran = list[0]; currentMode = btData[currentPasaran]?.mode || 'bbfs'; }
+                    else { btData['P1'] = { rows: [], mode: 'bbfs', sumber: '' }; currentPasaran = 'P1'; currentMode = 'bbfs'; saveStorage(); }
+                    populateDropdown(); populateSumberDropdown();
+                    document.querySelectorAll('.mode-tabs .tab').forEach(el => el.classList.toggle('active', el.dataset.mode === currentMode));
+                    render(); alert('Impor berhasil!');
+                }
+            } catch (err) { alert('Gagal mengimpor file: ' + err.message); }
+            event.target.value = '';
+        };
+        reader.readAsText(file);
+    }
+
+    function populateDropdown() {
+        const list = getPasaranList(); pasaranSelect.innerHTML = '';
+        list.forEach(p => { const opt = document.createElement('option'); opt.value = p; opt.textContent = p; pasaranSelect.appendChild(opt); });
+        if (list.includes(currentPasaran)) pasaranSelect.value = currentPasaran;
+        else if (list.length > 0) { currentPasaran = list[0]; pasaranSelect.value = currentPasaran; }
+    }
+    function switchPasaran() {
+        currentPasaran = pasaranSelect.value; currentMode = getMode();
+        document.querySelectorAll('.mode-tabs .tab').forEach(el => el.classList.toggle('active', el.dataset.mode === currentMode));
+        populateSumberDropdown(); render();
+    }
+    function tambahPasaran() {
+        const nama = prompt('Masukkan nama pasaran baru:'); if (!nama || !nama.trim()) return;
+        const p = nama.trim().toUpperCase();
+        if (btData[p]) return alert('Pasaran sudah ada!');
+        btData[p] = { rows: [], mode: 'bbfs', sumber: '' }; saveStorage(); populateDropdown();
+        currentPasaran = p; pasaranSelect.value = p; currentMode = 'bbfs'; setModePasaran('bbfs');
+        document.querySelectorAll('.mode-tabs .tab').forEach(el => el.classList.toggle('active', el.dataset.mode === 'bbfs'));
+        populateSumberDropdown(); render();
+    }
+    function hapusPasaran() {
+        const list = getPasaranList(); if (list.length <= 1) return alert('Minimal 1 pasaran.');
+        if (!confirm(`Hapus pasaran "${currentPasaran}" beserta datanya?`)) return;
+        delete btData[currentPasaran]; saveStorage();
+        const newList = getPasaranList(); currentPasaran = newList[0]; populateDropdown();
+        currentMode = getMode();
+        document.querySelectorAll('.mode-tabs .tab').forEach(el => el.classList.toggle('active', el.dataset.mode === currentMode));
+        populateSumberDropdown(); render();
+    }
+    function setMode(mode) {
+        currentMode = mode; setModePasaran(mode);
+        document.querySelectorAll('.mode-tabs .tab').forEach(el => el.classList.toggle('active', el.dataset.mode === mode));
+        render();
+    }
+
+    // ==========================================
+    // TAB 3: SYNC GOOGLE DRIVE LOGIC
+    // ==========================================
+    function syncToGoogleDrive() {
+        const webhookUrl = document.getElementById('sync_webhook').value.trim();
+        const folderId = document.getElementById('sync_folder_id').value.trim();
+        const statusEl = document.getElementById('sync_status');
+
+        if (!webhookUrl) {
+            statusEl.textContent = "❌ URL Webhook belum diisi!";
+            statusEl.style.color = "var(--danger)";
+            return;
+        }
+
+        statusEl.textContent = "⏳ Mengirim data ke Google Drive...";
+        statusEl.style.color = "var(--text-muted)";
+
+        const payload = {
+            timestamp: new Date().toISOString(),
+            folderId: folderId,
+            backtestData: btData,
+            sumberList: sumberList
+        };
+
+        fetch(webhookUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            // Simpan URL agar tidak perlu input ulang
+            localStorage.setItem('gdrive_webhook', webhookUrl);
+            localStorage.setItem('gdrive_folder_id', folderId);
+            
+            statusEl.textContent = "✅ Data berhasil dikirim ke Webhook! (Cek Google Sheet/Drive Anda)";
+            statusEl.style.color = "var(--success)";
+        }).catch(err => {
+            statusEl.textContent = "❌ Gagal mengirim. Periksa URL Webhook dan koneksi Anda.";
+            statusEl.style.color = "var(--danger)";
+            console.error(err);
+        });
+    }
+
+    // ==========================================
+    // INITIALIZATION
+    // ==========================================
+    window.addEventListener('load', () => {
+        // Init Generator
+        calculateKontrol();
+        updatePasaranView();
+        
+        // Init Backtest
+        loadStorage();
+        loadSumberList();
+        const list = getPasaranList();
+        if (list.length > 0) currentPasaran = list[0];
+        currentMode = getMode();
+        populateDropdown();
+        populateSumberDropdown();
+        document.querySelectorAll('.mode-tabs .tab').forEach(el => el.classList.toggle('active', el.dataset.mode === currentMode));
+        if (getRows().length === 0) loadSample();
+        else render();
+
+        // Init Sync
+        const savedWebhook = localStorage.getItem('gdrive_webhook');
+        const savedFolder = localStorage.getItem('gdrive_folder_id');
+        if (savedWebhook) document.getElementById('sync_webhook').value = savedWebhook;
+        if (savedFolder) document.getElementById('sync_folder_id').value = savedFolder;
+    });
+
+    // Expose functions to window for HTML onclick handlers
+    window.openMainTab = openMainTab;
+    window.updatePasaranView = updatePasaranView;
+    window.calculateKontrol = calculateKontrol;
+    window.ambilDataDariSheets = ambilDataDariSheets;
+    window.jalankanAutoFinder = jalankanAutoFinder;
+    window.jalankanAutoFinderLengkap = jalankanAutoFinderLengkap;
+    window.terapkanRumus = terapkanRumus;
+    window.resetAll = resetAll;
+    window.copyAllDigits = copyAllDigits;
+    window.addRow = addRow; window.removeLastRow = removeLastRow; window.removeRow = removeRow;
+    window.clearAll = clearAll; window.loadSample = loadSample; window.switchPasaran = switchPasaran;
+    window.tambahPasaran = tambahPasaran; window.hapusPasaran = hapusPasaran; window.setMode = setMode;
+    window.exportJSON = exportJSON; window.importJSON = importJSON; window.exportExcel = exportExcel;
+    window.tambahSumber = tambahSumber; window.hapusSumber = hapusSumber; window.switchSumber = switchSumber;
+    window.syncToGoogleDrive = syncToGoogleDrive;
+</script>
+</body>
+</html>
