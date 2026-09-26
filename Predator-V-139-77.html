@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>PREDATOR V139.0 - FIXED</title>
+<title>PREDATOR V139.7 - AUTO RECORD</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 :root{--bg:#0f172a;--card:#1e293b;--border:#334155;--txt:#f1f5f9;--mute:#64748b;--acc:#3b82f6;--ok:#10b981;--err:#ef4444;--warn:#f59e0b;--ex:#ec4899;--gld:#fbbf24}
@@ -13,6 +13,7 @@ h1{text-align:center;font-size:14px;color:#ff5722;letter-spacing:3px;font-weight
 .tbox{position:fixed;top:15px;right:15px;z-index:9999;display:flex;flex-direction:column;gap:8px}
 .toast{padding:10px 14px;border-radius:8px;font-size:11px;font-weight:700;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.3);animation:fadeIn .3s,fadeOut .3s 2.7s forwards}
 .toast.ok{background:#10b981}.toast.er{background:#ef4444}.toast.wn{background:#f59e0b;color:#000}
+.toast.auto{background:#8b5cf6}
 @keyframes fadeIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
 @keyframes fadeOut{to{opacity:0;transform:translateX(100%)}}
 .pbar{display:flex;gap:8px;margin-bottom:12px}
@@ -24,6 +25,10 @@ h1{text-align:center;font-size:14px;color:#ff5722;letter-spacing:3px;font-weight
 .btn-ex{background:var(--ex);color:#fff}
 .btn-gld{background:var(--gld);color:#000}
 .btn-card{background:var(--card);color:var(--txt);border:1px solid var(--border)}
+.btn-auto{background:#8b5cf6;color:#fff;position:relative}
+.btn-auto.off{background:#475569;opacity:0.6}
+.btn-auto::after{content:'ON';position:absolute;top:2px;right:4px;font-size:7px;background:#10b981;padding:1px 3px;border-radius:2px}
+.btn-auto.off::after{content:'OFF';background:#ef4444}
 .tabs{display:flex;gap:2px;background:var(--card);padding:3px;border-radius:10px;margin-bottom:12px}
 .tab{flex:1;padding:10px 4px;background:transparent;border:none;color:var(--mute);font-size:10px;font-weight:900;text-transform:uppercase;cursor:pointer;border-radius:8px;text-align:center}
 .tab.active{background:var(--bg);color:var(--gld)}
@@ -82,15 +87,21 @@ textarea{font-family:monospace;font-size:12px;color:var(--acc);border-left:4px s
 .hdr.acc{background:linear-gradient(to right,#3b82f6,transparent)}
 .hdr.pur{background:linear-gradient(to right,#a855f7,transparent)}
 .hdr.gld{background:linear-gradient(to right,#f59e0b,transparent)}
+.hdr.auto{background:linear-gradient(to right,#8b5cf6,transparent)}
 .lv-info,.md-info{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;font-size:9px;line-height:1.6}
 .lv-info b,.md-info b{color:var(--gld)}
 .tag{display:inline-block;padding:2px 5px;border-radius:3px;font-weight:900;font-size:8px;margin-right:3px}
+.auto-toggle{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid #8b5cf6;border-radius:8px;padding:8px 12px;margin-bottom:8px}
+.auto-toggle .lbl{margin:0;color:#8b5cf6}
+.auto-toggle .status{font-size:10px;font-weight:900}
+.auto-toggle .status.on{color:#10b981}
+.auto-toggle .status.off{color:#ef4444}
 </style>
 </head>
 <body>
 <div class="tbox" id="tbox"></div>
 <div class="wrap">
-<h1>⚡ PREDATOR V139.0 - FIXED</h1>
+<h1>⚡ PREDATOR V139.7 - AUTO RECORD</h1>
 
 <div class="pbar">
 <select class="psel" id="psSel"><option value="">-- Pilih Pasaran --</option></select>
@@ -99,14 +110,24 @@ textarea{font-family:monospace;font-size:12px;color:var(--acc);border-left:4px s
 </div>
 
 <div class="tabs">
-<button class="tab active" data-tab="expert">⚡ Expert</button>
+<button class="tab active" data-tab="expert"> Expert</button>
 <button class="tab" data-tab="vault">💾 Vault</button>
-<button class="tab" data-tab="dash">📊 Dash</button>
+<button class="tab" data-tab="dash"> Dash</button>
 <button class="tab" data-tab="mistik">📖 Mistik</button>
 </div>
 
 <!-- EXPERT TAB -->
 <div class="tabc active" id="tab-expert">
+
+<!-- AUTO RECORD TOGGLE -->
+<div class="auto-toggle">
+<div>
+<div class="lbl">🤖 AUTO-RECORD PREDIKSI</div>
+<div style="font-size:8px;color:var(--mute);">Otomatis simpan prediksi saat input keluaran baru</div>
+</div>
+<button class="btn btn-auto" id="btnAutoRec">ON</button>
+</div>
+
 <div class="qbar">
 <input type="text" class="qinp" id="qInp" placeholder="4 digit..." maxlength="4">
 <button class="btn btn-ok" id="btnAdd">＋ ADD</button>
@@ -116,27 +137,24 @@ textarea{font-family:monospace;font-size:12px;color:var(--acc);border-left:4px s
 <textarea id="inp" placeholder="Masukkan baris histori..." rows="5"></textarea>
 <div id="inpInfo" style="font-size:9px;color:var(--mute);margin:6px 0;"></div>
 
-<!-- AUTO SCAN DI ATAS (FITUR UTAMA) -->
 <div class="hdr ex">🔍 Expert Auto Scan (FITUR UTAMA)</div>
 
 <div class="pnl">
-<div style="font-size:10px;color:var(--mute);margin-bottom:8px;">⚡ Scan otomatis cari formula <b style="color:var(--ex)">beda sumber</b> terbaik</div>
+<div style="font-size:10px;color:var(--mute);margin-bottom:8px;"> Scan otomatis cari formula <b style="color:var(--ex)">beda sumber</b> terbaik</div>
 
-<!-- LEVEL KEDALAMAN -->
 <div style="font-size:9px;color:var(--ex);font-weight:900;margin-bottom:5px;">📊 LEVEL KEDALAMAN (Pembagian Formula):</div>
 <div class="chipg" id="lvChips">
-<div class="chip active" data-lv="LIGHT">⚡ LIGHT</div>
+<div class="chip active" data-lv="LIGHT"> LIGHT</div>
 <div class="chip" data-lv="NORMAL">🔍 NORMAL</div>
 <div class="chip" data-lv="DEEP">🔬 DEEP</div>
 </div>
 
 <div class="lv-info" id="lvInfo">
-<span class="tag" style="background:#10b981;color:#000;">⚡ LIGHT</span>
+<span class="tag" style="background:#10b981;color:#000;"> LIGHT</span>
 Scan formula #0 - #5,000,000 (<b>5 juta</b>)<br>
 <b>⏱️ Waktu:</b> ~2-5 detik | <b>🎯 Cocok untuk:</b> Test cepat, data sedikit
 </div>
 
-<!-- MODE SCAN -->
 <div style="font-size:9px;color:var(--acc);font-weight:900;margin-bottom:5px;">🚀 MODE SCAN (Strategi Berhenti):</div>
 <div class="chipg" id="mdChips">
 <div class="chip md active" data-md="TURBO">🚀 TURBO</div>
@@ -180,14 +198,15 @@ Scan formula #0 - #5,000,000 (<b>5 juta</b>)<br>
 </div>
 </div>
 
-<div class="g2" style="margin-top:10px;">
+<div class="g3" style="margin-top:10px;">
 <button class="btn btn-card" id="btnRst">RESET</button>
 <button class="btn btn-ex" id="btnScan">⚡ EXPERT SCAN</button>
+<button class="btn btn-gld" id="btnAutoFinder">🔥 AUTO FINDER</button>
 </div>
 </div>
 
 <div class="sbox" id="sBox">
-<div style="font-size:10px;font-weight:900;color:var(--ex);margin-bottom:8px;">⚡ EXPERT ENGINE <span id="engSt" style="float:right">RUNNING</span></div>
+<div style="font-size:10px;font-weight:900;color:var(--ex);margin-bottom:8px;"> EXPERT ENGINE <span id="engSt" style="float:right">RUNNING</span></div>
 <div class="smet">
 <div class="smeti"><span>MATCH:</span><b id="sMatch" style="color:var(--ex)">0</b></div>
 <div class="smeti"><span>PROGRESS:</span><b id="sPct" style="color:var(--acc)">0%</b></div>
@@ -201,7 +220,7 @@ Scan formula #0 - #5,000,000 (<b>5 juta</b>)<br>
 <div id="exOut"></div>
 
 <!-- FORMULA BUILDER DI BAWAH -->
-<div class="hdr ex" style="margin-top:20px;">🔧 Expert Formula Builder (Manual)</div>
+<div class="hdr ex" style="margin-top:20px;"> Expert Formula Builder (Manual)</div>
 
 <div class="pnl">
 <div class="epart">
@@ -209,7 +228,7 @@ Scan formula #0 - #5,000,000 (<b>5 juta</b>)<br>
 <div class="g3">
 <div><label class="lbl">Sumber</label><select id="exD1"><option value="0">AS</option><option value="1">COP</option><option value="2" selected>KEPALA</option><option value="3">EKOR</option><option value="4">J4D</option><option value="5">J3D</option><option value="6">J2D</option><option value="7">SLSH DD</option><option value="8">SLSH DT</option><option value="9">SLSH DB</option></select></div>
 <div><label class="lbl">Offset</label><input type="number" id="exP1" value="0" min="0"></div>
-<div><label class="lbl">Transform</label><select id="exT1"><option value="norm">NORM</option><option value="idx" selected>IDX</option><option value="ml">ML</option><option value="mb">MB</option><option value="ty">TY</option><option value="m3">M3</option><option value="m4">M4</option><option value="m0">M0</option><option value="m1">M1</option></select></div>
+<div><label class="lbl">Transform</label><select id="exT1"><option value="norm">NORM</option><option value="idx" selected>IDX</option><option value="ml">ML</option><option value="mb">MB</option><option value="ty">TY</option><option value="m0">M0</option><option value="m1">M1</option><option value="m2">M2</option><option value="m3">M3</option><option value="m4">M4</option><option value="m5">M5</option><option value="m6">M6</option><option value="m7">M7</option><option value="m8">M8</option><option value="m9">M9</option><option value="m10">M10</option><option value="m11">M11</option><option value="m12">M12</option><option value="m13">M13</option><option value="m14">M14</option><option value="m15">M15</option><option value="m16">M16</option><option value="m17">M17</option><option value="m18">M18</option><option value="m19">M19</option></select></div>
 </div>
 </div>
 
@@ -220,7 +239,7 @@ Scan formula #0 - #5,000,000 (<b>5 juta</b>)<br>
 <div class="g3">
 <div><label class="lbl">Sumber</label><select id="exD2"><option value="0">AS</option><option value="1" selected>COP</option><option value="2">KEPALA</option><option value="3">EKOR</option><option value="4">J4D</option><option value="5">J3D</option><option value="6">J2D</option><option value="7">SLSH DD</option><option value="8">SLSH DT</option><option value="9">SLSH DB</option></select></div>
 <div><label class="lbl">Offset</label><input type="number" id="exP2" value="0" min="0"></div>
-<div><label class="lbl">Transform</label><select id="exT2"><option value="norm">NORM</option><option value="idx">IDX</option><option value="ml">ML</option><option value="mb" selected>MB</option><option value="ty">TY</option><option value="m3">M3</option><option value="m4">M4</option><option value="m0">M0</option><option value="m1">M1</option></select></div>
+<div><label class="lbl">Transform</label><select id="exT2"><option value="norm">NORM</option><option value="idx">IDX</option><option value="ml">ML</option><option value="mb" selected>MB</option><option value="ty">TY</option><option value="m0">M0</option><option value="m1">M1</option><option value="m2">M2</option><option value="m3">M3</option><option value="m4">M4</option><option value="m5">M5</option><option value="m6">M6</option><option value="m7">M7</option><option value="m8">M8</option><option value="m9">M9</option><option value="m10">M10</option><option value="m11">M11</option><option value="m12">M12</option><option value="m13">M13</option><option value="m14">M14</option><option value="m15">M15</option><option value="m16">M16</option><option value="m17">M17</option><option value="m18">M18</option><option value="m19">M19</option></select></div>
 </div>
 </div>
 
@@ -231,7 +250,7 @@ Scan formula #0 - #5,000,000 (<b>5 juta</b>)<br>
 <div class="g3">
 <div><label class="lbl">Sumber</label><select id="exD3"><option value="0">AS</option><option value="1">COP</option><option value="2">KEPALA</option><option value="3" selected>EKOR</option><option value="4">J4D</option><option value="5">J3D</option><option value="6">J2D</option><option value="7">SLSH DD</option><option value="8">SLSH DT</option><option value="9">SLSH DB</option></select></div>
 <div><label class="lbl">Offset</label><input type="number" id="exP3" value="0" min="0"></div>
-<div><label class="lbl">Transform</label><select id="exT3"><option value="norm" selected>NORM</option><option value="idx">IDX</option><option value="ml">ML</option><option value="mb">MB</option><option value="ty">TY</option><option value="m3">M3</option><option value="m4">M4</option><option value="m0">M0</option><option value="m1">M1</option></select></div>
+<div><label class="lbl">Transform</label><select id="exT3"><option value="norm" selected>NORM</option><option value="idx">IDX</option><option value="ml">ML</option><option value="mb">MB</option><option value="ty">TY</option><option value="m0">M0</option><option value="m1">M1</option><option value="m2">M2</option><option value="m3">M3</option><option value="m4">M4</option><option value="m5">M5</option><option value="m6">M6</option><option value="m7">M7</option><option value="m8">M8</option><option value="m9">M9</option><option value="m10">M10</option><option value="m11">M11</option><option value="m12">M12</option><option value="m13">M13</option><option value="m14">M14</option><option value="m15">M15</option><option value="m16">M16</option><option value="m17">M17</option><option value="m18">M18</option><option value="m19">M19</option></select></div>
 </div>
 </div>
 
@@ -244,6 +263,7 @@ Scan formula #0 - #5,000,000 (<b>5 juta</b>)<br>
 <div style="font-size:9px;color:var(--mute);">⚡ EXPERT PREDIKSI LIVE</div>
 <div class="prev-val" id="exRes">—</div>
 <div class="prev-fm" id="exFm">—</div>
+<div style="font-size:8px;color:var(--ok);margin-top:4px;" id="exAutoStatus">🤖 Auto-Record: AKTIF</div>
 </div>
 
 <div class="g2" style="margin-top:10px;">
@@ -263,7 +283,13 @@ Scan formula #0 - #5,000,000 (<b>5 juta</b>)<br>
 </div>
 <div id="vList"></div>
 
-<div class="hdr gld" style="margin-top:16px;">🎯 Result Checker</div>
+<div class="hdr auto" style="margin-top:16px;">🤖 Riwayat Auto-Record</div>
+<div class="pnl">
+<div style="font-size:9px;color:var(--mute);margin-bottom:8px;">Prediksi yang otomatis tersimpan saat input keluaran baru:</div>
+<div id="autoRecList"></div>
+</div>
+
+<div class="hdr gld" style="margin-top:16px;"> Result Checker</div>
 <div class="pnl">
 <div style="font-size:10px;color:var(--mute);margin-bottom:6px;">Masukkan hasil keluaran:</div>
 <input type="text" id="chkInp" placeholder="????" maxlength="4" style="font-family:monospace;font-size:18px;font-weight:900;text-align:center;letter-spacing:4px;margin-bottom:8px;">
@@ -281,7 +307,7 @@ Scan formula #0 - #5,000,000 (<b>5 juta</b>)<br>
 
 <!-- MISTIK TAB -->
 <div class="tabc" id="tab-mistik">
-<div class="hdr pur">📖 Tabel Referensi Mistik</div>
+<div class="hdr pur">📖 Tabel Referensi Mistik Lengkap</div>
 <div class="pnl">
 <div style="font-size:10px;font-weight:900;color:#a855f7;text-align:center;margin-bottom:10px;">🔮 KALKULATOR MISTIK</div>
 <div style="display:flex;gap:4px;justify-content:center;margin-bottom:10px;flex-wrap:wrap;" id="mBtns"></div>
@@ -292,7 +318,7 @@ Scan formula #0 - #5,000,000 (<b>5 juta</b>)<br>
 </div>
 
 <div class="pnl">
-<div style="font-size:10px;font-weight:900;color:var(--gld);text-align:center;margin-bottom:10px;">📊 TABEL LENGKAP 0-9</div>
+<div style="font-size:10px;font-weight:900;color:var(--gld);text-align:center;margin-bottom:10px;">📊 TABEL LENGKAP 0-9 (24 MODE)</div>
 <div style="overflow-x:auto;"><table class="mt"><thead><tr id="mHead"></tr></thead><tbody id="mBody"></tbody></table></div>
 </div>
 </div>
@@ -318,22 +344,53 @@ Scan formula #0 - #5,000,000 (<b>5 juta</b>)<br>
 
 <script>
 // ============================================================
-// DB FIXED - SEMUA MODE 0-9 LENGKAP & BENAR
+// DB LENGKAP - 24 MODE MISTIK
 // ============================================================
 const DB = {
-    norm:[0,1,2,3,4,5,6,7,8,9],
-    idx:[5,6,7,8,9,0,1,2,3,4],
-    ml:[1,0,5,8,7,2,9,4,3,6],
-    mb:[8,7,6,9,5,4,2,1,0,3],
-    ty:[7,4,9,6,1,8,3,0,5,2],
-    m3:[3,2,1,0,9,8,7,6,5,4],
-    m4:[6,5,3,2,7,1,0,4,9,8],
-    m0:[6,5,8,7,9,1,0,3,2,4],
-    m1:[1,0,9,8,7,6,5,4,3,2]
+    norm: [0,1,2,3,4,5,6,7,8,9],
+    idx:  [5,6,7,8,9,0,1,2,3,4],
+    ml:   [1,0,5,8,7,2,9,4,3,6],
+    mb:   [8,7,6,9,5,4,2,1,0,3],
+    ty:   [7,4,9,6,1,8,3,0,5,2],
+    m0:   [6,5,8,7,9,1,0,3,2,4],
+    m1:   [1,0,9,8,7,6,5,4,3,2],
+    m2:   [2,8,0,9,7,6,5,4,1,3],
+    m3:   [3,2,1,0,9,8,7,6,5,4],
+    m4:   [6,5,3,2,7,1,0,4,9,8],
+    m5:   [5,4,3,2,1,0,9,8,7,6],
+    m6:   [6,8,4,5,2,3,0,9,1,7],
+    m7:   [7,6,5,4,3,2,1,0,9,8],
+    m8:   [8,7,6,5,9,3,2,1,0,4],
+    m9:   [9,8,7,6,5,4,3,2,1,0],
+    m10:  [4,2,1,8,0,6,5,9,3,7],
+    m11:  [1,0,5,4,3,2,8,9,6,7],
+    m12:  [2,7,0,8,6,9,4,1,3,5],
+    m13:  [3,9,7,0,6,8,4,2,5,1],
+    m14:  [6,5,4,7,2,1,0,3,9,8],
+    m15:  [5,6,4,9,2,0,1,8,7,3],
+    m16:  [3,8,7,0,9,6,5,2,1,4],
+    m17:  [9,4,8,6,1,7,3,5,2,0],
+    m18:  [8,9,7,4,3,6,5,2,0,1],
+    m19:  [7,8,3,2,9,6,5,0,1,4]
 };
-const MODES=Object.keys(DB);
-const MN={norm:'NORM',idx:'INDEX',ml:'ML',mb:'MB',ty:'TY',m3:'M3',m4:'M4',m0:'M0',m1:'M1'};
-const MC={norm:'#10b981',idx:'#3b82f6',ml:'#f97316',mb:'#ec4899',ty:'#fbbf24',m3:'#a855f7',m4:'#06b6d4',m0:'#ec4899',m1:'#14b8a6'};
+
+const MODES = Object.keys(DB);
+const MN = {
+    norm:'NORM', idx:'IX', ml:'ML', mb:'MB', ty:'TY',
+    m0:'M0', m1:'M1', m2:'M2', m3:'M3', m4:'M4',
+    m5:'M5', m6:'M6', m7:'M7', m8:'M8', m9:'M9',
+    m10:'M10', m11:'M11', m12:'M12', m13:'M13', m14:'M14',
+    m15:'M15', m16:'M16', m17:'M17', m18:'M18', m19:'M19'
+};
+
+const MC = {
+    norm:'#10b981', idx:'#3b82f6', ml:'#f97316', mb:'#ec4899', ty:'#fbbf24',
+    m0:'#a855f7', m1:'#14b8a6', m2:'#ef4444', m3:'#8b5cf6', m4:'#06b6d4',
+    m5:'#f59e0b', m6:'#10b981', m7:'#3b82f6', m8:'#ec4899', m9:'#64748b',
+    m10:'#f97316', m11:'#84cc16', m12:'#06b6d4', m13:'#a855f7', m14:'#f43f5e',
+    m15:'#14b8a6', m16:'#eab308', m17:'#6366f1', m18:'#d946ef', m19:'#22c55e'
+};
+
 const DN=["AS","COP","KEP","EKR","J4D","J3D","J2D","S2DD","S2DT","S2DB"];
 const PATS=[
     {id:"+1,+1,+1",s:[1,1,1]},{id:"+1,+3,-2",s:[1,3,-2]},{id:"+2,-1,+3",s:[2,-1,3]},
@@ -342,46 +399,26 @@ const PATS=[
     {id:"+4,-2,+1",s:[4,-2,1]},{id:"+2,-2,+2",s:[2,-2,2]}
 ];
 
-// LEVEL RANGES (PEMBAGIAN FORMULA)
 const LEVEL_RANGES = {
-    LIGHT: { 
-        start: 0, end: 5000000, label: '0-5M',
-        tag: '⚡ LIGHT', color: '#10b981',
+    LIGHT: { start: 0, end: 5000000, label: '0-5M', tag: '⚡ LIGHT', color: '#10b981',
         detail: 'Scan formula #0 - #5,000,000 (<b>5 juta</b>)<br><b>⏱️ Waktu:</b> ~2-5 detik | <b>🎯 Cocok untuk:</b> Test cepat, data sedikit',
-        params: { d: 4, p: 3, t: ['norm','idx','ml','mb','ty'], n: 5 }
-    },
-    NORMAL: { 
-        start: 5000000, end: 151000000, label: '5M-151M',
-        tag: '🔍 NORMAL', color: '#3b82f6',
+        params: { d: 4, p: 3, t: ['norm','idx','ml','mb','ty'], n: 5 } },
+    NORMAL: { start: 5000000, end: 151000000, label: '5M-151M', tag: '🔍 NORMAL', color: '#3b82f6',
         detail: 'Scan formula #5,000,001 - #151,000,000 (<b>146 juta</b>)<br><b>⏱️ Waktu:</b> ~30-90 detik | <b>🎯 Cocok untuk:</b> Keseimbangan',
-        params: { d: 6, p: 4, t: ['norm','idx','ml','mb','ty','m3','m4'], n: 8 }
-    },
-    DEEP: { 
-        start: 151000000, end: 4009500000, label: '151M-4B',
-        tag: '🔬 DEEP', color: '#ec4899',
-        detail: 'Scan formula #151,000,001 - #4,009,500,000 (<b>~3.86 miliar</b>)<br><b>⏱️ Waktu:</b> ~5-15 menit | <b>🎯 Cocok untuk:</b> Akurasi maksimal',
-        params: { d: 10, p: 5, t: MODES.slice(), n: 11 }
-    }
+        params: { d: 6, p: 4, t: ['norm','idx','ml','mb','ty','m0','m1','m2','m3','m4'], n: 8 } },
+    DEEP: { start: 151000000, end: 4009500000, label: '151M-4B', tag: '🔬 DEEP', color: '#ec4899',
+        detail: 'Scan formula #151,000,001 - #4,009,500,000 (<b>~3.86 miliar</b>)<br><b>⏱️ Waktu:</b> ~5-15 menit | <b>🎯 Cocok untuk:</b> Akurasi maksimal (Semua 24 Mode)',
+        params: { d: 10, p: 5, t: MODES.slice(), n: 11 } }
 };
 
-// MODE INFO (STRATEGI SCAN)
 const MODE_INFO = {
-    TURBO: {
-        tag: '🚀 TURBO',
-        desc: '<b>🚀 TURBO:</b> Berhenti segera saat limit tercapai. <span style="color:var(--ok)"><b>Paling cepat!</b></span><br><b>🎯 Strategi:</b> Stop begitu dapat N formula beda sumber'
-    },
-    FAST: {
-        tag: '⚡ FAST',
-        desc: '<b>⚡ FAST:</b> Skip formula yang sudah gagal (patah).<br><b>🎯 Strategi:</b> Saat ketemu patah > threshold, langsung skip ke formula berikutnya'
-    },
-    FULL: {
-        tag: '🔬 FULL',
-        desc: '<b>🔬 FULL:</b> Scan semua formula tanpa berhenti.<br><b>🎯 Strategi:</b> Telusuri semua kombinasi sampai selesai (paling lama tapi paling akurat)'
-    }
+    TURBO: { tag: '🚀 TURBO', desc: '<b>🚀 TURBO:</b> Berhenti segera saat limit tercapai. <span style="color:var(--ok)"><b>Paling cepat!</b></span><br><b>🎯 Strategi:</b> Stop begitu dapat N formula beda sumber' },
+    FAST: { tag: '⚡ FAST', desc: '<b> FAST:</b> Skip formula yang sudah gagal (patah).<br><b>🎯 Strategi:</b> Saat ketemu patah > threshold, langsung skip ke formula berikutnya' },
+    FULL: { tag: '🔬 FULL', desc: '<b>🔬 FULL:</b> Scan semua formula tanpa berhenti.<br><b>🎯 Strategi:</b> Telusuri semua kombinasi sampai selesai (paling lama tapi paling akurat)' }
 };
 
-let fCache=[],curPas='',curLv='LIGHT',curMd='TURBO',isScan=false;
-const SK={PL:'pm_pl',H:'pm_h_',V:'pm_v',C:'pm_c_'};
+let fCache=[],curPas='',curLv='LIGHT',curMd='TURBO',isScan=false,autoRecordEnabled=true;
+const SK={PL:'pm_pl',H:'pm_h_',V:'pm_v',C:'pm_c_',AR:'pm_ar'};
 const $=id=>document.getElementById(id);
 const esc=t=>{const d=document.createElement('div');d.textContent=t;return d.innerHTML;};
 
@@ -393,6 +430,25 @@ function toast(m,t='ok'){
     setTimeout(()=>el.remove(),3000);
 }
 
+// AUTO RECORD TOGGLE
+$('btnAutoRec').addEventListener('click',()=>{
+    autoRecordEnabled=!autoRecordEnabled;
+    localStorage.setItem(SK.AR,autoRecordEnabled?'1':'0');
+    updateAutoRecUI();
+    toast(autoRecordEnabled?'🤖 Auto-Record AKTIF':' Auto-Record NONAKTIF',autoRecordEnabled?'ok':'wn');
+});
+
+function updateAutoRecUI(){
+    const btn=$('btnAutoRec'),status=$('exAutoStatus');
+    if(autoRecordEnabled){
+        btn.classList.remove('off');btn.textContent='ON';
+        status.textContent='🤖 Auto-Record: AKTIF';status.style.color='var(--ok)';
+    }else{
+        btn.classList.add('off');btn.textContent='OFF';
+        status.textContent='🤖 Auto-Record: NONAKTIF';status.style.color='var(--mute)';
+    }
+}
+
 // TABS
 document.querySelectorAll('.tab').forEach(t=>{
     t.addEventListener('click',()=>{
@@ -400,12 +456,11 @@ document.querySelectorAll('.tab').forEach(t=>{
         document.querySelectorAll('.tabc').forEach(x=>x.classList.remove('active'));
         t.classList.add('active');
         $('tab-'+t.dataset.tab).classList.add('active');
-        if(t.dataset.tab==='vault')renderVault();
+        if(t.dataset.tab==='vault'){renderVault();renderAutoRec();}
         if(t.dataset.tab==='dash')renderDash();
     });
 });
 
-// POS BUTTONS
 document.querySelectorAll('.posb').forEach(b=>{
     b.addEventListener('click',()=>{
         document.querySelectorAll('.posb').forEach(x=>x.classList.remove('active'));
@@ -414,7 +469,6 @@ document.querySelectorAll('.posb').forEach(b=>{
     });
 });
 
-// PASARAN
 function getPList(){try{return JSON.parse(localStorage.getItem(SK.PL))||[];}catch{return[];}}
 function svPList(l){localStorage.setItem(SK.PL,JSON.stringify(l));}
 
@@ -428,41 +482,26 @@ function refreshPSel(){
     });
 }
 
-$('btnAddP').addEventListener('click',()=>{
-    $('pmNama').value='';$('pmKode').value='';
-    $('pMdl').style.display='block';
-});
-
-$('btnAddDash').addEventListener('click',()=>{
-    $('pmNama').value='';$('pmKode').value='';
-    $('pMdl').style.display='block';
-});
-
+$('btnAddP').addEventListener('click',()=>{$('pmNama').value='';$('pmKode').value='';$('pMdl').style.display='block';});
+$('btnAddDash').addEventListener('click',()=>{$('pmNama').value='';$('pmKode').value='';$('pMdl').style.display='block';});
 $('btnPmBatal').addEventListener('click',()=>$('pMdl').style.display='none');
-
 $('btnPmSave').addEventListener('click',()=>{
     const nm=$('pmNama').value.trim(),kd=$('pmKode').value.trim().toUpperCase();
     if(!nm||!kd)return toast('Wajib diisi!','er');
     const list=getPList();
     if(list.find(p=>p.kode===kd))return toast('Kode sudah ada!','er');
     list.push({nama:nm,kode:kd,createdAt:new Date().toISOString()});
-    svPList(list);refreshPSel();
-    $('psSel').value=kd;switchPasaran();
-    $('pMdl').style.display='none';
-    toast(`${kd} ditambahkan!`);
+    svPList(list);refreshPSel();$('psSel').value=kd;switchPasaran();
+    $('pMdl').style.display='none';toast(`${kd} ditambahkan!`);
 });
 
 $('btnDelP').addEventListener('click',()=>{
     if(!curPas)return toast('Pilih pasaran!','wn');
     if(!confirm(`Hapus ${curPas}?`))return;
     const list=getPList().filter(p=>p.kode!==curPas);
-    svPList(list);
-    localStorage.removeItem(SK.H+curPas);
-    localStorage.removeItem(SK.C+curPas);
-    curPas='';$('psSel').value='';
-    refreshPSel();$('inp').value='';
-    $('exOut').innerHTML='';updateInfo();renderDash();
-    toast('Dihapus','er');
+    svPList(list);localStorage.removeItem(SK.H+curPas);localStorage.removeItem(SK.C+curPas);
+    curPas='';$('psSel').value='';refreshPSel();$('inp').value='';
+    $('exOut').innerHTML='';updateInfo();renderDash();toast('Dihapus','er');
 });
 
 $('psSel').addEventListener('change',switchPasaran);
@@ -470,8 +509,7 @@ $('psSel').addEventListener('change',switchPasaran);
 function switchPasaran(){
     if(curPas){saveHist();saveCfg();}
     curPas=$('psSel').value;
-    if(curPas){loadHist(curPas);loadCfg(curPas);}
-    else $('inp').value='';
+    if(curPas){loadHist(curPas);loadCfg(curPas);}else $('inp').value='';
     $('exOut').innerHTML='';updateInfo();renderDash();
     localStorage.setItem('pm_lp',curPas);
 }
@@ -489,24 +527,15 @@ function saveCfg(){
 
 function loadCfg(k){
     try{
-        const c=JSON.parse(localStorage.getItem(SK.C+k));
-        if(!c)return;
-        $('exRnd').value=c.rnd||15;$('exLim').value=c.lim||3;
-        $('exPth').value=c.pth||0;
+        const c=JSON.parse(localStorage.getItem(SK.C+k));if(!c)return;
+        $('exRnd').value=c.rnd||15;$('exLim').value=c.lim||3;$('exPth').value=c.pth||0;
         if(c.lv && LEVEL_RANGES[c.lv]) curLv=c.lv;
         if(c.md && MODE_INFO[c.md]) curMd=c.md;
         document.querySelectorAll('.posb').forEach(b=>b.classList.remove('active'));
         document.querySelector(`.posb[data-p="${c.pos||'KEPALA'}"]`)?.classList.add('active');
-        document.querySelectorAll('#lvChips .chip').forEach(x=>{
-            x.classList.remove('active');
-            if(x.dataset.lv===curLv) x.classList.add('active');
-        });
-        document.querySelectorAll('#mdChips .chip').forEach(x=>{
-            x.classList.remove('active');
-            if(x.dataset.md===curMd) x.classList.add('active');
-        });
-        updateLevelInfo();
-        updateModeInfo();
+        document.querySelectorAll('#lvChips .chip').forEach(x=>{x.classList.remove('active');if(x.dataset.lv===curLv)x.classList.add('active');});
+        document.querySelectorAll('#mdChips .chip').forEach(x=>{x.classList.remove('active');if(x.dataset.md===curMd)x.classList.add('active');});
+        updateLevelInfo();updateModeInfo();
     }catch{}
 }
 
@@ -515,16 +544,78 @@ function updateInfo(){
     $('inpInfo').innerHTML=`<span style="color:var(--ok)">✓ ${lines.length} baris</span> ${curPas?'| <span style="color:var(--gld)">Auto-save</span>':''}`;
 }
 
-// QUICK INPUT
+// ============================================================
+// AUTO RECORD - INTI FITUR BARU
+// ============================================================
+function getCurrentPrediction(){
+    // Hitung prediksi saat ini berdasarkan formula yang aktif di Builder
+    const lines=$('inp').value.trim().split('\n').filter(x=>x.replace(/[^0-9]/g,'').length>=4);
+    if(lines.length<2) return null;
+    try{
+        const c=getExCfg(),pc=compPC(lines);
+        const res=gen3(pc,lines.length-1,c.p1,c.d1,c.t1,c.op1,c.p2,c.d2,c.t2,c.op2,c.p3,c.d3,c.t3,PATS[c.patIdx].s,c.len);
+        return {prediction:res, cfg:c, target:document.querySelector('.posb.active')?.dataset.p||'KEPALA'};
+    }catch(e){return null;}
+}
+
+function autoRecordPrediction(newEntry){
+    // Hanya auto-record jika:
+    // 1. Auto-Record aktif
+    // 2. Ada prediksi valid saat ini
+    // 3. Ada pasaran yang dipilih
+    if(!autoRecordEnabled) return false;
+    if(!curPas) return false;
+    
+    const current=getCurrentPrediction();
+    if(!current || !current.prediction || current.prediction==='—') return false;
+    
+    const dt=new Date();
+    const dateStr=dt.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+    const timeStr=dt.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    
+    const formulaId=bldExId(current.cfg);
+    
+    const record={
+        id: 'AR-'+Date.now().toString(36).toUpperCase(),
+        pasaran: curPas,
+        timestamp: dt.toISOString(),
+        prediction: current.prediction,
+        formulaId: formulaId,
+        target: current.target,
+        source: '🤖 AUTO-RECORD',
+        notes: `Prediksi sebelum keluaran ${newEntry} pada ${dateStr} ${timeStr}`,
+        keluaranTerkait: newEntry,
+        expertCfg: current.cfg,
+        autoRecord: true
+    };
+    
+    const v=getV();
+    v.unshift(record);
+    if(v.length>1000) v.length=1000;
+    svV(v);
+    
+    return true;
+}
+
+// QUICK INPUT - dengan AUTO RECORD
 $('btnAdd').addEventListener('click',()=>{
     const v=$('qInp').value.replace(/[^0-9]/g,'');
     if(v.length<4)return toast('Min 4 digit!','wn');
     const val=v.slice(-4);
     const cur=$('inp').value.trim();
+    
+    // AUTO RECORD: simpan prediksi sebelum tambah data baru
+    const recorded=autoRecordPrediction(val);
+    
     $('inp').value=cur?cur+'\n'+val:val;
     $('qInp').value='';$('qInp').focus();
     $('inp').dispatchEvent(new Event('input'));
-    toast(val);
+    
+    if(recorded){
+        toast(`✓ ${val} + 🤖 Prediksi tersimpan!`,'auto');
+    }else{
+        toast(val);
+    }
 });
 
 $('qInp').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnAdd').click();});
@@ -534,31 +625,62 @@ $('btnPaste').addEventListener('click',async()=>{
         const t=await navigator.clipboard.readText();
         const lines=t.trim().split('\n');
         let add=0,nl=$('inp').value.trim()?$('inp').value.trim().split('\n'):[];
+        let lastEntry=null;
         lines.forEach(l=>{
             const c=l.replace(/[^0-9]/g,'');
-            if(c.length>=4){nl.push(c.slice(-4));add++;}
+            if(c.length>=4){
+                const val=c.slice(-4);
+                // AUTO RECORD untuk setiap entry baru
+                if(autoRecordEnabled && curPas){
+                    const current=getCurrentPrediction();
+                    if(current && current.prediction && current.prediction!=='—'){
+                        const dt=new Date();
+                        const dateStr=dt.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+                        const timeStr=dt.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+                        const record={
+                            id: 'AR-'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).substr(2,4),
+                            pasaran: curPas,
+                            timestamp: dt.toISOString(),
+                            prediction: current.prediction,
+                            formulaId: bldExId(current.cfg),
+                            target: current.target,
+                            source: '🤖 AUTO-RECORD',
+                            notes: `Prediksi sebelum keluaran ${val} pada ${dateStr} ${timeStr}`,
+                            keluaranTerkait: val,
+                            expertCfg: current.cfg,
+                            autoRecord: true
+                        };
+                        const v=getV();
+                        v.unshift(record);
+                        if(v.length>1000) v.length=1000;
+                        svV(v);
+                    }
+                }
+                nl.push(val);
+                lastEntry=val;
+                add++;
+            }
         });
         $('inp').value=nl.join('\n');
         $('inp').dispatchEvent(new Event('input'));
-        toast(`${add} baris`);
+        if(add>0 && autoRecordEnabled){
+            toast(`📋 ${add} baris + 🤖 Auto-record aktif!`,'auto');
+        }else{
+            toast(`${add} baris`);
+        }
     }catch{toast('Gagal clipboard','er');}
 });
 
 $('btnDel').addEventListener('click',()=>{
     const lines=$('inp').value.trim().split('\n');
-    if(lines.length<=1)$('inp').value='';
-    else{lines.pop();$('inp').value=lines.join('\n');}
+    if(lines.length<=1)$('inp').value='';else{lines.pop();$('inp').value=lines.join('\n');}
     $('inp').dispatchEvent(new Event('input'));
 });
 
 $('inp').addEventListener('input',()=>{
-    clearTimeout(window._st);
-    window._st=setTimeout(()=>{saveHist();updateInfo();renderDash();},400);
+    clearTimeout(window._st);window._st=setTimeout(()=>{saveHist();updateInfo();renderDash();},400);
 });
 
-// ============================================================
-// CORE ENGINE - FIXED
-// ============================================================
 function compPC(raw){
     return raw.map(line=>{
         const d=String(line).replace(/[^0-9]/g,'').split('').map(Number);
@@ -613,35 +735,22 @@ function gen3(pc, idx, p1, d1, t1, op1, p2, d2, t2, op2, p3, d3, t3, pat, len) {
     }
 }
 
-// ============================================================
-// CHECKER - FIXED
-// - BBFS = BBFS 2D (KEPALA & EKOR)
-//   * Twin (kepala == ekor): cukup salah satu digit muncul → JP
-//   * Non-twin: KEDUA digit harus muncul → JP, jika hanya 1 → ZONK
-// - Target lain tetap seperti biasa
-// ============================================================
 function chk(pred, real, pos) {
     try {
         const r = String(real).replace(/[^0-9]/g,'').split('').map(Number);
         while(r.length<4) r.push(0);
         const p = String(pred);
 
-        // ================= BBFS 2D (KEPALA & EKOR) =================
         if (pos === 'BBFS') {
             const kepala = r[2];
             const ekor   = r[3];
-
-            // Twin: kepala == ekor → cukup salah satu digit muncul di prediksi
             if (kepala === ekor) {
                 return p.includes(String(kepala)) ? "JP" : null;
             }
-
             const adaKepala = p.includes(String(kepala));
             const adaEkor   = p.includes(String(ekor));
-            // HARUS dua-duanya muncul agar JP
             return (adaKepala && adaEkor) ? "JP" : null;
         }
-        // ============================================================
 
         let tv = [];
         switch(pos) {
@@ -663,7 +772,6 @@ function chk(pred, real, pos) {
     }
 }
 
-// EXPERT BUILDER
 function getExCfg(){
     return{
         d1:+$('exD1').value,d2:+$('exD2').value,d3:+$('exD3').value,
@@ -679,9 +787,7 @@ function bldExId(c){
     return`${DN[c.d1]}${c.p1+1}${s1} ${c.op1} ${DN[c.d2]}${c.p2+1}${s2} ${c.op2} ${DN[c.d3]}${c.p3+1}${s3} (${PATS[c.patIdx].id})`;
 }
 
-function bldSrcLabel(d1,d2,d3){
-    return`${DN[d1]}+${DN[d2]}+${DN[d3]}`;
-}
+function bldSrcLabel(d1,d2,d3){return`${DN[d1]}+${DN[d2]}+${DN[d3]}`;}
 
 let _exT=null;
 function debEx(){
@@ -703,10 +809,6 @@ function debEx(){
     $(id).addEventListener('change',debEx);
 });
 
-// ============================================================
-// BACKTEST DARI TOMBOL "BACKTEST" - FIXED
-// Baris paling atas = MENUNGGU (prediksi terbaru)
-// ============================================================
 $('btnBT').addEventListener('click',()=>{
     const lines=$('inp').value.trim().split('\n').filter(x=>x.replace(/[^0-9]/g,'').length>=4);
     if(lines.length<12)return toast('Min 12 baris!','wn');
@@ -717,13 +819,10 @@ $('btnBT').addEventListener('click',()=>{
     body+=`<div style="text-align:center;font-size:9px;color:var(--ex);font-family:monospace;margin:6px 0;">${esc(bldExId(c))}</div>`;
 
     let res = [];
-
-    // 1. Prediksi terbaru untuk result berikutnya = MENUNGGU
     const lastIdx = lines.length - 1;
     const lastPred = gen3(pc, lastIdx, c.p1, c.d1, c.t1, c.op1, c.p2, c.d2, c.t2, c.op2, c.p3, c.d3, c.t3, PATS[c.patIdx].s, c.len);
     res.push({in: lines[lastIdx], pred: lastPred, out: '—', st: '⏳ MENUNGGU', cl: 'var(--warn)'});
 
-    // 2. Backtest historis
     let hits = 0, tot = 0, rc = 0;
     for(let i = lines.length - 2; i >= 9 && i >= 0; i--) {
         if(rc >= lim) break;
@@ -742,9 +841,6 @@ $('btnBT').addEventListener('click',()=>{
     $('mdl').style.display='block';
 });
 
-// ============================================================
-// SAVE FORMULA - FIXED
-// ============================================================
 function saveFormula(data) {
     const v = getV();
     const formulaData = {
@@ -796,7 +892,6 @@ $('btnSave').addEventListener('click',()=>{
     });
 });
 
-// LEVEL CHIPS
 document.querySelectorAll('#lvChips .chip').forEach(c=>{
     c.addEventListener('click',()=>{
         curLv=c.dataset.lv;
@@ -812,7 +907,6 @@ function updateLevelInfo(){
     $('siRange').textContent=lv.label;
 }
 
-// MODE CHIPS
 document.querySelectorAll('#mdChips .chip').forEach(c=>{
     c.addEventListener('click',()=>{
         curMd=c.dataset.md;
@@ -822,38 +916,28 @@ document.querySelectorAll('#mdChips .chip').forEach(c=>{
     });
 });
 
-function updateModeInfo(){
-    $('mdInfo').innerHTML=MODE_INFO[curMd].desc;
-}
+function updateModeInfo(){$('mdInfo').innerHTML=MODE_INFO[curMd].desc;}
 
-$('exRnd').addEventListener('input',()=>{
-    const r=+$('exRnd').value||15;
-    $('siPut').textContent=r;
-});
+$('exRnd').addEventListener('input',()=>{$('siPut').textContent=+$('exRnd').value||15;});
+$('exLim').addEventListener('input',()=>{$('siLim').textContent=+$('exLim').value||3;});
 
-$('exLim').addEventListener('input',()=>{
-    const l=+$('exLim').value||3;
-    $('siLim').textContent=l;
-});
-
-$('btnRst').addEventListener('click',()=>{
-    $('exOut').innerHTML='';fCache=[];
-    $('sBox').style.display='none';
-    toast('Direset');
-});
+$('btnRst').addEventListener('click',()=>{$('exOut').innerHTML='';fCache=[];$('sBox').style.display='none';toast('Direset');});
 
 // ============================================================
-// EXPERT AUTO SCAN - FIXED
+// EXPERT AUTO SCAN & AUTO FINDER
 // ============================================================
 const MAX_CANDS = 1000;
 
-$('btnScan').addEventListener('click',()=>{
+function runScan(isAutoFinder=false){
     if(isScan)return;
     try{
         const raw=$('inp').value.trim().split('\n').filter(x=>x.replace(/[^0-9]/g,'').length>=4);
         const rds=+$('exRnd').value||15;
-        const rLim=+$('exLim').value||3;
-        const tPth=+$('exPth').value||0;
+        let rLim=+$('exLim').value||3;
+        let tPth=+$('exPth').value||0;
+        
+        if(isAutoFinder){rLim=1;tPth=0;}
+        
         if(raw.length<rds+11)return toast(`Butuh min ${rds+11} baris! (${raw.length})`,'er');
         const target=document.querySelector('.posb.active')?.dataset.p;
         if(!target)return toast('Pilih posisi!','er');
@@ -862,11 +946,18 @@ $('btnScan').addEventListener('click',()=>{
         const lvParams = lvRange.params;
         const dLen=+$('exLen').value,lScan=rds,sm=curMd;
         isScan=true;
-        $('btnScan').innerText=`${lvRange.tag} + ${MODE_INFO[sm].tag}`;
-        $('btnScan').disabled=true;
-        $('sBox').style.display='block';
-        $('exOut').innerHTML='';
-        $('engSt').innerText=`${lvRange.tag} | ${MODE_INFO[sm].tag}`;
+        
+        if(isAutoFinder){
+            $('btnAutoFinder').innerText='🔥 MENCARI...';
+            $('btnAutoFinder').disabled=true;
+            toast('🔥 AUTO FINDER: Mencari formula sempurna (0 patah)...','wn');
+        }else{
+            $('btnScan').innerText=`${lvRange.tag} + ${MODE_INFO[sm].tag}`;
+            $('btnScan').disabled=true;
+        }
+        
+        $('sBox').style.display='block';$('exOut').innerHTML='';
+        $('engSt').innerText=isAutoFinder?'🔥 AUTO FINDER':`${lvRange.tag} | ${MODE_INFO[sm].tag}`;
         fCache=[];
         
         let cands=[],seen=new Set(),seenSources=new Set();
@@ -885,7 +976,7 @@ $('btnScan').addEventListener('click',()=>{
         function chunk(){
             try{
                 if(!isScan || tbStop) {
-                    if (!isScan || tbStop) finishScan(cands,target,globalIdx,lvRange,sm);
+                    finishScan(cands,target,globalIdx,lvRange,sm,isAutoFinder);
                     return;
                 }
                 let cnt=0;
@@ -935,7 +1026,7 @@ $('btnScan').addEventListener('click',()=>{
                                 });
                                 if(sm==='TURBO' && cands.length>=rLim){
                                     tbStop=true;
-                                    toast(`🚀 TURBO: ${cands.length} formula beda sumber!`);
+                                    if(!isAutoFinder) toast(`🚀 TURBO: ${cands.length} formula beda sumber!`);
                                     break;
                                 }
                             }
@@ -965,24 +1056,55 @@ $('btnScan').addEventListener('click',()=>{
                 if(globalIdx<endIdx && isScan && !tbStop && cands.length < MAX_CANDS){
                     setTimeout(chunk,1);
                 }else{
-                    finishScan(cands,target,globalIdx,lvRange,sm);
+                    finishScan(cands,target,globalIdx,lvRange,sm,isAutoFinder);
                 }
             }catch(err){console.error(err);toast('Error: '+err.message,'er');resetUI();}
         }
         setTimeout(chunk,10);
     }catch(err){console.error(err);toast('Error: '+err.message,'er');resetUI();}
-});
+}
+
+$('btnScan').addEventListener('click',()=>runScan(false));
+$('btnAutoFinder').addEventListener('click',()=>runScan(true));
 
 function resetUI(){
     $('sBox').style.display='none';
     $('btnScan').innerText="⚡ EXPERT SCAN";
     $('btnScan').disabled=false;
+    $('btnAutoFinder').innerText='🔥 AUTO FINDER';
+    $('btnAutoFinder').disabled=false;
     isScan=false;
 }
 
-function finishScan(cands,target,lastIdx,lvRange,sm){
+function finishScan(cands,target,lastIdx,lvRange,sm,isAutoFinder){
     try{
         cands.sort((a,b)=>b.s-a.s||a.cp-b.cp);
+        
+        if(isAutoFinder){
+            if(cands.length>0){
+                const best=cands[0];
+                saveFormula({
+                    prediction:best.res,
+                    formulaId:best.f.id,
+                    target:target,
+                    source:'🏆 AUTO FINDER',
+                    notes:`Otomatis ditemukan! Hit: ${best.s}, Patah: ${best.cp}`,
+                    expertCfg:{
+                        d1:best.f.d1,p1:best.f.p1,t1:best.f.t1,op1:best.f.op1,
+                        d2:best.f.d2,p2:best.f.p2,t2:best.f.t2,op2:best.f.op2,
+                        d3:best.f.d3,p3:best.f.p3,t3:best.f.t3,
+                        patIdx:PATS.findIndex(p=>JSON.stringify(p.s)===JSON.stringify(best.f.patArr)),
+                        len:+$('exLen').value
+                    }
+                });
+                toast(` AUTO FINDER BERHASIL! Rumus terbaik disimpan ke Vault.`,'ok');
+            }else{
+                toast('❌ AUTO FINDER: Tidak ada rumus sempurna (0 patah). Coba ubah posisi atau tambah data.','er');
+            }
+            resetUI();
+            return;
+        }
+        
         if(!cands.length){
             $('exOut').innerHTML=`<div style="text-align:center;padding:25px;color:var(--ex);font-weight:900;background:var(--bg);border-radius:10px;border:2px solid var(--ex);margin-top:10px;">
                 TIDAK ADA FORMULA LOLOS<br>
@@ -1050,10 +1172,6 @@ window.saveScanF=function(idx){
     });
 };
 
-// ============================================================
-// OPEN BACKTEST DARI KARTU HASIL SCAN - FIXED
-// Baris paling atas = MENUNGGU (prediksi terbaru)
-// ============================================================
 window.openBT=function(idx){
     const c=fCache[idx];if(!c)return;
     const lines=$('inp').value.trim().split('\n').filter(x=>x.replace(/[^0-9]/g,'').length>=4);
@@ -1063,13 +1181,10 @@ window.openBT=function(idx){
     body+=`<div style="text-align:center;font-size:8px;color:var(--acc);margin-bottom:8px;">Sumber: ${esc(bldSrcLabel(c.f.d1,c.f.d2,c.f.d3))}</div>`;
 
     let res = [];
-
-    // 1. Prediksi terbaru MENUNGGU
     const lastIdx = lines.length - 1;
     const lastPred = gen3(pc, lastIdx, c.f.p1, c.f.d1, c.f.t1, c.f.op1, c.f.p2, c.f.d2, c.f.t2, c.f.op2, c.f.p3, c.f.d3, c.f.t3, c.f.patArr, c.dLen);
     res.push({in: lines[lastIdx], pred: lastPred, out: '—', st: '⏳ MENUNGGU', cl: 'var(--warn)'});
 
-    // 2. Backtest historis
     let hits = 0, tot = 0, rc = 0;
     for(let i = lines.length - 2; i >= 9 && i >= 0; i--) {
         if(rc >= c.lScan) break;
@@ -1090,7 +1205,6 @@ window.openBT=function(idx){
 
 $('btnClose').addEventListener('click',()=>$('mdl').style.display='none');
 
-// VAULT
 function getV(){try{return JSON.parse(localStorage.getItem(SK.V))||[];}catch{return[];}}
 function svV(v){localStorage.setItem(SK.V,JSON.stringify(v));}
 
@@ -1103,13 +1217,28 @@ function renderVault(){
     fil.forEach((x,i)=>{
         const idx=v.indexOf(x);
         const dt=new Date(x.timestamp).toLocaleDateString('id-ID',{day:'2-digit',month:'short'});
-        h+=`<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;border-left:3px solid #a855f7;">
+        const isAuto=x.source&&x.source.includes('AUTO FINDER');
+        const isRec=x.source&&x.source.includes('AUTO-RECORD');
+        let borderColor='#a855f7';
+        let badgeBg='#a855f7';
+        let badgeText='#fff';
+        let badgeLabel=esc(x.pasaran);
+        
+        if(isAuto){
+            borderColor='var(--gld)';badgeBg='var(--gld)';badgeText='#000';badgeLabel+=' 🏆';
+        }else if(isRec){
+            borderColor='#8b5cf6';badgeBg='#8b5cf6';badgeText='#fff';badgeLabel+=' 🤖';
+        }
+        
+        h+=`<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;border-left:3px solid ${borderColor};">
             <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--mute);margin-bottom:4px;">
-                <span style="background:#a855f7;color:#fff;padding:2px 5px;border-radius:3px;font-weight:900;">${esc(x.pasaran)}</span>
+                <span style="background:${badgeBg};color:${badgeText};padding:2px 5px;border-radius:3px;font-weight:900;">${badgeLabel}</span>
                 <span>${dt}</span>
             </div>
             <div style="font-size:18px;font-weight:900;color:#fff;letter-spacing:2px;text-align:center;margin:5px 0;">${esc(x.prediction||'—')}</div>
             <div style="font-size:8px;color:var(--mute);text-align:center;font-family:monospace;">${esc(x.formulaId||'Manual')}</div>
+            ${x.notes?`<div style="font-size:8px;color:var(--acc);text-align:center;margin-top:4px;">${esc(x.notes)}</div>`:''}
+            ${x.keluaranTerkait?`<div style="font-size:8px;color:var(--warn);text-align:center;margin-top:3px;">📊 Keluaran terkait: <b>${esc(x.keluaranTerkait)}</b></div>`:''}
             <div style="display:flex;gap:5px;margin-top:6px;">
                 <button class="btn btn-ok" style="flex:1" onclick="loadVF(${idx})">LOAD</button>
                 <button class="btn btn-err" style="flex:1" onclick="delVF(${idx})">HAPUS</button>
@@ -1119,14 +1248,46 @@ function renderVault(){
     list.innerHTML=h;
 }
 
-$('vFilter').addEventListener('change',renderVault);
+// Render khusus untuk Auto-Record history
+function renderAutoRec(){
+    const v=getV(),f=$('vFilter').value;
+    const fil=(f==='ALL'?v:v.filter(x=>x.pasaran===f)).filter(x=>x.source&&x.source.includes('AUTO-RECORD'));
+    const list=$('autoRecList');
+    if(!fil.length){list.innerHTML=`<div style="text-align:center;padding:20px;color:var(--mute);font-size:10px;">Belum ada auto-record</div>`;return;}
+    let h='';
+    fil.slice(0,20).forEach(x=>{
+        const dt=new Date(x.timestamp);
+        const dateStr=dt.toLocaleDateString('id-ID',{day:'2-digit',month:'short'});
+        const timeStr=dt.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+        const isHit=x.keluaranTerkait?chk(x.prediction,x.keluaranTerkait,x.target||'KEPALA'):null;
+        const hitColor=isHit==='JP'?'var(--ok)':isHit===null?'var(--mute)':'var(--err)';
+        const hitText=isHit==='JP'?'✓ JP':isHit===null?'⏳':'✗ MISS';
+        
+        h+=`<div style="background:var(--bg);border:1px solid #8b5cf6;border-radius:6px;padding:8px;margin-bottom:5px;border-left:3px solid ${hitColor};">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <div style="font-size:14px;font-weight:900;color:#fff;letter-spacing:2px;">${esc(x.prediction||'—')}</div>
+                    <div style="font-size:7px;color:var(--mute);font-family:monospace;">${esc(x.formulaId||'')}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:14px;font-weight:900;color:${hitColor};">${hitText}</div>
+                    <div style="font-size:7px;color:var(--mute);">${dateStr} ${timeStr}</div>
+                </div>
+            </div>
+            ${x.keluaranTerkait?`<div style="font-size:8px;color:var(--warn);margin-top:4px;">📊 Keluaran: <b>${esc(x.keluaranTerkait)}</b> • Target: ${esc(x.target||'KEPALA')}</div>`:''}
+        </div>`;
+    });
+    list.innerHTML=h;
+}
+
+$('vFilter').addEventListener('change',()=>{renderVault();renderAutoRec();});
 
 window.loadVF=function(idx){
     const v=getV()[idx];if(!v)return;
     if(v.pasaran&&v.pasaran!=='MANUAL'){
         $('psSel').value=v.pasaran;switchPasaran();
     }
-    if(v.source==='EXPERT'&&v.expertCfg){
+    if((v.source==='EXPERT'||v.source?.includes('AUTO FINDER')||v.source?.includes('AUTO-RECORD'))&&v.expertCfg){
         document.querySelector('.tab[data-tab="expert"]').click();
         const e=v.expertCfg;
         $('exD1').value=e.d1;$('exD2').value=e.d2;$('exD3').value=e.d3;
@@ -1141,7 +1302,7 @@ window.loadVF=function(idx){
 
 window.delVF=function(idx){
     if(!confirm('Hapus?'))return;
-    const v=getV();v.splice(idx,1);svV(v);renderVault();
+    const v=getV();v.splice(idx,1);svV(v);renderVault();renderAutoRec();
 };
 
 $('btnExport').addEventListener('click',()=>{
@@ -1164,16 +1325,13 @@ $('impFile').addEventListener('change',e=>{
             const merged = [...imp, ...current];
             if (merged.length > 1000) merged.length = 1000;
             svV(merged);
-            renderVault();
+            renderVault();renderAutoRec();
             toast(`Import ${imp.length}!`);
         }catch{toast('Invalid','er');}
     };
     r.readAsText(f);e.target.value='';
 });
 
-// ============================================================
-// RESULT CHECKER - FIXED
-// ============================================================
 $('btnCheck').addEventListener('click',()=>{
     const inp=$('chkInp').value.replace(/[^0-9]/g,'');
     if(inp.length<4)return toast('Masukkan 4 digit!','wn');
@@ -1203,7 +1361,6 @@ $('btnCheck').addEventListener('click',()=>{
     if(tot>0)toast(`${hits}/${tot} JP!`);
 });
 
-// DASHBOARD
 function renderDash(){
     const list=getPList(),c=$('dList'),vault=getV();
     if(!list.length){c.innerHTML=`<div style="text-align:center;padding:35px;color:var(--mute);">📊<br>Belum ada pasaran</div>`;return;}
@@ -1212,11 +1369,13 @@ function renderDash(){
         const hh=localStorage.getItem(SK.H+p.kode)||'';
         const lines=hh.trim().split('\n').filter(l=>l.replace(/[^0-9]/g,'').length>=4);
         const vc=vault.filter(v=>v.pasaran===p.kode).length;
+        const arCount=vault.filter(v=>v.pasaran===p.kode&&v.source?.includes('AUTO-RECORD')).length;
         const last=lines.length>0?lines[lines.length-1].replace(/[^0-9]/g,''):'—';
         h+=`<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-left:3px solid var(--acc);" onclick="$('psSel').value='${p.kode}';switchPasaran();document.querySelector('.tab').click();">
             <div>
                 <div style="font-weight:900;font-size:13px;color:var(--acc);">${esc(p.nama)}</div>
                 <div style="font-size:9px;color:var(--mute);margin-top:3px;font-family:monospace;">${esc(p.kode)} • ${lines.length} baris • Last: ${last}</div>
+                <div style="font-size:8px;color:#8b5cf6;margin-top:2px;">🤖 Auto-record: ${arCount}</div>
             </div>
             <div style="text-align:right;">
                 <div style="font-size:18px;font-weight:900;color:var(--acc);">${vc}</div>
@@ -1227,7 +1386,6 @@ function renderDash(){
     c.innerHTML=h;
 }
 
-// MISTIK TABLE
 function initMistik(){
     const b=$('mBtns');
     let h='';for(let i=0;i<10;i++)h+=`<div class="mbtn" data-n="${i}">${i}</div>`;
@@ -1276,8 +1434,12 @@ function showM(n){
     gd.innerHTML=h;
 }
 
-// INIT
 document.addEventListener('DOMContentLoaded',()=>{
+    // Load auto-record preference
+    const arPref=localStorage.getItem(SK.AR);
+    if(arPref==='0') autoRecordEnabled=false;
+    updateAutoRecUI();
+    
     refreshPSel();renderDash();updateInfo();updateLevelInfo();updateModeInfo();initMistik();
     const last=localStorage.getItem('pm_lp');
     if(last&&getPList().find(p=>p.kode===last)){
