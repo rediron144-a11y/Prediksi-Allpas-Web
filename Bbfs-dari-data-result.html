@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🎯 AI 2D Belakang — Prediksi BBFS</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{--ink:#22313f;--muted:#7b8a99}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',sans-serif;
+  color:var(--ink);min-height:100vh;padding:16px 12px 70px;
+  background:linear-gradient(135deg,#89f7fe 0%,#66a6ff 30%,#a18cd1 60%,#fbc2eb 85%,#ffecd2 100%);
+  background-attachment:fixed;
+}
+.wrap{max-width:1000px;margin:0 auto}
+
+.hero{
+  border-radius:24px;padding:24px 18px;text-align:center;color:#fff;margin-bottom:18px;
+  background:linear-gradient(120deg,#ff6b6b,#feca57,#1dd1a1,#48dbfb,#a55eea);
+  background-size:400% 400%;animation:flow 14s ease infinite;
+  box-shadow:0 12px 34px rgba(0,0,0,.22);
+}
+@keyframes flow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.hero h1{font-size:clamp(17px,3.4vw,26px);letter-spacing:.4px;text-shadow:0 2px 10px rgba(0,0,0,.3)}
+.hero p{font-size:12.5px;margin-top:7px;opacity:.96;font-weight:700}
+
+.tabs{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.tab{
+  flex:1;min-width:160px;padding:14px 16px;border:0;border-radius:16px;cursor:pointer;
+  font-weight:800;font-size:13.5px;color:#7b8a99;background:#fff;
+  box-shadow:0 6px 18px rgba(0,0,0,.12);transition:.25s;
+}
+.tab:hover{transform:translateY(-2px)}
+.tab.active{color:#fff;background:linear-gradient(135deg,#ff6b6b,#feca57);
+  box-shadow:0 10px 26px rgba(255,107,107,.45)}
+.panel{display:none}
+.panel.active{display:block;animation:fadeUp .35s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.card{background:#fff;border-radius:22px;padding:18px;margin-bottom:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.card-title{display:flex;align-items:center;gap:9px;font-size:14.5px;font-weight:800;margin-bottom:12px}
+.card-title i{width:11px;height:11px;border-radius:50%;display:inline-block;
+  background:linear-gradient(135deg,#ff6b6b,#feca57)}
+
+textarea{
+  width:100%;min-height:230px;padding:14px;border-radius:16px;border:2px solid #e3ecf5;
+  background:#f8fbff;font-family:ui-monospace,Consolas,monospace;font-size:13px;line-height:1.6;
+  resize:vertical;outline:none;transition:.2s;color:#22313f;
+}
+textarea:focus{border-color:#48dbfb;background:#fff;box-shadow:0 0 0 5px rgba(72,219,251,.16)}
+
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:13px}
+.btn{border:0;cursor:pointer;border-radius:14px;padding:13px 18px;color:#fff;
+  font-weight:800;font-size:13.5px;box-shadow:0 7px 18px rgba(0,0,0,.16);transition:.2s}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.07)}
+.btn:active{transform:translateY(0) scale(.99)}
+.b-blue{background:linear-gradient(135deg,#48dbfb,#0abde3)}
+.b-green{background:linear-gradient(135deg,#1dd1a1,#10ac84)}
+.b-orange{background:linear-gradient(135deg,#feca57,#ff9f43)}
+.b-purple{background:linear-gradient(135deg,#a55eea,#8854d0)}
+.b-pink{background:linear-gradient(135deg,#ff6b6b,#ee5253)}
+.b-gray{background:linear-gradient(135deg,#b2bec3,#7f8c8d)}
+.b-teal{background:linear-gradient(135deg,#0abde3,#0652DD)}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:14px}
+.stat{border-radius:16px;padding:12px;text-align:center;
+  background:linear-gradient(135deg,#eef6ff,#e6fbff);border:2px dashed #b9e6ff}
+.stat b{display:block;font-size:19px;color:#0abde3;font-family:ui-monospace,monospace}
+.stat span{font-size:10.5px;font-weight:800;color:#7b8a99;letter-spacing:.6px}
+
+.chipbox{display:flex;flex-wrap:wrap;gap:8px;max-height:300px;overflow:auto;padding:10px;
+  background:#f8fbff;border-radius:16px;border:2px solid #eaf3fb;margin-top:12px}
+.chip{font-family:ui-monospace,monospace;font-weight:800;font-size:13px;color:#fff;
+  padding:7px 11px;border-radius:11px;background:linear-gradient(135deg,#48dbfb,#0abde3);
+  box-shadow:0 4px 10px rgba(10,189,227,.28)}
+
+.field{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.field .grp{flex:1;min-width:140px}
+label.lbl{display:block;font-size:11.5px;font-weight:800;color:#7b8a99;
+  letter-spacing:.5px;margin-bottom:6px}
+input[type=text],input[type=date],select{
+  width:100%;padding:13px 14px;border-radius:14px;border:2px solid #e3ecf5;background:#f8fbff;
+  font-family:ui-monospace,monospace;font-size:16px;font-weight:800;outline:none;
+  transition:.2s;color:#22313f;
+}
+input[type=date]{font-size:14px;font-family:'Segoe UI',sans-serif}
+input[type=text]:focus,input[type=date]:focus,select:focus{
+  border-color:#feca57;background:#fff;box-shadow:0 0 0 5px rgba(254,202,87,.2)}
+select{font-size:14px}
+
+.pasaran-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:9px;margin-top:4px;
+}
+.pas-item{
+  cursor:pointer;padding:11px 8px;border-radius:14px;text-align:center;user-select:none;
+  font-weight:800;font-size:12.5px;color:#576574;background:#f4f9ff;
+  border:2px solid #e3ecf5;transition:.18s;
+}
+.pas-item:hover{transform:translateY(-2px);border-color:#48dbfb;color:#0abde3}
+.pas-item.active{
+  color:#fff;border-color:transparent;
+  background:linear-gradient(135deg,#a55eea,#8854d0);
+  box-shadow:0 8px 18px rgba(165,94,234,.42);
+}
+
+.badge{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;
+  font-size:12px;font-weight:800;background:linear-gradient(135deg,#1dd1a1,#10ac84);color:#fff;
+  box-shadow:0 5px 14px rgba(16,172,132,.3)}
+.badge.warn{background:linear-gradient(135deg,#ff6b6b,#ee5253);
+  box-shadow:0 5px 14px rgba(238,82,83,.3)}
+
+.bbfs-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;
+  padding:12px;border-radius:18px;background:#f8fbff;border:2px solid #eaf3fb}
+.bbfs-label{font-size:12px;font-weight:900;color:#7b8a99;min-width:82px;letter-spacing:.5px}
+.digits{display:flex;gap:10px;flex-wrap:wrap}
+
+.ball{
+  width: 52px;height: 52px;border-radius: 50%;
+  display: flex;align-items: center; justify-content: center;position: relative;
+  box-shadow:
+    inset -6px -6px 10px rgba(0,0,0,.35),
+    inset 4px 4px 8px rgba(255,255,255,.45),
+    0 6px 14px rgba(0,0,0,.3),
+    0 2px 4px rgba(0,0,0,.15);
+  transition: transform .2s;
+  animation: ballIn .3s ease backwards;
+}
+@keyframes ballIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+.ball:hover{transform: translateY(-3px) scale(1.06)}
+.ball::before{
+  content: '';position: absolute;top: 50%; left: 50%;transform: translate(-50%,-50%);
+  width: 56%; height: 56%;border-radius: 50%;background: #fff;
+  box-shadow: inset 0 2px 3px rgba(0,0,0,.15);z-index: 1;
+}
+.ball::after{
+  content:'';position:absolute;top:12%; left:18%;width:30%; height:30%;border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,.75), rgba(255,255,255,0) 70%);
+  pointer-events:none;z-index: 3;
+}
+.ball span{
+  position: relative;z-index: 2;font-weight: 900;font-size: 17px;color: #1a1a1a;
+  font-family: 'Segoe UI', sans-serif;text-shadow: 0 1px 0 rgba(255,255,255,.4);
+}
+.b0 { background: radial-gradient(circle at 32% 32%, #ffffff, #d4d4d4); }
+.b1 { background: radial-gradient(circle at 32% 32%, #ffe066, #d4a300); }
+.b2 { background: radial-gradient(circle at 32% 32%, #4a90e2, #0d47a1); }
+.b3 { background: radial-gradient(circle at 32% 32%, #ff5252, #b71c1c); }
+.b4 { background: radial-gradient(circle at 32% 32%, #b96ee0, #4a148c); }
+.b5 { background: radial-gradient(circle at 32% 32%, #ffa726, #e65100); }
+.b6 { background: radial-gradient(circle at 32% 32%, #66bb6a, #1b5e20); }
+.b7 { background: radial-gradient(circle at 32% 32%, #c2185b, #6a0f2e); }
+.b8 { background: radial-gradient(circle at 32% 32%, #424242, #000000); }
+.b9 { background: radial-gradient(circle at 32% 32%, #ffe066, #d4a300); }
+.b9::before{background: #fff;box-shadow: inset 0 0 0 3px #d4a300;}
+.ball.mati{ filter: grayscale(.85) brightness(.85);opacity: .55; }
+.ball.mati:hover{ filter: grayscale(.3) brightness(1); opacity:1; }
+
+/* ===== CRASH ANGKA ===== */
+.crash-section{
+  background:linear-gradient(135deg,#fff8e1,#ffecb3);
+  border-radius:18px;padding:16px;border:2px solid #ffe082;
+}
+.crash-title{
+  font-size:12.5px;font-weight:900;color:#7a5800;margin-bottom:10px;
+  display:flex;align-items:center;gap:7px;letter-spacing:.3px;
+}
+.crash-title .tag{
+  font-size:10px;padding:3px 8px;border-radius:6px;background:#ff9f43;color:#fff;font-weight:800;
+}
+.crash-title .tag.p{background:#8854d0;}
+.crash-row{display:flex;flex-wrap:wrap;gap:9px;}
+.crash-item{
+  padding:10px 14px;border-radius:14px;background:#fff;
+  border:2px solid #ffe082;text-align:center;min-width:78px;
+  box-shadow:0 4px 12px rgba(255,193,7,.25);transition:.2s;
+  animation: crashIn .35s ease backwards;
+}
+@keyframes crashIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+.crash-item:hover{transform:translateY(-3px) scale(1.04);border-color:#ff9f43;}
+.crash-item.top1{border-color:#ff9f43;background:linear-gradient(135deg,#fff,#fff5e1);
+  box-shadow:0 6px 16px rgba(255,159,67,.4);}
+.crash-num{
+  font-family:ui-monospace,monospace;font-size:18px;font-weight:900;
+  color:#c0392b;letter-spacing:2px;
+}
+.crash-2d .crash-num{color:#8854d0;}
+.crash-freq{font-size:10px;font-weight:800;color:#7b8a99;margin-top:3px;}
+
+.frow{display:grid;grid-template-columns:34px 1fr 46px;gap:10px;align-items:center;
+  margin:7px 0;font-size:12.5px;font-weight:700}
+.fdigit{font-family:ui-monospace,monospace;font-weight:900;text-align:center}
+.fbar{height:16px;border-radius:9px;background:#eef4fa;overflow:hidden}
+.fbar>i{display:block;height:100%;border-radius:9px;transition:width .5s}
+
+.bar-d0{background:linear-gradient(90deg,#ffffff,#c9c9c9);border:1px solid #d8d8d8;}
+.bar-d1{background:linear-gradient(90deg,#ffe066,#d4a300);}
+.bar-d2{background:linear-gradient(90deg,#4a90e2,#0d47a1);}
+.bar-d3{background:linear-gradient(90deg,#ff5252,#b71c1c);}
+.bar-d4{background:linear-gradient(90deg,#b96ee0,#4a148c);}
+.bar-d5{background:linear-gradient(90deg,#ffa726,#e65100);}
+.bar-d6{background:linear-gradient(90deg,#66bb6a,#1b5e20);}
+.bar-d7{background:linear-gradient(90deg,#c2185b,#6a0f2e);}
+.bar-d8{background:linear-gradient(90deg,#555555,#000000);}
+.bar-d9{background:linear-gradient(90deg,#ffe066,#d4a300);
+  box-shadow: inset 0 0 0 2px #b8860b;}
+
+.fcount{text-align:right;font-family:ui-monospace,monospace;color:#0abde3;font-weight:900}
+
+.akurasi-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){ .akurasi-wrap{grid-template-columns:1fr;} }
+
+.akurasi-section{
+  border-radius:18px;padding:14px;background:linear-gradient(135deg,#f8fbff,#eef6ff);
+  border:2px solid #eaf3fb;
+}
+.akurasi-section h4{
+  font-size:12.5px;font-weight:900;margin-bottom:12px;letter-spacing:.3px;
+  display:flex;align-items:center;gap:7px;color:#22313f;
+}
+.akurasi-section h4 .tag{
+  font-size:10px;padding:3px 8px;border-radius:6px;background:#0abde3;color:#fff;font-weight:800;
+}
+.akurasi-section h4 .tag.g{background:#10ac84;}
+.akurasi-section h4 .tag.p{background:#8854d0;}
+
+.acc-item{
+  display:grid;grid-template-columns:64px 1fr 70px;gap:9px;align-items:center;
+  margin-bottom:10px;
+}
+.acc-item:last-child{margin-bottom:0;}
+.acc-lbl{font-size:11.5px;font-weight:900;color:#576574;}
+.acc-bar{height:22px;border-radius:11px;background:#e3ecf5;overflow:hidden;position:relative;}
+.acc-fill{
+  height:100%;border-radius:11px;transition:width .6s;
+  display:flex;align-items:center;padding-left:8px;color:#fff;font-weight:900;font-size:11px;
+}
+.acc-fill.f8{background:linear-gradient(90deg,#1dd1a1,#10ac84);}
+.acc-fill.f7{background:linear-gradient(90deg,#48dbfb,#0abde3);}
+.acc-fill.f6{background:linear-gradient(90deg,#a55eea,#8854d0);}
+.acc-fill.empty{background:#dfe6ee;color:#7b8a99;padding-left:8px;}
+.acc-num{font-family:ui-monospace,monospace;font-weight:900;font-size:12px;text-align:right;color:#22313f;}
+.acc-num small{color:#7b8a99;font-weight:700;font-size:10px;}
+
+.akurasi-summary{
+  margin-top:12px;padding:12px;border-radius:14px;
+  background:linear-gradient(135deg,#fffbe6,#fff3c4);
+  border:2px solid #ffe066;font-size:12.5px;font-weight:700;color:#7a5800;line-height:1.75;
+}
+.akurasi-summary b{color:#b8860b;}
+
+.hitlist{display:flex;flex-wrap:wrap;gap:8px;max-height:220px;overflow:auto;padding:10px;
+  background:#f8fbff;border-radius:16px;border:2px solid #eaf3fb}
+.hit{font-family:ui-monospace,monospace;font-size:12.5px;font-weight:800;padding:6px 10px;
+  border-radius:10px;background:#fff;border:2px solid #e6f4ff}
+.hit b{color:#ee5253}
+.arrow{color:#1dd1a1;margin:0 4px;font-weight:900}
+
+.empty{color:#9aa9b6;font-size:13px;font-weight:600;padding:12px}
+.note{font-size:12px;color:#7b8a99;line-height:1.75;margin-top:12px}
+.warnbox{background:linear-gradient(135deg,#fff5f5,#ffe9e9);border:2px solid #ffc9c9;
+  color:#c0392b;padding:12px;border-radius:14px;font-size:12.5px;font-weight:700;margin-top:12px}
+
+.preview{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.prev-pill{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:12px;
+  font-size:12px;font-weight:900;color:#fff;letter-spacing:.3px;
+  background:linear-gradient(135deg,#48dbfb,#0abde3);
+  box-shadow:0 6px 14px rgba(10,189,227,.32);
+}
+.prev-pill.p2{background:linear-gradient(135deg,#a55eea,#8854d0);
+  box-shadow:0 6px 14px rgba(165,94,234,.32);}
+.prev-pill.p3{background:linear-gradient(135deg,#ff9f43,#ee5253);
+  box-shadow:0 6px 14px rgba(238,82,83,.32);}
+
+.riwayat-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-end}
+.riwayat-toolbar .grp{flex:1;min-width:160px}
+.riwayat-list{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto;padding-right:4px}
+
+.riwayat-item{
+  border-radius:16px;padding:12px;
+  background:linear-gradient(135deg,#f8fbff,#eef6ff);
+  border:2px solid #eaf3fb;transition:.2s;
+}
+.riwayat-item:hover{border-color:#48dbfb;box-shadow:0 4px 14px rgba(72,219,251,.15)}
+.riwayat-head{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
+.riwayat-head .prev-pill{font-size:10.5px;padding:6px 10px}
+.riwayat-body{font-size:12.5px;line-height:1.85;color:#22313f}
+.riwayat-body b{color:#0abde3;font-family:ui-monospace,monospace}
+.riwayat-body .mini{display:inline-block;font-family:ui-monospace,monospace;font-weight:900;
+  background:#fff;border:1.5px solid #e3ecf5;border-radius:7px;padding:1px 7px;margin:1px}
+
+.hit-badge{
+  display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:8px;
+  font-size:10.5px;font-weight:900;
+}
+.hit-badge.ok{background:linear-gradient(135deg,#1dd1a1,#10ac84);color:#fff;}
+.hit-badge.no{background:linear-gradient(135deg,#ff6b6b,#ee5253);color:#fff;}
+.hit-badge.pending{background:linear-gradient(135deg,#feca57,#ff9f43);color:#fff;}
+
+.btn-hapus{
+  margin-left:auto;border:0;cursor:pointer;background:linear-gradient(135deg,#ff6b6b,#ee5253);
+  color:#fff;width:28px;height:28px;border-radius:50%;font-weight:900;font-size:13px;
+  box-shadow:0 4px 10px rgba(238,82,83,.35);transition:.2s;
+}
+.btn-hapus:hover{transform:scale(1.1)}
+.btn-mini-copy{
+  border:0;cursor:pointer;background:linear-gradient(135deg,#48dbfb,#0abde3);
+  color:#fff;padding:5px 10px;border-radius:8px;font-weight:800;font-size:11px;
+  box-shadow:0 3px 8px rgba(10,189,227,.3);transition:.2s;
+}
+.btn-mini-copy:hover{transform:translateY(-2px)}
+
+.toast{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:linear-gradient(135deg,#1dd1a1,#10ac84);color:#fff;font-weight:800;
+  padding:12px 22px;border-radius:14px;box-shadow:0 12px 30px rgba(16,172,132,.4);
+  opacity:0;pointer-events:none;transition:.28s;z-index:999;font-size:13.5px;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.storage-note{
+  font-size:11px;color:#7b8a99;font-weight:700;display:flex;gap:6px;align-items:center;
+  margin-top:10px;padding:8px 12px;border-radius:10px;background:#f4f9ff;
+}
+
+/* Export overlay */
+.exporting{position:relative;}
+.exporting::after{
+  content:'📸 Membuat gambar...';
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:18px;font-weight:900;z-index:9999;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>🎯 AI 2D BELAKANG — PREDIKSI BBFS</h1>
+    <p>Analisa Pola 2D Belakang • BBFS 8/7/6 • Crash 4D + Top 2D • Export PNG</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="tabParse">1️⃣ &nbsp;Parsing Data</button>
+    <button class="tab" data-tab="tabPredict">2️⃣ &nbsp;Prediksi BBFS</button>
+  </div>
+
+  <!-- ================= TAB 1 ================= -->
+  <section id="tabParse" class="panel active">
+    <div class="card">
+      <div class="card-title"><i></i>Input Data Result (paste mentah / bebas)</div>
+      <textarea id="rawInput" placeholder="Paste data di sini...&#10;Contoh:&#10;1622 : 234568901 ai&#10;9258 : 123457890 ai&#10;5315 : 901235678 ai"></textarea>
+      <div class="btnrow">
+        <button class="btn b-blue" onclick="doParse()">⚙️ Proses Parsing</button>
+        <button class="btn b-orange" onclick="loadSample()">📋 Muat Contoh</button>
+        <button class="btn b-gray" onclick="clearAll()">🗑️ Bersihkan</button>
+        <button class="btn b-green" onclick="sendToPredict()">📤 Kirim ke Tab Prediksi</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="stTotal">0</b><span>TOTAL DATA</span></div>
+        <div class="stat"><b id="stUnik">0</b><span>DATA UNIK</span></div>
+        <div class="stat"><b id="stFirst">-</b><span>TERLAMA</span></div>
+        <div class="stat"><b id="stLast">-</b><span>TERBARU</span></div>
+      </div>
+      <div class="storage-note">💾 <span id="storageStatus">Data tersimpan otomatis di browser.</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i></i>Hasil Parsing (hanya data keluaran 4 digit)</div>
+      <div id="cleanList" class="chipbox">
+        <div class="empty">Belum ada data. Klik "Proses Parsing".</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TAB 2 ================= -->
+  <section id="tabPredict" class="panel">
+
+    <div class="card">
+      <div class="card-title"><i></i>Pilih Pasaran</div>
+      <div class="pasaran-grid" id="pasaranGrid"></div>
+      <div class="field" style="margin-top:14px">
+        <div class="grp">
+          <label class="lbl">NAMA PASARAN (bisa diketik manual)</label>
+          <input type="text" id="namaPasaran" placeholder="Contoh: Singapore" value="Singapore">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i></i>Tanggal &amp; Result Terakhir</div>
+      <div class="field">
+        <div class="grp">
+          <label class="lbl">TANGGAL PREDIKSI</label>
+          <input type="date" id="tanggalPrediksi">
+        </div>
+        <div class="grp">
+          <label class="lbl">RESULT TERAKHIR (4 DIGIT)</label>
+          <input type="text" id="lastResult" maxlength="4" placeholder="5315" value="5315">
+        </div>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <div class="grp">
+          <label class="lbl">MODE FILTER DATA</label>
+          <select id="filterMode" onchange="toggleFilterMode()">
+            <option value="count" selected>Jumlah Data Terakhir</option>
+            <option value="range">Rentang Tanggal</option>
+          </select>
+        </div>
+        <div class="grp" id="grpCount">
+          <label class="lbl">JUMLAH DATA</label>
+          <select id="limitData">
+            <option value="300" selected>300 Data Terakhir</option>
+            <option value="500">500 Data Terakhir</option>
+            <option value="all">Semua Data</option>
+          </select>
+        </div>
+        <div class="grp" id="grpStart" style="display:none">
+          <label class="lbl">TANGGAL MULAI</label>
+          <input type="date" id="startDate">
+        </div>
+        <div class="grp" id="grpEnd" style="display:none">
+          <label class="lbl">TANGGAL AKHIR</label>
+          <input type="date" id="endDate">
+        </div>
+      </div>
+      <div class="btnrow">
+        <button class="btn b-purple" onclick="hitungPrediksi()">🔮 Hitung Prediksi BBFS</button>
+        <button class="btn b-pink" onclick="copyHasil()">📋 Salin Hasil</button>
+        <button class="btn b-orange" onclick="exportPNG()">📸 Export PNG</button>
+      </div>
+      <div style="margin-top:14px">
+        <span id="dataBadge" class="badge warn">⚠️ Belum ada data — parsing dulu di Tab 1</span>
+      </div>
+    </div>
+
+    <div id="hasilBox"></div>
+
+    <div class="card" id="akurasiCard">
+      <div class="card-title"><i></i>📊 Statistik Akurasi Prediksi</div>
+      <div id="akurasiBox">
+        <div class="empty">Belum ada data akurasi.</div>
+      </div>
+    </div>
+
+    <div class="card" id="riwayatCard">
+      <div class="card-title"><i></i>📚 Riwayat Prediksi Per Pasaran</div>
+      <div class="riwayat-toolbar">
+        <div class="grp">
+          <label class="lbl">FILTER PASARAN</label>
+          <select id="filterPasaranRiwayat" onchange="renderRiwayat()">
+            <option value="all">Semua Pasaran</option>
+          </select>
+        </div>
+        <button class="btn b-gray" style="padding:11px 16px" onclick="hapusSemuaRiwayat()">🗑️ Hapus Semua Riwayat</button>
+      </div>
+      <div id="riwayatBox" class="riwayat-list">
+        <div class="empty">Belum ada riwayat prediksi.</div>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<div class="toast" id="toast">✅ Hasil berhasil disalin!</div>
+
+<script>
+/* =========================================================
+   KONSTANTA
+========================================================= */
+const PASARAN_LIST = [
+  "Singapore","Hongkong","Sydney","SGP49","Cambodia",
+  "China","Japan","Taiwan","Macau","Bangkok",
+  "BullsEye","Carolina Day","Oregon 12","PCSO","Magnum4D",
+  "Damacai","Toto","Kuda Lari","Bullseye NZ","KingKong"
+];
+
+const LS_DATA     = 'aibb_data_v1';
+const LS_SETTINGS = 'aibb_settings_v1';
+const LS_HISTORY  = 'aibb_history_v1';
+
+/* =========================================================
+   STATE
+========================================================= */
+let parsedData = [];
+let lastPrediction = null;
+let riwayatCache = [];
+
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
+function saveData(){ try{ localStorage.setItem(LS_DATA, JSON.stringify(parsedData)); updateStorageNote(); }catch(e){} }
+function loadData(){
+  try{ const raw = localStorage.getItem(LS_DATA);
+    if(raw){ const arr = JSON.parse(raw); if(Array.isArray(arr)) parsedData = arr; }
+  }catch(e){}
+}
+function saveSettings(){
+  const s = {
+    namaPasaran : document.getElementById('namaPasaran').value,
+    tanggal     : document.getElementById('tanggalPrediksi').value,
+    lastResult  : document.getElementById('lastResult').value,
+    filterMode  : document.getElementById('filterMode').value,
+    limit       : document.getElementById('limitData').value,
+    startDate   : document.getElementById('startDate').value,
+    endDate     : document.getElementById('endDate').value
+  };
+  try{ localStorage.setItem(LS_SETTINGS, JSON.stringify(s)); }catch(e){}
+}
+function loadSettings(){
+  try{
+    const raw = localStorage.getItem(LS_SETTINGS);
+    if(!raw) return;
+    const s = JSON.parse(raw);
+    if(s.namaPasaran) document.getElementById('namaPasaran').value = s.namaPasaran;
+    if(s.tanggal)     document.getElementById('tanggalPrediksi').value = s.tanggal;
+    if(s.lastResult)  document.getElementById('lastResult').value = s.lastResult;
+    if(s.filterMode)  document.getElementById('filterMode').value = s.filterMode;
+    if(s.limit)       document.getElementById('limitData').value = s.limit;
+    if(s.startDate)   document.getElementById('startDate').value = s.startDate;
+    if(s.endDate)     document.getElementById('endDate').value = s.endDate;
+    toggleFilterMode();
+    document.querySelectorAll('.pas-item').forEach(el=>{
+      el.classList.toggle('active', el.dataset.nama === s.namaPasaran);
+    });
+  }catch(e){}
+}
+function getRiwayat(){
+  try{ const raw = localStorage.getItem(LS_HISTORY);
+    const arr = raw ? JSON.parse(raw) : []; return Array.isArray(arr)?arr:[];
+  }catch(e){ return []; }
+}
+function setRiwayat(arr){ try{ localStorage.setItem(LS_HISTORY, JSON.stringify(arr)); }catch(e){} }
+
+function simpanRiwayat(pred){
+  let hist = getRiwayat();
+  hist = hist.filter(h => !(h.namaPasaran===pred.namaPasaran
+                        && h.tanggalISO===pred.tanggalISO
+                        && h.lastInput===pred.lastInput));
+  hist.unshift({...pred, dataLen: parsedData.length, ts: Date.now()});
+  if(hist.length > 200) hist = hist.slice(0,200);
+  setRiwayat(hist);
+}
+
+function updateStorageNote(){
+  const el = document.getElementById('storageStatus');
+  if(!el) return;
+  el.textContent = parsedData.length === 0
+    ? 'Belum ada data tersimpan.'
+    : `${parsedData.length} data tersimpan otomatis di browser (localStorage).`;
+}
+
+/* =========================================================
+   INIT
+========================================================= */
+document.addEventListener('DOMContentLoaded', ()=>{
+  const t = new Date();
+  const yyyy = t.getFullYear();
+  const mm = String(t.getMonth()+1).padStart(2,'0');
+  const dd = String(t.getDate()).padStart(2,'0');
+  const today = `${yyyy}-${mm}-${dd}`;
+  document.getElementById('tanggalPrediksi').value = today;
+  document.getElementById('endDate').value = today;
+
+  // Set default start date (30 hari lalu)
+  const d30 = new Date(); d30.setDate(d30.getDate() - 30);
+  const y2 = d30.getFullYear();
+  const m2 = String(d30.getMonth()+1).padStart(2,'0');
+  const d2 = String(d30.getDate()).padStart(2,'0');
+  document.getElementById('startDate').value = `${y2}-${m2}-${d2}`;
+
+  renderPasaranGrid();
+  loadData();
+  renderClean();
+  updateBadge();
+  updateStorageNote();
+  loadSettings();
+
+  ['namaPasaran','tanggalPrediksi','lastResult','limitData','startDate','endDate','filterMode'].forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener('input', saveSettings);
+    el.addEventListener('change', saveSettings);
+  });
+
+  renderFilterPasaran();
+  renderRiwayat();
+});
+
+function renderPasaranGrid(){
+  const grid = document.getElementById('pasaranGrid');
+  grid.innerHTML = PASARAN_LIST.map(p=>
+    `<div class="pas-item${p==='Singapore'?' active':''}" data-nama="${p}">${p}</div>`
+  ).join('');
+  grid.querySelectorAll('.pas-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      grid.querySelectorAll('.pas-item').forEach(x=>x.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('namaPasaran').value = el.dataset.nama;
+      saveSettings();
+    });
+  });
+}
+
+/* =========================================================
+   TAB SWITCHER
+========================================================= */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.tab).classList.add('active');
+    if(t.dataset.tab === 'tabPredict'){
+      renderFilterPasaran();
+      renderRiwayat();
+    }
+  });
+});
+
+/* =========================================================
+   FILTER MODE
+========================================================= */
+function toggleFilterMode(){
+  const mode = document.getElementById('filterMode').value;
+  document.getElementById('grpCount').style.display = mode==='count' ? '' : 'none';
+  document.getElementById('grpStart').style.display = mode==='range' ? '' : 'none';
+  document.getElementById('grpEnd').style.display   = mode==='range' ? '' : 'none';
+}
+
+/* =========================================================
+   PARSING
+========================================================= */
+function extractResult(line){
+  let s = String(line).replace(/\u00A0/g,' ').trim();
+  if(!s) return null;
+  const ci = s.indexOf(':');
+  if(ci > -1){
+    const left = s.slice(0,ci);
+    const m = left.match(/\d{4}/);
+    if(m) return m[0];
+  }
+  const tokens = s.split(/[\s,;|\t]+/);
+  for(const t of tokens){ if(/^\d{4}$/.test(t)) return t; }
+  const m2 = s.match(/(?:^|\D)(\d{4})(?:\D|$)/);
+  return m2 ? m2[1] : null;
+}
+
+function doParse(){
+  const raw = document.getElementById('rawInput').value;
+  const lines = raw.split(/\r?\n/);
+  const out = [];
+  for(const ln of lines){
+    const r = extractResult(ln);
+    if(r) out.push(r);
+  }
+  parsedData = out;
+  saveData();
+  renderClean();
+  updateBadge();
+  updateStorageNote();
+
+  resolveAkurasi();
+  renderFilterPasaran();
+  renderRiwayat();
+
+  if(out.length === 0){
+    alert('Tidak ada data 4 digit yang ditemukan.\nPeriksa kembali format input.');
+  }
+}
+
+function renderClean(){
+  const box = document.getElementById('cleanList');
+  if(parsedData.length === 0){
+    box.innerHTML = '<div class="empty">Belum ada data. Klik "Proses Parsing".</div>';
+    document.getElementById('stTotal').textContent = 0;
+    document.getElementById('stUnik').textContent  = 0;
+    document.getElementById('stFirst').textContent = '-';
+    document.getElementById('stLast').textContent  = '-';
+    return;
+  }
+  box.innerHTML = parsedData.map((v,i)=>`<span class="chip">${i+1}. ${v}</span>`).join('');
+  document.getElementById('stTotal').textContent = parsedData.length;
+  document.getElementById('stUnik').textContent  = new Set(parsedData).size;
+  document.getElementById('stFirst').textContent = parsedData[0];
+  document.getElementById('stLast').textContent  = parsedData[parsedData.length-1];
+}
+
+function updateBadge(){
+  const b = document.getElementById('dataBadge');
+  if(parsedData.length === 0){
+    b.className = 'badge warn';
+    b.innerHTML = '⚠️ Belum ada data — parsing dulu di Tab 1';
+  }else{
+    b.className = 'badge';
+    b.innerHTML = `✅ ${parsedData.length} data siap dianalisa`;
+  }
+}
+
+function clearAll(){
+  if(!confirm('Hapus semua data hasil parsing? (riwayat prediksi tidak terhapus)')) return;
+  document.getElementById('rawInput').value = '';
+  parsedData = [];
+  saveData();
+  renderClean();
+  updateBadge();
+  updateStorageNote();
+  document.getElementById('hasilBox').innerHTML = '';
+  lastPrediction = null;
+}
+
+function sendToPredict(){
+  if(parsedData.length === 0){
+    alert('Belum ada data rapi. Klik "Proses Parsing" dulu.');
+    return;
+  }
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  document.querySelector('.tab[data-tab="tabPredict"]').classList.add('active');
+  document.getElementById('tabPredict').classList.add('active');
+  updateBadge();
+  renderFilterPasaran();
+  renderRiwayat();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* =========================================================
+   UTIL
+========================================================= */
+function formatTanggal(iso){
+  if(!iso) return '-';
+  const bulan = ['Januari','Februari','Maret','April','Mei','Juni',
+                 'Juli','Agustus','September','Oktober','November','Desember'];
+  const hari  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const d = new Date(iso + 'T00:00:00');
+  if(isNaN(d)) return iso;
+  return `${hari[d.getDay()]}, ${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+}
+function formatTanggalPendek(iso){
+  if(!iso) return '-';
+  const d = new Date(iso + 'T00:00:00');
+  if(isNaN(d)) return iso;
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  return `${dd}/${mm}/${d.getFullYear()}`;
+}
+function ballHtml(d, extraClass){
+  const cls = `ball b${d}${extraClass ? ' '+extraClass : ''}`;
+  return `<div class="${cls}"><span>${d}</span></div>`;
+}
+
+/* =========================================================
+   DATE MAPPING untuk filter rentang tanggal
+   Data terakhir = tanggalPrediksi, sebelumnya -1 hari, dst.
+========================================================= */
+function getDataWithDates(lastDateISO){
+  const base = new Date((lastDateISO || new Date().toISOString().split('T')[0]) + 'T00:00:00');
+  const result = [];
+  parsedData.forEach((val, i) => {
+    const offset = parsedData.length - 1 - i;
+    const d = new Date(base);
+    d.setDate(d.getDate() - offset);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    result.push({ val, date: `${yyyy}-${mm}-${dd}`, index: i });
+  });
+  return result;
+}
+
+/* =========================================================
+   CRASH ANGKA (dari riwayat pola hits)
+========================================================= */
+function computeCrash(hits, topN=6){
+  const c4 = {}; // 4D full
+  const c2 = {}; // 2D belakang
+
+  hits.forEach(h=>{
+    const to = h.to;
+    c4[to] = (c4[to]||0) + 1;
+    const tail = to.slice(2);
+    c2[tail] = (c2[tail]||0) + 1;
+  });
+
+  const sortFn = (a,b) => b[1]-a[1];
+  const crash4D = Object.entries(c4).sort(sortFn).slice(0,topN).map(([num,cnt])=>({num,count:cnt}));
+  const top2D   = Object.entries(c2).sort(sortFn).slice(0,topN).map(([num,cnt])=>({num,count:cnt}));
+  return { crash4D, top2D };
+}
+
+/* =========================================================
+   PREDIKSI BBFS
+========================================================= */
+function hitungPrediksi(){
+  const lastInput = document.getElementById('lastResult').value.trim();
+  const namaPasaran = (document.getElementById('namaPasaran').value.trim() || 'Tanpa Pasaran');
+  const tanggalISO  = document.getElementById('tanggalPrediksi').value;
+  const filterMode  = document.getElementById('filterMode').value;
+
+  if(!/^\d{4}$/.test(lastInput)){
+    alert('Masukkan 4 digit result terakhir. Contoh: 5315');
+    return;
+  }
+  if(parsedData.length < 3){
+    alert('Data terlalu sedikit. Parsing minimal beberapa data dulu di Tab 1.');
+    return;
+  }
+
+  const key = lastInput.slice(2);
+  let data = parsedData.slice();
+  let filterInfo = '';
+
+  if(filterMode === 'range'){
+    const startDate = document.getElementById('startDate').value;
+    const endDate   = document.getElementById('endDate').value;
+    if(!startDate || !endDate){ alert('Isi tanggal mulai dan tanggal akhir.'); return; }
+    if(startDate > endDate){ alert('Tanggal mulai tidak boleh lebih dari tanggal akhir.'); return; }
+
+    const withDates = getDataWithDates(tanggalISO);
+    data = withDates
+      .filter(d => d.date >= startDate && d.date <= endDate)
+      .map(d => d.val);
+
+    if(data.length < 3){
+      alert(`Data dalam rentang ${formatTanggalPendek(startDate)} — ${formatTanggalPendek(endDate)} hanya ${data.length}. Minimal 3 data.`);
+      return;
+    }
+    filterInfo = `${formatTanggalPendek(startDate)} — ${formatTanggalPendek(endDate)}`;
+  } else {
+    const lim = document.getElementById('limitData').value;
+    if(lim !== 'all'){
+      const n = parseInt(lim,10);
+      if(data.length > n) data = data.slice(-n);
+    }
+    filterInfo = filterMode === 'count'
+      ? (lim === 'all' ? 'Semua data' : `${data.length} data terakhir`)
+      : filterInfo;
+  }
+
+  /* Cari kemunculan pola */
+  const hits = [];
+  for(let i=0; i<data.length-1; i++){
+    if(data[i].slice(2) === key){
+      hits.push({from: data[i], to: data[i+1]});
+    }
+  }
+
+  /* Frekuensi digit setelah pola */
+  const freq = new Array(10).fill(0);
+  hits.forEach(h => h.to.split('').forEach(d => freq[+d]++));
+
+  /* Hot 7 putaran */
+  const last7 = data.slice(-7);
+  const hot = new Array(10).fill(0);
+  last7.forEach(r => r.split('').forEach(d => hot[+d]++));
+
+  let fallback = false;
+  if(hits.length === 0){
+    fallback = true;
+    const last30 = data.slice(-30);
+    last30.forEach(r => r.split('').forEach(d => freq[+d]++));
+  }
+
+  const order = [0,1,2,3,4,5,6,7,8,9].sort((a,b)=>{
+    if(freq[b] !== freq[a]) return freq[b] - freq[a];
+    if(hot[b]  !== hot[a])  return hot[b]  - hot[a];
+    return a - b;
+  });
+
+  const bbfs8 = order.slice(0,8).sort((a,b)=>a-b);
+  const bbfs7 = order.slice(0,7).sort((a,b)=>a-b);
+  const bbfs6 = order.slice(0,6).sort((a,b)=>a-b);
+  const mati  = order.slice(8).sort((a,b)=>a-b);
+
+  /* Crash AI dari riwayat pola */
+  const crash = computeCrash(hits, 6);
+
+  lastPrediction = {
+    namaPasaran, tanggalISO, lastInput, key,
+    bbfs8, bbfs7, bbfs6, mati,
+    crash4D: crash.crash4D,
+    top2D: crash.top2D,
+    jumlahData: data.length,
+    hits: hits.length,
+    fallback,
+    filterInfo
+  };
+  simpanRiwayat(lastPrediction);
+  resolveAkurasi();
+  renderFilterPasaran();
+  renderRiwayat();
+
+  const maxF = Math.max(1, ...freq);
+  const freqHtml = order.map(d=>{
+    const w = (freq[d]/maxF)*100;
+    return `<div class="frow">
+      <div class="fdigit">${d}</div>
+      <div class="fbar"><i class="bar-d${d}" style="width:${w}%"></i></div>
+      <div class="fcount">${freq[d]}</div>
+    </div>`;
+  }).join('');
+
+  const hitHtml = hits.length
+    ? hits.map(h=>`<span class="hit">${h.from}<span class="arrow">→</span><b>${h.to}</b></span>`).join('')
+    : '<div class="empty">Tidak ada kecocokan pola pada data yang dipakai.</div>';
+
+  let warnHtml = '';
+  if(fallback){
+    warnHtml = `<div class="warnbox">⚠️ Pola 2D belakang <b>${key}</b> tidak ditemukan pada data yang dipakai.
+      Prediksi dialihkan memakai frekuensi 30 putaran terakhir.</div>`;
+  }else if(hits.length < 5){
+    warnHtml = `<div class="warnbox">⚠️ Hanya ditemukan <b>${hits.length}</b> kemunculan pola
+      <b>${key}</b>. Hasil kurang kuat — gunakan dengan bijak.</div>`;
+  }
+
+  // Crash html
+  const crash4DHtml = crash.crash4D.length
+    ? crash.crash4D.map((c,i)=>`
+      <div class="crash-item${i===0?' top1':''}" style="animation-delay:${i*.05}s">
+        <div class="crash-num">${c.num}</div>
+        <div class="crash-freq">${c.count}x muncul</div>
+      </div>`).join('')
+    : '<div class="empty">Belum ada riwayat pola untuk crash 4D.</div>';
+
+  const top2DHtml = crash.top2D.length
+    ? crash.top2D.map((c,i)=>`
+      <div class="crash-item crash-2d${i===0?' top1':''}" style="animation-delay:${i*.05}s">
+        <div class="crash-num">${c.num}</div>
+        <div class="crash-freq">${c.count}x muncul</div>
+      </div>`).join('')
+    : '<div class="empty">Belum ada riwayat pola untuk top 2D.</div>';
+
+  document.getElementById('hasilBox').innerHTML = `
+    <div class="card">
+      <div class="preview">
+        <span class="prev-pill">🎰 ${namaPasaran}</span>
+        <span class="prev-pill p2">📅 ${formatTanggal(tanggalISO)}</span>
+        <span class="prev-pill p3">🔑 2D : ${key}</span>
+        ${filterInfo ? `<span class="prev-pill" style="background:linear-gradient(135deg,#1dd1a1,#10ac84);box-shadow:0 6px 14px rgba(16,172,132,.32)">📊 ${filterInfo}</span>` : ''}
+      </div>
+      <div class="card-title" style="margin-top:4px"><i></i>Hasil Prediksi BBFS <span style="font-size:11px;color:#7b8a99;font-weight:700;margin-left:6px">(bola bilyar)</span></div>
+
+      <div class="bbfs-row">
+        <div class="bbfs-label">BBFS 8 DIGIT</div>
+        <div class="digits">${bbfs8.map(d=>ballHtml(d)).join('')}</div>
+      </div>
+      <div class="bbfs-row">
+        <div class="bbfs-label">BBFS 7 DIGIT</div>
+        <div class="digits">${bbfs7.map(d=>ballHtml(d)).join('')}</div>
+      </div>
+      <div class="bbfs-row">
+        <div class="bbfs-label">BBFS 6 DIGIT</div>
+        <div class="digits">${bbfs6.map(d=>ballHtml(d)).join('')}</div>
+      </div>
+      <div class="bbfs-row" style="margin-bottom:0">
+        <div class="bbfs-label">ANGKA MATI</div>
+        <div class="digits">${mati.map(d=>ballHtml(d,'mati')).join('')}</div>
+      </div>
+
+      ${warnHtml}
+    </div>
+
+    <!-- CRASH ANGKA AI -->
+    <div class="card">
+      <div class="card-title"><i></i>💥 Angka Crash AI <span style="font-size:11px;color:#7b8a99;font-weight:700;margin-left:6px">(dari riwayat pola ${key})</span></div>
+      <div class="crash-section">
+        <div class="crash-title">🎯 CRASH 4D AI <span class="tag">TOP ${crash.crash4D.length}</span></div>
+        <div class="crash-row">${crash4DHtml}</div>
+
+        <div class="crash-title" style="margin-top:16px">🌟 AI TOP 2D <span class="tag p">TOP ${crash.top2D.length}</span></div>
+        <div class="crash-row">${top2DHtml}</div>
+      </div>
+      <div class="note" style="margin-top:12px">
+        <b>Cara baca:</b> Angka crash diambil dari <b>riwayat pola</b> — berapa kali tiap result muncul
+        sebagai "result berikutnya" setelah pola <b>${key}</b>. Semakin sering muncul, semakin kuat sinyalnya.
+        <br>• <b>CRASH 4D</b> = result 4-digit aktual yang paling sering muncul setelah pola.
+        <br>• <b>TOP 2D</b> = 2 digit belakang yang paling sering muncul setelah pola.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i></i>Detail Analisa</div>
+      <div class="stats">
+        <div class="stat"><b>${key}</b><span>2D BELAKANG</span></div>
+        <div class="stat"><b>${data.length}</b><span>DATA DIPAKAI</span></div>
+        <div class="stat"><b>${hits.length}</b><span>POLA DITEMUKAN</span></div>
+        <div class="stat"><b>${hits.length*4}</b><span>DIGIT DIANALISA</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i></i>Frekuensi Digit (terbanyak → terendah)</div>
+      ${freqHtml}
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i></i>Riwayat Pola ${key} → Result Berikutnya</div>
+      <div class="hitlist">${hitHtml}</div>
+    </div>
+  `;
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* =========================================================
+   SALIN HASIL
+========================================================= */
+function buildCopyText(p){
+  let akurasiLine = '';
+  if(p.aktual){
+    const h8 = p.hit8 ? '✅':'❌';
+    const h7 = p.hit7 ? '✅':'❌';
+    const h6 = p.hit6 ? '✅':'❌';
+    akurasiLine = `\n📈 Evaluasi : Aktual ${p.aktual} → 8D ${h8} | 7D ${h7} | 6D ${h6}`;
+  }
+  let crashLine = '';
+  if(p.crash4D && p.crash4D.length){
+    crashLine += `\n━━━━━━━━━━━━━━━━━━━━━━━
+💥 CRASH 4D AI  : ${p.crash4D.map(c=>c.num).join(' ')}
+🌟 AI TOP 2D    : ${p.top2D.map(c=>c.num).join(' ')}`;
+  }
+  return `🎯 PREDIKSI BBFS AI 2D BELAKANG
+🎰 Pasaran : ${p.namaPasaran}
+📅 Tanggal : ${formatTanggal(p.tanggalISO)}
+🔑 Result  : ${p.lastInput}  (2D belakang: ${p.key})
+━━━━━━━━━━━━━━━━━━━━━━━
+🔥 BBFS 8 DIGIT : ${p.bbfs8.join(' ')}
+💠 BBFS 7 DIGIT : ${p.bbfs7.join(' ')}
+🌟 BBFS 6 DIGIT : ${p.bbfs6.join(' ')}
+🚫 ANGKA MATI   : ${p.mati.join(' ')}${crashLine}
+━━━━━━━━━━━━━━━━━━━━━━━
+📊 Data dipakai : ${p.jumlahData} putaran
+🎯 Pola cocok   : ${p.hits} kali${akurasiLine}
+${p.fallback ? '⚠️ Mode fallback: pola tidak ditemukan, memakai 30 putaran terakhir.' : ''}
+#BBFS #PrediksiAngka #AI2DBelakang`;
+}
+
+function copyHasil(){
+  if(!lastPrediction){
+    alert('Hitung prediksi dulu sebelum menyalin hasil.');
+    return;
+  }
+  const hist = getRiwayat();
+  const fresh = hist.find(h => h.namaPasaran===lastPrediction.namaPasaran
+                            && h.tanggalISO===lastPrediction.tanggalISO
+                            && h.lastInput===lastPrediction.lastInput);
+  copyText(buildCopyText(fresh || lastPrediction));
+}
+
+function copyRiwayat(idx){
+  const h = riwayatCache[idx];
+  if(!h) return;
+  copyText(buildCopyText(h));
+}
+
+function copyText(teks){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(teks)
+      .then(()=>showToast('✅ Hasil berhasil disalin ke clipboard!'))
+      .catch(()=>fallbackCopy(teks));
+  }else{
+    fallbackCopy(teks);
+  }
+}
+function fallbackCopy(teks){
+  const ta = document.createElement('textarea');
+  ta.value = teks; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand('copy'); showToast('✅ Hasil berhasil disalin!'); }
+  catch(e){ showToast('❌ Gagal menyalin, salin manual ya.'); }
+  document.body.removeChild(ta);
+}
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+/* =========================================================
+   EXPORT PNG
+========================================================= */
+async function exportPNG(){
+  if(!lastPrediction){
+    alert('Hitung prediksi dulu sebelum export gambar.');
+    return;
+  }
+  const target = document.getElementById('hasilBox');
+  if(!target || !target.innerHTML.trim()){
+    alert('Belum ada hasil untuk diexport.');
+    return;
+  }
+  if(typeof html2canvas === 'undefined'){
+    showToast('❌ Library html2canvas belum siap. Cek koneksi internet.');
+    return;
+  }
+
+  showToast('📸 Sedang membuat gambar...');
+  document.body.classList.add('exporting');
+
+  try{
+    const canvas = await html2canvas(target, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      windowWidth: target.scrollWidth,
+    });
+    const p = lastPrediction;
+    const safeName = (s) => String(s).replace(/[^\w\-]+/g,'_');
+    const filename = `BBFS_${safeName(p.namaPasaran)}_${p.tanggalISO}_${p.lastInput}.png`;
+
+    // Coba Web Share API di mobile
+    if(navigator.share && navigator.canShare){
+      try{
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+        const file = new File([blob], filename, {type:'image/png'});
+        if(navigator.canShare({files:[file]})){
+          await navigator.share({files:[file], title:'Prediksi BBFS', text:`${p.namaPasaran} - ${p.lastInput}`});
+          document.body.classList.remove('exporting');
+          showToast('✅ Gambar dibagikan!');
+          return;
+        }
+      }catch(err){ /* lanjut ke download biasa */ }
+    }
+
+    // Download biasa
+    const a = document.createElement('a');
+    a.download = filename;
+    a.href = canvas.toDataURL('image/png');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    document.body.classList.remove('exporting');
+    showToast('✅ Gambar berhasil di-download!');
+  }catch(e){
+    document.body.classList.remove('exporting');
+    console.error(e);
+    showToast('❌ Gagal export gambar. Coba lagi.');
+  }
+}
+
+/* =========================================================
+   RESOLVE AKURASI
+========================================================= */
+function resolveAkurasi(){
+  const hist = getRiwayat();
+  let changed = false;
+  const updated = hist.map(h=>{
+    if(h.aktual) return h;
+    if(!h.dataLen) return h;
+    if(parsedData.length <= h.dataLen) return h;
+    if(parsedData[h.dataLen-1] !== h.lastInput) return h;
+
+    const aktual = parsedData[h.dataLen];
+    if(!aktual) return h;
+
+    const d2arr = aktual.slice(2).split('').map(Number);
+    const all   = aktual.split('').map(Number);
+
+    const hit8  = d2arr.every(x=>h.bbfs8.includes(x));
+    const hit7  = d2arr.every(x=>h.bbfs7.includes(x));
+    const hit6  = d2arr.every(x=>h.bbfs6.includes(x));
+    const hitD8 = all.every(x=>h.bbfs8.includes(x));
+    const hitD7 = all.every(x=>h.bbfs7.includes(x));
+    const hitD6 = all.every(x=>h.bbfs6.includes(x));
+
+    changed = true;
+    return {...h, aktual, hit8, hit7, hit6, hitD8, hitD7, hitD6};
+  });
+  if(changed) setRiwayat(updated);
+}
+
+/* =========================================================
+   RIWAYAT
+========================================================= */
+function renderFilterPasaran(){
+  const sel = document.getElementById('filterPasaranRiwayat');
+  const cur = sel.value || 'all';
+  const hist = getRiwayat();
+  const uniq = Array.from(new Set(hist.map(h=>h.namaPasaran))).sort();
+  let opts = '<option value="all">Semua Pasaran</option>';
+  uniq.forEach(p=>{
+    opts += `<option value="${p}">${p} (${hist.filter(h=>h.namaPasaran===p).length})</option>`;
+  });
+  sel.innerHTML = opts;
+  sel.value = (cur==='all' || uniq.includes(cur)) ? cur : 'all';
+}
+
+function renderRiwayat(){
+  const box = document.getElementById('riwayatBox');
+  const filter = document.getElementById('filterPasaranRiwayat').value || 'all';
+
+  let hist = getRiwayat();
+  if(filter !== 'all') hist = hist.filter(h => h.namaPasaran === filter);
+  riwayatCache = hist;
+
+  if(hist.length === 0){
+    box.innerHTML = '<div class="empty">Belum ada riwayat prediksi.</div>';
+    renderAkurasi([]);
+    return;
+  }
+
+  box.innerHTML = hist.map((h,idx)=>{
+    let accBadge = '';
+    if(h.aktual){
+      const okCount = [h.hit8,h.hit7,h.hit6].filter(Boolean).length;
+      const cls = okCount>0 ? 'ok' : 'no';
+      const txt = okCount>0
+        ? `✅ Hit ${okCount}/3 (aktual: ${h.aktual})`
+        : `❌ Miss (aktual: ${h.aktual})`;
+      accBadge = `<span class="hit-badge ${cls}">${txt}</span>`;
+    }else{
+      accBadge = `<span class="hit-badge pending">⏳ Pending</span>`;
+    }
+
+    const crashLine = (h.crash4D && h.crash4D.length)
+      ? `<br><b>Crash 4D:</b> ${h.crash4D.map(c=>`<span class="mini">${c.num}</span>`).join('')}
+         <br><b>Top 2D:</b> ${h.top2D.map(c=>`<span class="mini">${c.num}</span>`).join('')}`
+      : '';
+
+    return `
+      <div class="riwayat-item">
+        <div class="riwayat-head">
+          <span class="prev-pill">🎰 ${h.namaPasaran}</span>
+          <span class="prev-pill p2">📅 ${formatTanggal(h.tanggalISO)}</span>
+          <span class="prev-pill p3">🔑 ${h.key}</span>
+          ${accBadge}
+          <button class="btn-mini-copy" onclick="copyRiwayat(${idx})">📋 Salin</button>
+          <button class="btn-hapus" onclick="hapusRiwayat(${idx})" title="Hapus">✕</button>
+        </div>
+        <div class="riwayat-body">
+          <b>Result:</b> ${h.lastInput}<br>
+          <b>8D:</b> ${h.bbfs8.map(d=>`<span class="mini">${d}</span>`).join('')}<br>
+          <b>7D:</b> ${h.bbfs7.map(d=>`<span class="mini">${d}</span>`).join('')}<br>
+          <b>6D:</b> ${h.bbfs6.map(d=>`<span class="mini">${d}</span>`).join('')}
+          ${crashLine}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  renderAkurasi(hist);
+}
+
+/* =========================================================
+   STATISTIK AKURASI
+========================================================= */
+function renderAkurasi(hist){
+  const box = document.getElementById('akurasiBox');
+  const resolved = (hist || getRiwayat()).filter(h => h.aktual);
+
+  if(resolved.length === 0){
+    box.innerHTML = `
+      <div class="empty" style="text-align:center;padding:20px 12px">
+        📭 Belum ada prediksi yang bisa dievaluasi.<br>
+        <span style="font-size:11.5px">Parsing data baru agar sistem otomatis mengecek hasil aktualnya.</span>
+      </div>`;
+    return;
+  }
+
+  const total = resolved.length;
+  const count = (key) => resolved.filter(h=>h[key]).length;
+  const pct   = (n) => total ? Math.round((n/total)*100) : 0;
+
+  const c8_2D = count('hit8'),  c7_2D = count('hit7'),  c6_2D = count('hit6');
+  const c8_4D = count('hitD8'), c7_4D = count('hitD7'), c6_4D = count('hitD6');
+
+  const p8_2D = pct(c8_2D), p7_2D = pct(c7_2D), p6_2D = pct(c6_2D);
+  const p8_4D = pct(c8_4D), p7_4D = pct(c7_4D), p6_4D = pct(c6_4D);
+
+  const best2D = Math.max(p8_2D, p7_2D, p6_2D);
+  const best4D = Math.max(p8_4D, p7_4D, p6_4D);
+
+  const barHtml = (lbl, pctVal, cnt, cls) => {
+    const w = pctVal;
+    return `
+      <div class="acc-item">
+        <div class="acc-lbl">${lbl}</div>
+        <div class="acc-bar">
+          <div class="acc-fill ${cls}${w===0?' empty':''}" style="width:${Math.max(w,8)}%">
+            ${w>10 ? pctVal+'%' : ''}
+          </div>
+        </div>
+        <div class="acc-num">${pctVal}%<br><small>${cnt}/${total}</small></div>
+      </div>`;
+  };
+
+  box.innerHTML = `
+    <div class="akurasi-wrap">
+      <div class="akurasi-section">
+        <h4>🎯 HIT 2D BELAKANG <span class="tag g">2 DIGIT AKHIR</span></h4>
+        ${barHtml('BBFS 8D', p8_2D, c8_2D, 'f8')}
+        ${barHtml('BBFS 7D', p7_2D, c7_2D, 'f7')}
+        ${barHtml('BBFS 6D', p6_2D, c6_2D, 'f6')}
+        <div style="font-size:11px;color:#7b8a99;margin-top:10px;line-height:1.6">
+          Hit jika <b>2 digit terakhir</b> result aktual ada di BBFS.
+        </div>
+      </div>
+
+      <div class="akurasi-section">
+        <h4>🎯 HIT 4D FULL <span class="tag p">SEMUA 4 DIGIT</span></h4>
+        ${barHtml('BBFS 8D', p8_4D, c8_4D, 'f8')}
+        ${barHtml('BBFS 7D', p7_4D, c7_4D, 'f7')}
+        ${barHtml('BBFS 6D', p6_4D, c6_4D, 'f6')}
+        <div style="font-size:11px;color:#7b8a99;margin-top:10px;line-height:1.6">
+          Hit jika <b>ke-4 digit</b> result aktual semuanya ada di BBFS (full 4D).
+        </div>
+      </div>
+    </div>
+
+    <div class="akurasi-summary">
+      📊 <b>Total evaluasi:</b> ${total} prediksi resolved &nbsp;|&nbsp;
+      🥇 <b>Best 2D:</b> ${best2D}% &nbsp;|&nbsp;
+      🥇 <b>Best 4D:</b> ${best4D}%
+      <br>
+      💡 Semakin banyak prediksi yang dievaluasi, semakin akurat statistik ini.
+    </div>
+  `;
+}
+
+/* =========================================================
+   HAPUS RIWAYAT
+========================================================= */
+function hapusRiwayat(idx){
+  const h = riwayatCache[idx];
+  if(!h) return;
+  if(!confirm(`Hapus riwayat ${h.namaPasaran} (${formatTanggal(h.tanggalISO)})?`)) return;
+  let hist = getRiwayat();
+  hist = hist.filter(x => !(x.namaPasaran===h.namaPasaran
+                         && x.tanggalISO===h.tanggalISO
+                         && x.lastInput===h.lastInput));
+  setRiwayat(hist);
+  renderFilterPasaran();
+  renderRiwayat();
+  showToast('🗑️ Riwayat dihapus');
+}
+
+function hapusSemuaRiwayat(){
+  if(!confirm('Hapus SEMUA riwayat prediksi? Tindakan ini tidak bisa dibatalkan.')) return;
+  setRiwayat([]);
+  renderFilterPasaran();
+  renderRiwayat();
+  showToast('🗑️ Semua riwayat dihapus');
+}
+
+/* =========================================================
+   CONTOH DATA
+========================================================= */
+const SAMPLE = [
+"3920 : 567891234 ai","9494 : 345679012 ai","1480 : 901235678 ai",
+"1143 : 123457890 ai","8142 : 123457890 ai","4831 : 890124567 ai",
+"3653 : 456780123 ai","9485 : 345679012 ai","0799 : 901235678 ai",
+"6739 : 012346789 ai","2725 : 678902345 ai","6378 : 234568901 ai",
+"4062 : 678902345 ai","2394 : 456780123 ai","5696 : 234568901 ai",
+"2355 : 567891234 ai","5451 : 234568901 ai","4153 : 567891234 ai",
+"9969 : 456780123 ai","3530 : 901235678 ai","7140 : 345679012 ai",
+"7595 : 789013456 ai","3847 : 789013456 ai","1886 : 345679012 ai",
+"5073 : 123457890 ai","2272 : 567891234 ai","5322 : 234568901 ai",
+"8093 : 567891234 ai","0481 : 890124567 ai","0485 : 012346789 ai",
+"2856 : 012346789 ai","9458 : 234568901 ai","4663 : 901235678 ai",
+"7094 : 456780123 ai","5231 : 789013456 ai","9700 : 567891234 ai",
+"3676 : 901235678 ai","8957 : 345679012 ai","7720 : 890124567 ai",
+"5853 : 789013456 ai","9961 : 567891234 ai","0107 : 901235678 ai",
+"6669 : 012346789 ai","9390 : 678902345 ai","5315 : 901235678 ai",
+"1314 : 567891234 ??"
+].join("\n");
+
+function loadSample(){
+  document.getElementById('rawInput').value = SAMPLE;
+  doParse();
+}
+</script>
+</body>
+</html>
