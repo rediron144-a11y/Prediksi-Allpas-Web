@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALGOFINDER V.3 - COMPLETE + BACKTEST (FIX)</title>
+    <title>ALGOFINDER V.3 - COMPLETE + BACKTEST (FIX N→N+1)</title>
     <style>
         :root {
             --bg: #121212;
@@ -18,502 +18,251 @@
             --input-bg: #252525;
             --waiting: #5d5d1a;
         }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            padding: 15px;
-            margin: 0;
-            min-height: 100vh;
+            background: var(--bg); color: var(--text);
+            padding: 15px; margin: 0; min-height: 100vh;
         }
         .container {
-            max-width: 580px;
-            margin: 20px auto;
-            background: var(--surface);
-            padding: 25px;
+            max-width: 580px; margin: 20px auto;
+            background: var(--surface); padding: 25px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
             border: 1px solid var(--border);
         }
         h2 {
-            text-align: center;
-            color: var(--accent);
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-size: 22px;
-            border-bottom: 2px solid var(--accent);
-            padding-bottom: 10px;
+            text-align: center; color: var(--accent);
+            margin-bottom: 25px; text-transform: uppercase;
+            letter-spacing: 3px; font-size: 22px;
+            border-bottom: 2px solid var(--accent); padding-bottom: 10px;
         }
         h3 {
-            color: var(--accent);
-            font-size: 14px;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
+            color: var(--accent); font-size: 14px; letter-spacing: 1px;
+            margin-bottom: 10px; text-transform: uppercase;
         }
         label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #aaa;
-            font-size: 13px;
-            letter-spacing: 0.5px;
+            display: block; margin-bottom: 8px; font-weight: bold;
+            color: #aaa; font-size: 13px; letter-spacing: 0.5px;
         }
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 18px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--input-bg);
-            color: #fff;
-            font-size: 15px;
-            outline: none;
-            transition: border 0.3s;
-            font-family: inherit;
+        input, select, textarea {
+            width: 100%; padding: 12px; margin-bottom: 18px;
+            border-radius: 8px; border: 1px solid var(--border);
+            background: var(--input-bg); color: #fff;
+            font-size: 15px; outline: none;
+            transition: border 0.3s; font-family: inherit;
         }
         textarea {
-            resize: vertical;
-            min-height: 100px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            line-height: 1.5;
+            resize: vertical; min-height: 100px;
+            font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.5;
         }
-        input:focus,
-        select:focus,
-        textarea:focus {
-            border-color: var(--accent);
-        }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
         button {
-            width: 100%;
-            padding: 14px;
+            width: 100%; padding: 14px;
             background: linear-gradient(135deg, var(--accent), var(--accent2));
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 16px;
-            color: #000;
-            transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            border: none; border-radius: 8px; font-weight: bold;
+            cursor: pointer; font-size: 16px; color: #000;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
         }
         button:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
+            opacity: 0.9; transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(255, 204, 0, 0.3);
         }
         .btn-outline {
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 10px 14px;
-            font-size: 13px;
-            letter-spacing: 0.5px;
+            background: transparent; border: 1px solid var(--accent);
+            color: var(--accent); padding: 10px 14px;
+            font-size: 13px; letter-spacing: 0.5px;
         }
-        .btn-outline:hover {
-            background: rgba(255, 204, 0, 0.1);
-        }
-        .btn-sm {
-            padding: 8px 14px;
-            font-size: 12px;
-            width: auto;
-            letter-spacing: 0.5px;
-        }
-        .btn-danger {
-            background: #b71c1c;
-            color: #fff;
-            border: none;
-        }
-        .btn-danger:hover {
-            box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4);
-        }
-        .btn-green {
-            background: #2e7d32;
-            color: #fff;
-            border: none;
-        }
-        .btn-green:hover {
-            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
-        }
-        .row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .row button {
-            flex: 1;
-        }
+        .btn-outline:hover { background: rgba(255, 204, 0, 0.1); }
+        .btn-sm { padding: 8px 14px; font-size: 12px; width: auto; letter-spacing: 0.5px; }
+        .btn-danger { background: #b71c1c; color: #fff; border: none; }
+        .btn-danger:hover { box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4); }
+        .btn-green { background: #2e7d32; color: #fff; border: none; }
+        .btn-green:hover { box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4); }
+        .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .row button { flex: 1; }
         .row-sel {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 18px;
+            display: flex; gap: 10px; align-items: center; margin-bottom: 18px;
         }
-        .row-sel select {
-            margin-bottom: 0;
-            flex: 1;
-        }
+        .row-sel select { margin-bottom: 0; flex: 1; }
         .row-sel button {
-            margin-bottom: 0;
-            width: auto;
-            flex-shrink: 0;
-            padding: 12px 16px;
+            margin-bottom: 0; width: auto; flex-shrink: 0; padding: 12px 16px;
         }
         .badge {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: -12px;
-            margin-bottom: 18px;
-            display: block;
+            font-size: 11px; color: var(--muted);
+            margin-top: -12px; margin-bottom: 18px; display: block;
         }
         .toggle-link {
-            display: inline-block;
-            color: var(--accent2);
-            cursor: pointer;
-            font-size: 12px;
-            text-decoration: underline;
-            margin-bottom: 15px;
-            letter-spacing: 0.5px;
-            transition: color 0.3s;
+            display: inline-block; color: var(--accent2);
+            cursor: pointer; font-size: 12px; text-decoration: underline;
+            margin-bottom: 15px; letter-spacing: 0.5px; transition: color 0.3s;
         }
-        .toggle-link:hover {
-            color: var(--accent);
-        }
+        .toggle-link:hover { color: var(--accent); }
         .result-box {
-            margin-top: 25px;
-            padding: 20px;
-            background: var(--card);
-            border-radius: 10px;
+            margin-top: 25px; padding: 20px;
+            background: var(--card); border-radius: 10px;
             border-top: 4px solid var(--accent);
-            display: none;
-            animation: slideIn 0.4s ease-out;
+            display: none; animation: slideIn 0.4s ease-out;
         }
         .result-header {
-            text-align: center;
-            font-weight: bold;
-            color: var(--accent);
-            font-size: 17px;
-            margin-bottom: 5px;
-            letter-spacing: 1px;
+            text-align: center; font-weight: bold;
+            color: var(--accent); font-size: 17px;
+            margin-bottom: 5px; letter-spacing: 1px;
         }
         .result-sub {
-            text-align: center;
-            font-size: 13px;
-            color: var(--muted);
-            margin-bottom: 15px;
+            text-align: center; font-size: 13px;
+            color: var(--muted); margin-bottom: 15px;
         }
         .result-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 12px;
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 12px; margin-top: 12px;
         }
         .card {
-            background: #333;
-            padding: 12px;
-            border-radius: 6px;
-            text-align: center;
-            transition: transform 0.2s;
+            background: #333; padding: 12px; border-radius: 6px;
+            text-align: center; transition: transform 0.2s;
         }
-        .card:hover {
-            transform: translateY(-2px);
-        }
+        .card:hover { transform: translateY(-2px); }
         .label-card {
-            font-size: 10px;
-            color: #bbb;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-            letter-spacing: 1px;
+            font-size: 10px; color: #bbb; text-transform: uppercase;
+            margin-bottom: 4px; letter-spacing: 1px;
         }
-        .val-card {
-            font-weight: bold;
-            font-size: 18px;
-            color: var(--danger);
-        }
+        .val-card { font-weight: bold; font-size: 18px; color: var(--danger); }
         .bbfs-card {
-            grid-column: span 2;
-            background: #3d3d1a;
-            border: 1px dashed var(--accent);
-            padding: 14px;
+            grid-column: span 2; background: #3d3d1a;
+            border: 1px dashed var(--accent); padding: 14px;
         }
         .highlight-bbfs {
-            color: var(--accent);
-            font-size: 24px;
-            letter-spacing: 4px;
-            margin-top: 3px;
-            word-break: break-all;
+            color: var(--accent); font-size: 24px;
+            letter-spacing: 4px; margin-top: 3px; word-break: break-all;
         }
         .highlight-bbfs-alt {
-            color: var(--accent2);
-            font-size: 24px;
-            letter-spacing: 4px;
-            margin-top: 3px;
-            word-break: break-all;
+            color: var(--accent2); font-size: 24px;
+            letter-spacing: 4px; margin-top: 3px; word-break: break-all;
         }
         .stat-mini {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 12px;
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 8px; margin-top: 12px;
         }
         .stat-chip {
-            background: #252525;
-            padding: 10px;
-            border-radius: 6px;
-            text-align: center;
-            font-size: 11px;
+            background: #252525; padding: 10px; border-radius: 6px;
+            text-align: center; font-size: 11px;
         }
         .stat-chip .sval {
-            font-weight: bold;
-            font-size: 15px;
-            color: #0f0;
-            margin-top: 3px;
+            font-weight: bold; font-size: 15px; color: #0f0; margin-top: 3px;
         }
-        .stat-chip .sval.cold {
-            color: var(--danger);
-        }
-        hr {
-            border: 0;
-            border-top: 1px solid #444;
-            margin: 16px 0;
-        }
+        .stat-chip .sval.cold { color: var(--danger); }
+        hr { border: 0; border-top: 1px solid #444; margin: 16px 0; }
         .table-compact {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
-            margin-top: 8px;
+            width: 100%; border-collapse: collapse;
+            font-size: 11px; margin-top: 8px;
         }
-        .table-compact th,
-        .table-compact td {
-            border: 1px solid #444;
-            padding: 6px 4px;
-            text-align: center;
+        .table-compact th, .table-compact td {
+            border: 1px solid #444; padding: 6px 4px; text-align: center;
         }
         .table-compact th {
-            background: #333;
-            color: var(--accent);
-            font-weight: bold;
-            letter-spacing: 0.5px;
+            background: #333; color: var(--accent);
+            font-weight: bold; letter-spacing: 0.5px;
         }
-        .table-compact td {
-            color: #ccc;
-        }
-        .table-compact tr:hover td {
-            background: #2a2a2a;
-        }
+        .table-compact td { color: #ccc; }
+        .table-compact tr:hover td { background: #2a2a2a; }
         .info-text {
-            font-size: 10px;
-            color: #666;
-            text-align: center;
-            margin-top: 12px;
-            letter-spacing: 0.5px;
+            font-size: 10px; color: #666; text-align: center;
+            margin-top: 12px; letter-spacing: 0.5px;
         }
         .pos-freq-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 8px;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 10px; margin-top: 8px;
         }
         .pos-freq-grid .pos-col {
-            background: #1e1e1e;
-            padding: 8px;
-            border-radius: 6px;
-            text-align: center;
+            background: #1e1e1e; padding: 8px; border-radius: 6px; text-align: center;
         }
         .pos-col .pos-title {
-            font-weight: bold;
-            color: var(--accent);
-            font-size: 11px;
-            margin-bottom: 5px;
+            font-weight: bold; color: var(--accent);
+            font-size: 11px; margin-bottom: 5px;
         }
         .pos-col .digit-freq {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 4px;
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 4px;
         }
         .pos-col .df-item {
-            background: #333;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-size: 10px;
-            color: #ccc;
-            min-width: 24px;
+            background: #333; padding: 2px 5px; border-radius: 3px;
+            font-size: 10px; color: #ccc; min-width: 24px;
         }
-        .df-item.hot-digit {
-            background: #ffcc00;
-            color: #000;
-            font-weight: bold;
-        }
+        .df-item.hot-digit { background: #ffcc00; color: #000; font-weight: bold; }
         .backtest-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 10px;
-            margin-top: 8px;
+            width: 100%; border-collapse: collapse;
+            font-size: 10px; margin-top: 8px;
         }
-        .backtest-table th,
-        .backtest-table td {
-            border: 1px solid #444;
-            padding: 5px 3px;
-            text-align: center;
+        .backtest-table th, .backtest-table td {
+            border: 1px solid #444; padding: 5px 3px; text-align: center;
         }
         .backtest-table th {
-            background: #2a2a2a;
-            color: var(--accent);
-            font-weight: bold;
+            background: #2a2a2a; color: var(--accent); font-weight: bold;
         }
-        .backtest-table td {
-            background: #1e1e1e;
-            color: #ccc;
-        }
-        .backtest-table .jp {
-            background: #1b5e20;
-            color: #a5d6a7;
-            font-weight: bold;
-        }
-        .backtest-table .zonk {
-            background: #4a1515;
-            color: #ef9a9a;
-        }
-        .backtest-table .waiting {
-            background: #5d5d1a;
-            color: #ffff88;
-            font-weight: bold;
-        }
+        .backtest-table td { background: #1e1e1e; color: #ccc; }
+        .backtest-table .jp { background: #1b5e20; color: #a5d6a7; font-weight: bold; }
+        .backtest-table .zonk { background: #4a1515; color: #ef9a9a; }
+        .backtest-table .waiting { background: #5d5d1a; color: #ffff88; font-weight: bold; }
         .backtest-summary {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 10px;
-            background: #1a1a1a;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            flex-wrap: wrap;
+            display: flex; justify-content: space-around;
+            margin-top: 10px; background: #1a1a1a;
+            padding: 8px; border-radius: 6px; font-size: 12px; flex-wrap: wrap;
         }
-        .backtest-summary div {
-            text-align: center;
-            margin: 5px;
-        }
-        .backtest-summary .jp-count {
-            color: #4caf50;
-            font-weight: bold;
-            font-size: 16px;
-        }
+        .backtest-summary div { text-align: center; margin: 5px; }
+        .backtest-summary .jp-count { color: #4caf50; font-weight: bold; font-size: 16px; }
 
         /* ===== RIWAYAT PREDIKSI ===== */
         .pred-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 10px;
-            margin-top: 8px;
+            width: 100%; border-collapse: collapse;
+            font-size: 10px; margin-top: 8px;
         }
-        .pred-table th,
-        .pred-table td {
-            border: 1px solid #444;
-            padding: 5px 3px;
-            text-align: center;
+        .pred-table th, .pred-table td {
+            border: 1px solid #444; padding: 5px 3px; text-align: center;
         }
         .pred-table th {
-            background: #2a2a2a;
-            color: var(--accent);
-            font-weight: bold;
+            background: #2a2a2a; color: var(--accent); font-weight: bold;
         }
-        .pred-table td {
-            background: #1e1e1e;
-            color: #ccc;
-        }
-        .pred-table .jp {
-            background: #1b5e20;
-            color: #a5d6a7;
-            font-weight: bold;
-        }
-        .pred-table .zonk {
-            background: #4a1515;
-            color: #ef9a9a;
-            font-weight: bold;
-        }
-        .pred-table .pending {
-            background: #5d5d1a;
-            color: #ffff88;
-            font-weight: bold;
-        }
-        .pred-table .bbfs-cell {
-            letter-spacing: 1px;
-            color: var(--accent);
-            font-weight: bold;
-        }
+        .pred-table td { background: #1e1e1e; color: #ccc; }
+        .pred-table .jp { background: #1b5e20; color: #a5d6a7; font-weight: bold; }
+        .pred-table .zonk { background: #4a1515; color: #ef9a9a; font-weight: bold; }
+        .pred-table .pending { background: #5d5d1a; color: #ffff88; font-weight: bold; }
+        .pred-table .bbfs-cell { letter-spacing: 1px; color: var(--accent); font-weight: bold; }
+        .pred-table .n-cell { color: #7ec8ff; font-weight: bold; }
+        .pred-table .n1-cell { color: #7effa0; font-weight: bold; }
+        .pred-table .arrow { color: var(--accent2); }
         .pred-empty {
-            text-align: center;
-            color: #666;
-            font-size: 12px;
-            padding: 15px;
-            background: #1a1a1a;
-            border-radius: 8px;
-            margin-top: 8px;
+            text-align: center; color: #666; font-size: 12px;
+            padding: 15px; background: #1a1a1a;
+            border-radius: 8px; margin-top: 8px;
         }
         .market-tag {
-            display: inline-block;
-            background: #333;
-            color: var(--accent);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
+            display: inline-block; background: #333; color: var(--accent);
+            padding: 3px 8px; border-radius: 4px; font-size: 11px;
+            margin-bottom: 6px; letter-spacing: 0.5px;
         }
 
         /* ===== STATISTIK AKURASI ===== */
         .accuracy-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-top: 10px;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 8px; margin-top: 10px;
         }
         .acc-card {
-            background: #1a1a1a;
-            padding: 10px 6px;
-            border-radius: 6px;
-            text-align: center;
-            border-top: 3px solid var(--accent);
+            background: #1a1a1a; padding: 10px 6px; border-radius: 6px;
+            text-align: center; border-top: 3px solid var(--accent);
         }
         .acc-card .acc-label {
-            font-size: 10px;
-            color: #aaa;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 10px; color: #aaa;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
         .acc-card .acc-val {
-            font-size: 18px;
-            font-weight: bold;
-            color: #4caf50;
-            margin-top: 4px;
+            font-size: 18px; font-weight: bold;
+            color: #4caf50; margin-top: 4px;
         }
-        .acc-card .acc-sub {
-            font-size: 9px;
-            color: #666;
-            margin-top: 2px;
-        }
+        .acc-card .acc-sub { font-size: 9px; color: #666; margin-top: 2px; }
         .acc-card.warn .acc-val { color: var(--danger); }
 
         @keyframes slideIn {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
         }
     </style>
 </head>
@@ -678,11 +427,9 @@
                 const s = localStorage.getItem('algoCustomMarkets');
                 if (s) { try { customMarkets = JSON.parse(s); } catch (e) { customMarkets = []; } }
             }
-
             function saveCustomMarkets() {
                 localStorage.setItem('algoCustomMarkets', JSON.stringify(customMarkets));
             }
-
             function allMarkets() { return [...PASARAN_DEFAULT, ...customMarkets]; }
 
             function populateDropdown() {
@@ -691,8 +438,7 @@
                 sel.innerHTML = '';
                 allMarkets().forEach(p => {
                     const o = document.createElement('option');
-                    o.value = p;
-                    o.textContent = p;
+                    o.value = p; o.textContent = p;
                     sel.appendChild(o);
                 });
                 if (allMarkets().length) {
@@ -723,11 +469,9 @@
                 if (s) { try { DATA_HISTORIS = JSON.parse(s); } catch (e) { DATA_HISTORIS = {}; } }
                 let ch = false;
                 allMarkets().forEach(p => {
-                    if (!DATA_HISTORIS[p] || !Array.isArray(DATA_HISTORIS[p])) { DATA_HISTORIS[p] = [];
-                        ch = true; }
+                    if (!DATA_HISTORIS[p] || !Array.isArray(DATA_HISTORIS[p])) { DATA_HISTORIS[p] = []; ch = true; }
                 });
-                if (Object.values(DATA_HISTORIS).every(a => a.length === 0)) { genDummy(allMarkets());
-                    ch = true; }
+                if (Object.values(DATA_HISTORIS).every(a => a.length === 0)) { genDummy(allMarkets()); ch = true; }
                 if (ch) saveHistData();
             }
 
@@ -735,15 +479,13 @@
                 list.forEach(p => {
                     if (!DATA_HISTORIS[p]) DATA_HISTORIS[p] = [];
                     if (DATA_HISTORIS[p].length === 0) {
-                        for (let i = 0; i < 500; i++) DATA_HISTORIS[p].push(String(Math.floor(Math.random() *
-                            10000)).padStart(4, '0'));
+                        for (let i = 0; i < 500; i++) DATA_HISTORIS[p].push(String(Math.floor(Math.random() * 10000)).padStart(4, '0'));
                     }
                 });
                 saveHistData();
             }
 
             function saveHistData() { localStorage.setItem('algoFinderHistData', JSON.stringify(DATA_HISTORIS)); }
-
             function getHist(p) { return DATA_HISTORIS[p] || []; }
 
             // ==================== RIWAYAT PREDIKSI ====================
@@ -752,7 +494,6 @@
                 if (s) { try { PRED_HISTORY = JSON.parse(s); } catch (e) { PRED_HISTORY = {}; } }
                 allMarkets().forEach(p => { if (!Array.isArray(PRED_HISTORY[p])) PRED_HISTORY[p] = []; });
             }
-
             function savePredHistory() { localStorage.setItem('algoPredHistory', JSON.stringify(PRED_HISTORY)); }
 
             function simpanPrediksi(market, result, lk, le, bbfsMB, bbfsEn, bbfs7D) {
@@ -764,6 +505,7 @@
                 list.push({
                     id: Date.now() + Math.floor(Math.random() * 1000),
                     waktu: new Date().toLocaleString('id-ID'),
+                    sourceResult: result,   // ⬅️ Result N (dasar prediksi)
                     result: result,
                     lk: lk,
                     le: le,
@@ -771,25 +513,46 @@
                     bbfsEn: bbfsEn.join(''),
                     bbfs7D: bbfs7D.join(''),
                     cek: null,
-                    hasil: null
+                    hasil: null             // ⬅️ Result N+1 (hasil validasi)
                 });
                 if (list.length > 200) list.splice(0, list.length - 200);
                 savePredHistory();
+
+                // Coba validasi langsung (kalau result N+1 sudah ada di history)
+                revalidateAllPred(market);
             }
 
-            function cekPrediksiTerakhir(market, resultBaru) {
+            // ===== VALIDASI N → N+1 =====
+            // Prediksi yang dibuat dari result R divalidasi terhadap result yang muncul
+            // TEPAT SETELAH R di history pasaran tersebut.
+            function revalidateAllPred(market) {
+                const hist = DATA_HISTORIS[market] || [];
                 const list = PRED_HISTORY[market] || [];
-                for (let i = list.length - 1; i >= 0; i--) {
-                    if (!list[i].cek && list[i].bbfsMB) {
-                        const target = new Set([+resultBaru[2], +resultBaru[3]]);
-                        const arr = list[i].bbfsMB.split('').map(Number);
-                        const match = arr.filter(d => target.has(d)).length;
-                        list[i].cek = match >= 2 ? 'JP' : 'ZONK';
-                        list[i].hasil = resultBaru;
-                        break;
-                    }
-                }
-                savePredHistory();
+                if (!hist.length || !list.length) { savePredHistory(); return; }
+
+                // Map: nilai result -> index terakhir kemunculannya di history
+                const lastIdx = {};
+                hist.forEach((r, i) => { lastIdx[r] = i; });
+
+                let changed = false;
+                list.forEach(pred => {
+                    if (pred.cek) return; // hanya proses yang masih MENUNGGU
+                    const src = pred.sourceResult || pred.result;
+                    if (!src) return;
+                    const idx = lastIdx[src];
+                    // butuh result berikutnya (idx+1)
+                    if (idx === undefined || idx >= hist.length - 1) return;
+
+                    const next = hist[idx + 1];
+                    const target = new Set([+next[2], +next[3]]);
+                    const arr = (pred.bbfsMB || '').split('').map(Number);
+                    const match = arr.filter(d => target.has(d)).length;
+                    pred.cek = match >= 2 ? 'JP' : 'ZONK';
+                    pred.hasil = next;   // N+1
+                    changed = true;
+                });
+
+                if (changed) savePredHistory();
             }
 
             window.resetData = function() {
@@ -797,6 +560,7 @@
                     DATA_HISTORIS = {};
                     allMarkets().forEach(p => DATA_HISTORIS[p] = []);
                     genDummy(allMarkets());
+                    allMarkets().forEach(p => revalidateAllPred(p));
                     updateDataCount();
                     alert('Data direset.');
                 }
@@ -810,8 +574,8 @@
                 DATA_HISTORIS[p].push(v);
                 saveHistData();
 
-                // Cek prediksi terakhir pasaran ini terhadap result baru
-                cekPrediksiTerakhir(p, v);
+                // Re-validasi semua prediksi pending pasaran ini (N -> N+1)
+                revalidateAllPred(p);
 
                 updateDataCount();
                 alert(`Result ${v} ditambahkan ke pasaran ${p}.\nTotal: ${DATA_HISTORIS[p].length} draw.`);
@@ -836,12 +600,14 @@
                 if (!raw) return alert('Tempel data dulu!');
                 const lines = raw.split(/[\n\r]+/).filter(l => /^\d{4}$/.test(l.trim()));
                 if (!lines.length) return alert('Tidak ada data 4 digit valid.');
-                if (lines.length > 500) { alert('Max 500, hanya 500 pertama diproses.');
-                    lines.length = 500; }
+                if (lines.length > 500) { alert('Max 500, hanya 500 pertama diproses.'); lines.length = 500; }
                 if (!DATA_HISTORIS[p]) DATA_HISTORIS[p] = [];
                 DATA_HISTORIS[p].push(...lines);
                 saveHistData();
-                lines.forEach(v => cekPrediksiTerakhir(p, v));
+
+                // Re-validasi semua prediksi pending (N -> N+1)
+                revalidateAllPred(p);
+
                 updateDataCount();
                 document.getElementById('massData').value = '';
                 alert(`Berhasil menambahkan ${lines.length} data ke ${p}. Total: ${DATA_HISTORIS[p].length} draw.`);
@@ -849,39 +615,28 @@
 
             // ==================== RUMUS ====================
             function bulat(n) { while (n > 9) n = n.toString().split('').reduce((a, b) => +a + +b, 0); return n; }
-
             function bbfsDari(tbl, kop, eko) {
                 const off = tbl[bulat(kop + eko)] ?? 0;
                 const r = [];
                 for (let i = 0; i <= 9; i++) if (i !== off) r.push(i);
                 return r;
             }
-
             function lkDari(tbl, as, eko) { return tbl[bulat(as + eko)] ?? 0; }
-
             function leDari(tbl, kop, kep) { return tbl[bulat(kop + kep)] ?? 0; }
 
             // ==================== STATISTIK ====================
             function statistik(data) {
                 const s = data.slice(-100);
-                const df = Array(10).fill(0),
-                    kf = Array(10).fill(0),
-                    ef = Array(10).fill(0);
-                const asf = Array(10).fill(0),
-                    kopf = Array(10).fill(0),
-                    kepf = Array(10).fill(0),
-                    ekf = Array(10).fill(0);
+                const df = Array(10).fill(0), kf = Array(10).fill(0), ef = Array(10).fill(0);
+                const asf = Array(10).fill(0), kopf = Array(10).fill(0);
+                const kepf = Array(10).fill(0), ekf = Array(10).fill(0);
                 const map2D = new Map();
 
                 s.forEach(r => {
                     const d = r.split('').map(Number);
                     d.forEach(dg => df[dg]++);
-                    asf[d[0]]++;
-                    kopf[d[1]]++;
-                    kepf[d[2]]++;
-                    ekf[d[3]]++;
-                    kf[d[2]]++;
-                    ef[d[3]]++;
+                    asf[d[0]]++; kopf[d[1]]++; kepf[d[2]]++; ekf[d[3]]++;
+                    kf[d[2]]++; ef[d[3]]++;
                     const dua = r.slice(2);
                     map2D.set(dua, (map2D.get(dua) || 0) + 1);
                 });
@@ -892,19 +647,10 @@
                 const sorted2D = [...map2D.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
 
                 return {
-                    df,
-                    kf,
-                    ef,
-                    asf,
-                    kopf,
-                    kepf,
-                    ekf,
+                    df, kf, ef, asf, kopf, kepf, ekf,
                     hot: dr.slice(0, 3).map(x => x.d),
                     cold: dr.slice(-3).map(x => x.d).reverse(),
-                    topK,
-                    topE,
-                    top2D: sorted2D,
-                    n: s.length
+                    topK, topE, top2D: sorted2D, n: s.length
                 };
             }
 
@@ -917,9 +663,7 @@
                 const set = new Set(orig);
                 let rp = 0;
                 for (let i = 0; i < sorted.length && rp < missing.length && rp < 2; i++) {
-                    if (set.has(sorted[i])) { set.delete(sorted[i]);
-                        set.add(missing[rp]);
-                        rp++; }
+                    if (set.has(sorted[i])) { set.delete(sorted[i]); set.add(missing[rp]); rp++; }
                 }
                 return [...set].sort((a, b) => a - b);
             }
@@ -930,10 +674,7 @@
                     const ps = document.getElementById('pasaran').value;
                     const rv = document.getElementById('resultInput').value.trim();
                     if (!/^\d{4}$/.test(rv)) return alert('Masukkan 4 digit result!');
-                    const a = +rv[0],
-                        kp = +rv[1],
-                        ke = +rv[2],
-                        e = +rv[3];
+                    const a = +rv[0], kp = +rv[1], ke = +rv[2], e = +rv[3];
 
                     const bbfsMB = bbfsDari(TABEL.mb.map, kp, e);
                     const lkIx = lkDari(TABEL.ml.map, a, e);
@@ -942,9 +683,7 @@
                     const bbfsEn = enhanceBBFS(bbfsMB, st);
 
                     const combined = Array(10).fill(0);
-                    for (let i = 0; i < 10; i++) {
-                        combined[i] = st.asf[i] + st.kopf[i] + st.ekf[i];
-                    }
+                    for (let i = 0; i < 10; i++) combined[i] = st.asf[i] + st.kopf[i] + st.ekf[i];
                     const sortedComb = combined.map((f, i) => ({ d: i, f })).sort((a, b) => b.f - a.f);
                     const bbfs7D = sortedComb.slice(0, 7).map(x => x.d).sort((a, b) => a - b);
 
@@ -979,8 +718,7 @@
                     simpanPrediksi(ps, rv, lkIx, leIx, bbfsMB, bbfsEn, bbfs7D);
 
                     document.getElementById('output').style.display = 'block';
-                } catch (er) { alert('Error: ' + er.message);
-                    console.error(er); }
+                } catch (er) { alert('Error: ' + er.message); console.error(er); }
             };
 
             function renderPosFreq(containerId, freqArr, topIdx) {
@@ -995,10 +733,10 @@
                 });
             }
 
-            // ==================== BACKTEST (DENGAN BARIS MENUNGGU) ====================
+            // ==================== BACKTEST (N → N+1) ====================
             function jalankanBacktest(data, title) {
                 const patterns = ['index', 'ml', 'mb', 'ty'];
-                let html = '<div style="overflow-x:auto;"><table class="backtest-table"><thead><tr><th>No</th><th>Result</th>';
+                let html = '<div style="overflow-x:auto;"><table class="backtest-table"><thead><tr><th>No</th><th>Result (N)</th>';
                 patterns.forEach(p => html += `<th>BBFS ${TABEL[p].name}</th><th>JP?</th>`);
                 html += '</tr></thead><tbody>';
 
@@ -1007,19 +745,15 @@
 
                 for (let i = 0; i < n; i++) {
                     const draw = data[i];
-                    const a = +draw[0],
-                        kp = +draw[1],
-                        ke = +draw[2],
-                        e = +draw[3];
+                    const kp = +draw[1], e = +draw[3];
 
                     html += `<tr><td>${i+1}</td><td>${draw}</td>`;
 
-                    // Baris terakhir -> waiting
                     if (i === n - 1) {
+                        // Baris terakhir -> belum ada N+1
                         patterns.forEach(p => {
                             const bbfsArr = bbfsDari(TABEL[p].map, kp, e);
-                            const bbfsStr = bbfsArr.join('');
-                            html += `<td>${bbfsStr}</td><td class="waiting">MENUNGGU</td>`;
+                            html += `<td>${bbfsArr.join('')}</td><td class="waiting">MENUNGGU</td>`;
                         });
                     } else {
                         const nextDraw = data[i + 1];
@@ -1029,12 +763,10 @@
 
                         patterns.forEach(p => {
                             const bbfsArr = bbfsDari(TABEL[p].map, kp, e);
-                            const bbfsStr = bbfsArr.join('');
                             const matchCount = bbfsArr.filter(d => targetSet.has(d)).length;
                             const isJP = matchCount >= 2;
                             if (isJP) totals[p]++;
-                            html +=
-                                `<td>${bbfsStr}</td><td class="${isJP ? 'jp' : 'zonk'}">${isJP ? 'JP' : 'ZONK'}</td>`;
+                            html += `<td>${bbfsArr.join('')}</td><td class="${isJP ? 'jp' : 'zonk'}">${isJP ? 'JP' : 'ZONK'}</td>`;
                         });
                     }
 
@@ -1043,14 +775,12 @@
 
                 html += '</tbody></table></div>';
 
-                // Ringkasan
                 html += '<div class="backtest-summary">';
                 patterns.forEach(p => {
-                    html +=
-                        `<div><span style="color:#aaa;">${TABEL[p].name}</span><div class="jp-count">${totals[p]} JP</div></div>`;
+                    html += `<div><span style="color:#aaa;">${TABEL[p].name}</span><div class="jp-count">${totals[p]} JP</div></div>`;
                 });
                 html += '</div>';
-                html += '<p class="info-text">* JP = minimal 2 digit BBFS muncul di Kepala & Ekor draw berikutnya. Baris terakhir MENUNGGU hasil selanjutnya.</p>';
+                html += '<p class="info-text">* JP = minimal 2 digit BBFS muncul di Kepala & Ekor draw berikutnya (N→N+1).</p>';
 
                 document.getElementById('backtestTitle').innerText = '📋 ' + title;
                 document.getElementById('backtestContent').innerHTML = html;
@@ -1061,10 +791,7 @@
             window.backtest30 = function() {
                 const ps = document.getElementById('pasaran').value;
                 const history = getHist(ps);
-                if (history.length < 2) {
-                    alert('Minimal butuh 2 draw untuk backtest.');
-                    return;
-                }
+                if (history.length < 2) { alert('Minimal butuh 2 draw untuk backtest.'); return; }
                 const data = history.slice(-30);
                 jalankanBacktest(data, 'BACKTEST 30 DATA HISTORIS');
             };
@@ -1079,10 +806,7 @@
                 if (!raw) return alert('Tempel data dulu!');
                 const lines = raw.split(/[\n\r]+/).filter(l => /^\d{4}$/.test(l.trim()));
                 if (lines.length < 2) return alert('Minimal 2 result untuk backtest.');
-                if (lines.length > 30) {
-                    alert('Maksimal 30 baris, hanya 30 pertama yang diproses.');
-                    lines.length = 30;
-                }
+                if (lines.length > 30) { alert('Maksimal 30 baris, hanya 30 pertama yang diproses.'); lines.length = 30; }
                 jalankanBacktest(lines, 'BACKTEST MANUAL');
             };
 
@@ -1136,8 +860,13 @@
                 `;
 
                 html += '<div style="overflow-x:auto;"><table class="pred-table"><thead><tr>' +
-                    '<th>#</th><th>Waktu</th><th>Result</th><th>LK</th><th>LE</th>' +
-                    '<th>BBFS 9D</th><th>BBFS Enh</th><th>BBFS 7D</th><th>Hasil</th><th>Status</th><th>X</th>' +
+                    '<th>#</th><th>Waktu</th>' +
+                    '<th>Source<br>(N)</th>' +
+                    '<th class="arrow">→</th>' +
+                    '<th>Target<br>(N+1)</th>' +
+                    '<th>LK</th><th>LE</th>' +
+                    '<th>BBFS 9D</th><th>BBFS Enh</th><th>BBFS 7D</th>' +
+                    '<th>Status</th><th>X</th>' +
                     '</tr></thead><tbody>';
 
                 list.forEach((r, idx) => {
@@ -1147,23 +876,27 @@
                         '<span class="zonk" style="padding:2px 6px;border-radius:3px;">ZONK</span>' :
                         '<span class="pending" style="padding:2px 6px;border-radius:3px;">MENUNGGU</span>';
 
+                    const src = r.sourceResult || r.result || '-';
+                    const tgt = r.hasil || '—';
+
                     html += `<tr>
                         <td>${list.length - idx}</td>
                         <td>${r.waktu || '-'}</td>
-                        <td><b>${r.result}</b></td>
+                        <td class="n-cell">${src}</td>
+                        <td class="arrow">→</td>
+                        <td class="n1-cell">${tgt}</td>
                         <td>${r.lk}</td>
                         <td>${r.le}</td>
                         <td class="bbfs-cell">${r.bbfsMB}</td>
                         <td class="bbfs-cell">${r.bbfsEn || '-'}</td>
                         <td class="bbfs-cell">${r.bbfs7D || '-'}</td>
-                        <td>${r.hasil || '-'}</td>
                         <td>${statusHtml}</td>
                         <td><span style="cursor:pointer;color:#ff4d4d;" onclick="hapusSatuPrediksi(${r.id})">✕</span></td>
                     </tr>`;
                 });
 
                 html += '</tbody></table></div>';
-                html += '<p class="info-text">Status dihitung otomatis saat Anda menekan <b>+ HISTORI</b> (minimal 2 digit BBFS 9D muncul di Kepala & Ekor result berikutnya = JP).</p>';
+                html += '<p class="info-text">Status dihitung otomatis: prediksi dari result <b>N</b> divalidasi terhadap result <b>N+1</b> (draw berikutnya). JP = minimal 2 digit BBFS 9D muncul di Kepala & Ekor N+1.</p>';
                 el.innerHTML = html;
             };
 
@@ -1189,18 +922,18 @@
                 const list = PRED_HISTORY[p] || [];
                 if (!list.length) return alert('Belum ada riwayat untuk diexport.');
 
-                const header = ['No', 'Waktu', 'Pasaran', 'Result', 'LK', 'LE', 'BBFS_9D', 'BBFS_Enhanced', 'BBFS_7D', 'Hasil', 'Status'];
+                const header = ['No', 'Waktu', 'Pasaran', 'Source_N', 'Target_N1', 'LK', 'LE', 'BBFS_9D', 'BBFS_Enhanced', 'BBFS_7D', 'Status'];
                 const rows = list.map((r, i) => [
                     i + 1,
                     r.waktu || '-',
                     p,
-                    r.result,
+                    r.sourceResult || r.result || '-',
+                    r.hasil || '-',
                     r.lk,
                     r.le,
                     r.bbfsMB,
                     r.bbfsEn || '-',
                     r.bbfs7D || '-',
-                    r.hasil || '-',
                     r.cek || 'MENUNGGU'
                 ]);
 
@@ -1224,9 +957,10 @@
             window.addEventListener('DOMContentLoaded', () => {
                 initHistData();
                 loadPredHistory();
-                // Pastikan semua market punya slot riwayat
                 allMarkets().forEach(p => { if (!PRED_HISTORY[p]) PRED_HISTORY[p] = []; });
                 savePredHistory();
+                // Re-validasi semua pasaran saat load (biar konsisten)
+                allMarkets().forEach(p => revalidateAllPred(p));
                 populateDropdown();
                 updateDataCount();
             });
