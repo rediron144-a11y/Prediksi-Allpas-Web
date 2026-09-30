@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALGOFINDER V.3 - COMPLETE + BACKTEST (FIX)</title>
+    <style>
+        :root {
+            --bg: #121212;
+            --surface: #1e1e1e;
+            --card: #2a2a2a;
+            --accent: #ffcc00;
+            --accent2: #ff9900;
+            --text: #e0e0e0;
+            --muted: #888;
+            --danger: #ff4d4d;
+            --border: #333;
+            --input-bg: #252525;
+            --waiting: #5d5d1a;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 15px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 580px;
+            margin: 20px auto;
+            background: var(--surface);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--border);
+        }
+        h2 {
+            text-align: center;
+            color: var(--accent);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 22px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: var(--accent);
+            font-size: 14px;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #aaa;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: border 0.3s;
+            font-family: inherit;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            color: #000;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 204, 0, 0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 14px;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        .btn-outline:hover {
+            background: rgba(255, 204, 0, 0.1);
+        }
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 12px;
+            width: auto;
+            letter-spacing: 0.5px;
+        }
+        .btn-danger {
+            background: #b71c1c;
+            color: #fff;
+            border: none;
+        }
+        .btn-danger:hover {
+            box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4);
+        }
+        .btn-green {
+            background: #2e7d32;
+            color: #fff;
+            border: none;
+        }
+        .btn-green:hover {
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+        }
+        .row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .row button {
+            flex: 1;
+        }
+        .row-sel {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .row-sel select {
+            margin-bottom: 0;
+            flex: 1;
+        }
+        .row-sel button {
+            margin-bottom: 0;
+            width: auto;
+            flex-shrink: 0;
+            padding: 12px 16px;
+        }
+        .badge {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: -12px;
+            margin-bottom: 18px;
+            display: block;
+        }
+        .toggle-link {
+            display: inline-block;
+            color: var(--accent2);
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: underline;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+            transition: color 0.3s;
+        }
+        .toggle-link:hover {
+            color: var(--accent);
+        }
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: var(--card);
+            border-radius: 10px;
+            border-top: 4px solid var(--accent);
+            display: none;
+            animation: slideIn 0.4s ease-out;
+        }
+        .result-header {
+            text-align: center;
+            font-weight: bold;
+            color: var(--accent);
+            font-size: 17px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        .result-sub {
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 15px;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .card {
+            background: #333;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .label-card {
+            font-size: 10px;
+            color: #bbb;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
+        }
+        .val-card {
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--danger);
+        }
+        .bbfs-card {
+            grid-column: span 2;
+            background: #3d3d1a;
+            border: 1px dashed var(--accent);
+            padding: 14px;
+        }
+        .highlight-bbfs {
+            color: var(--accent);
+            font-size: 24px;
+            letter-spacing: 4px;
+            margin-top: 3px;
+            word-break: break-all;
+        }
+        .highlight-bbfs-alt {
+            color: var(--accent2);
+            font-size: 24px;
+            letter-spacing: 4px;
+            margin-top: 3px;
+            word-break: break-all;
+        }
+        .stat-mini {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .stat-chip {
+            background: #252525;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 11px;
+        }
+        .stat-chip .sval {
+            font-weight: bold;
+            font-size: 15px;
+            color: #0f0;
+            margin-top: 3px;
+        }
+        .stat-chip .sval.cold {
+            color: var(--danger);
+        }
+        hr {
+            border: 0;
+            border-top: 1px solid #444;
+            margin: 16px 0;
+        }
+        .table-compact {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+        .table-compact th,
+        .table-compact td {
+            border: 1px solid #444;
+            padding: 6px 4px;
+            text-align: center;
+        }
+        .table-compact th {
+            background: #333;
+            color: var(--accent);
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .table-compact td {
+            color: #ccc;
+        }
+        .table-compact tr:hover td {
+            background: #2a2a2a;
+        }
+        .info-text {
+            font-size: 10px;
+            color: #666;
+            text-align: center;
+            margin-top: 12px;
+            letter-spacing: 0.5px;
+        }
+        .pos-freq-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .pos-freq-grid .pos-col {
+            background: #1e1e1e;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .pos-col .pos-title {
+            font-weight: bold;
+            color: var(--accent);
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+        .pos-col .digit-freq {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px;
+        }
+        .pos-col .df-item {
+            background: #333;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 10px;
+            color: #ccc;
+            min-width: 24px;
+        }
+        .df-item.hot-digit {
+            background: #ffcc00;
+            color: #000;
+            font-weight: bold;
+        }
+        .backtest-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-top: 8px;
+        }
+        .backtest-table th,
+        .backtest-table td {
+            border: 1px solid #444;
+            padding: 5px 3px;
+            text-align: center;
+        }
+        .backtest-table th {
+            background: #2a2a2a;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .backtest-table td {
+            background: #1e1e1e;
+            color: #ccc;
+        }
+        .backtest-table .jp {
+            background: #1b5e20;
+            color: #a5d6a7;
+            font-weight: bold;
+        }
+        .backtest-table .zonk {
+            background: #4a1515;
+            color: #ef9a9a;
+        }
+        .backtest-table .waiting {
+            background: #5d5d1a;
+            color: #ffff88;
+            font-weight: bold;
+        }
+        .backtest-summary {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            background: #1a1a1a;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            flex-wrap: wrap;
+        }
+        .backtest-summary div {
+            text-align: center;
+            margin: 5px;
+        }
+        .backtest-summary .jp-count {
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* ===== RIWAYAT PREDIKSI ===== */
+        .pred-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-top: 8px;
+        }
+        .pred-table th,
+        .pred-table td {
+            border: 1px solid #444;
+            padding: 5px 3px;
+            text-align: center;
+        }
+        .pred-table th {
+            background: #2a2a2a;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .pred-table td {
+            background: #1e1e1e;
+            color: #ccc;
+        }
+        .pred-table .jp {
+            background: #1b5e20;
+            color: #a5d6a7;
+            font-weight: bold;
+        }
+        .pred-table .zonk {
+            background: #4a1515;
+            color: #ef9a9a;
+            font-weight: bold;
+        }
+        .pred-table .pending {
+            background: #5d5d1a;
+            color: #ffff88;
+            font-weight: bold;
+        }
+        .pred-table .bbfs-cell {
+            letter-spacing: 1px;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .pred-empty {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            padding: 15px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+        .market-tag {
+            display: inline-block;
+            background: #333;
+            color: var(--accent);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== STATISTIK AKURASI ===== */
+        .accuracy-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .acc-card {
+            background: #1a1a1a;
+            padding: 10px 6px;
+            border-radius: 6px;
+            text-align: center;
+            border-top: 3px solid var(--accent);
+        }
+        .acc-card .acc-label {
+            font-size: 10px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .acc-card .acc-val {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4caf50;
+            margin-top: 4px;
+        }
+        .acc-card .acc-sub {
+            font-size: 9px;
+            color: #666;
+            margin-top: 2px;
+        }
+        .acc-card.warn .acc-val { color: var(--danger); }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>⚡ ALGOFINDER V.3</h2>
+
+        <label>🎯 PILIH PASARAN</label>
+        <div class="row-sel">
+            <select id="pasaran" onchange="updateDataCount()"></select>
+            <button class="btn-outline btn-sm" onclick="tambahPasaran()" title="Tambah Pasaran">+</button>
+        </div>
+        <span class="badge" id="dataCount">Data: 0 draw</span>
+
+        <label>📥 RESULT TERAKHIR</label>
+        <input type="number" id="resultInput" placeholder="Contoh: 5999" oninput="if(this.value.length>4) this.value=this.value.slice(0,4);">
+
+        <div class="row">
+            <button onclick="prosesData()">⚡ GENERATE</button>
+            <button class="btn-green btn-sm" onclick="tambahDataHistori()" style="flex:0.6;">+ HISTORI</button>
+        </div>
+
+        <span class="toggle-link" onclick="toggleMassInput()">📋 INPUT MASSAL DATA »</span>
+        <div id="massInputContainer" style="display:none;">
+            <label>PASTE DATA (4 digit per baris, max 500):</label>
+            <textarea id="massData" placeholder="5999&#10;1234&#10;8567&#10;..."></textarea>
+            <button class="btn-green btn-sm" onclick="tambahMassalData()">TAMBAHKAN SEMUA</button>
+            <p class="info-text">Setiap baris 4 digit. Data ditambahkan ke pasaran terpilih.</p>
+        </div>
+
+        <button class="btn-danger btn-sm" onclick="resetData()" style="margin-top:8px;">🔄 RESET DATA</button>
+
+        <!-- RIWAYAT PREDIKSI PER PASARAN -->
+        <span class="toggle-link" onclick="togglePredHistory()" style="margin-top:12px;">🕘 RIWAYAT PREDIKSI PASARAN INI »</span>
+        <div id="predHistoryContainer" style="display:none; margin-bottom:15px;">
+            <div class="row" style="margin-bottom:8px;">
+                <button class="btn-outline btn-sm" onclick="renderPredHistory()">🔄 MUAT ULANG</button>
+                <button class="btn-green btn-sm" onclick="exportPredHistoryCSV()">📤 EXPORT CSV</button>
+                <button class="btn-danger btn-sm" onclick="hapusPredHistory()">🗑️ HAPUS RIWAYAT</button>
+            </div>
+            <div id="predHistoryContent"></div>
+        </div>
+
+        <!-- BACKTEST OTOMATIS -->
+        <button class="btn-outline btn-sm" onclick="backtest30()" style="margin-top:8px; width:100%;">🔙 BACKTEST 30 (DATA HISTORIS)</button>
+
+        <!-- TOGGLE BACKTEST MANUAL -->
+        <span class="toggle-link" onclick="toggleManualBacktest()" style="margin-top:8px;">📝 ATAU BACKTEST MANUAL (PASTE DATA) »</span>
+        <div id="manualBacktestContainer" style="display:none; margin-bottom:15px;">
+            <label>PASTE RESULT MANUAL (4 digit, urut LAMA → BARU):</label>
+            <textarea id="manualBacktestData" placeholder="8643&#10;5324&#10;3501&#10;... (maks 30 baris)" rows="6"></textarea>
+            <button class="btn-green btn-sm" onclick="backtestManual()" style="width:100%;">⚡ PROSES BACKTEST MANUAL</button>
+            <p class="info-text">Minimal 2 result. Baris pertama = result terlama, baris terakhir = result terbaru.</p>
+        </div>
+
+        <!-- OUTPUT UTAMA -->
+        <div id="output" class="result-box">
+            <div class="result-header" id="resPasaran"></div>
+            <div class="result-sub">Result: <span id="resTerakhir"></span></div>
+
+            <div class="result-grid">
+                <div class="card">
+                    <div class="label-card">Lemah Kepala (LK)</div>
+                    <div id="resLK" class="val-card"></div>
+                </div>
+                <div class="card">
+                    <div class="label-card">Lemah Ekor (LE)</div>
+                    <div id="resLE" class="val-card"></div>
+                </div>
+                <div class="card bbfs-card">
+                    <div class="label-card">BBFS 9D — Mistik Baru</div>
+                    <div id="resBBFS" class="highlight-bbfs"></div>
+                </div>
+                <div class="card bbfs-card" style="background:#2d2d1a; border-color: var(--accent2);">
+                    <div class="label-card">BBFS Enhanced — Statistik + Mistik Baru</div>
+                    <div id="resBBFSEnhanced" class="highlight-bbfs-alt"></div>
+                </div>
+            </div>
+
+            <div class="card bbfs-card" style="background:#1a2d1a; border-color: #0f0; margin-top:12px;">
+                <div class="label-card">BBFS 7D — As + Kop + Ekor (Statistik)</div>
+                <div id="resBBFS7D" class="highlight-bbfs" style="color:#0f0; font-size:22px;"></div>
+            </div>
+
+            <hr>
+            <h3>📊 Statistik 100 Draw</h3>
+            <div class="stat-mini">
+                <div class="stat-chip"><span>Digit Panas</span><div class="sval" id="statHotDigits">-</div></div>
+                <div class="stat-chip"><span>Digit Dingin</span><div class="sval cold" id="statColdDigits">-</div></div>
+                <div class="stat-chip"><span>Kepala Terkuat</span><div class="sval" id="statTopKepala">-</div></div>
+                <div class="stat-chip"><span>Ekor Terkuat</span><div class="sval" id="statTopEkor">-</div></div>
+            </div>
+
+            <hr>
+            <h3>📈 Statistik Lanjutan</h3>
+            <div class="stat-chip" style="margin-bottom:8px; background:#252525; text-align:left; padding:8px;">
+                <span style="color:#ffcc00; font-size:12px;">Top 5 Kombinasi 2D (Ekor)</span>
+                <div id="top2D" style="font-size:11px; color:#ccc; margin-top:4px;"></div>
+            </div>
+
+            <h4 style="font-size:12px; color:#aaa; margin-top:12px;">Frekuensi per Posisi (As · Kop · Kep · Ekor)</h4>
+            <div class="pos-freq-grid">
+                <div class="pos-col"><div class="pos-title">As</div><div class="digit-freq" id="freqAs"></div></div>
+                <div class="pos-col"><div class="pos-title">Kop</div><div class="digit-freq" id="freqKop"></div></div>
+                <div class="pos-col"><div class="pos-title">Kep</div><div class="digit-freq" id="freqKep"></div></div>
+                <div class="pos-col"><div class="pos-title">Ekor</div><div class="digit-freq" id="freqEkor"></div></div>
+            </div>
+            <p class="info-text" style="margin-top:8px;">Warna kuning = digit terkuat di posisi tersebut.</p>
+
+            <hr>
+            <h3>📋 Prediksi Alternatif (7 Tabel)</h3>
+            <table class="table-compact">
+                <thead>
+                    <tr><th>Tabel</th><th>LK</th><th>LE</th><th>BBFS 9D</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Index</td><td id="altLK_index">-</td><td id="altLE_index">-</td><td id="altBBFS_index">-</td></tr>
+                    <tr><td>Mistik Lama</td><td id="altLK_ml">-</td><td id="altLE_ml">-</td><td id="altBBFS_ml">-</td></tr>
+                    <tr><td>Mistik Baru</td><td id="altLK_mb">-</td><td id="altLE_mb">-</td><td id="altBBFS_mb">-</td></tr>
+                    <tr><td>Tesson (TY)</td><td id="altLK_ty">-</td><td id="altLE_ty">-</td><td id="altBBFS_ty">-</td></tr>
+                    <tr><td>Tesson 2 (T2)</td><td id="altLK_t2">-</td><td id="altLE_t2">-</td><td id="altBBFS_t2">-</td></tr>
+                    <tr><td>Tesson 3 (T3)</td><td id="altLK_t3">-</td><td id="altLE_t3">-</td><td id="altBBFS_t3">-</td></tr>
+                    <tr><td>Tesson 7 (T7)</td><td id="altLK_t7">-</td><td id="altLE_t7">-</td><td id="altBBFS_t7">-</td></tr>
+                </tbody>
+            </table>
+            <p class="info-text">*Gunakan bijak, utamakan prediksi sendiri.</p>
+        </div>
+
+        <!-- OUTPUT BACKTEST -->
+        <div id="backtestOutput" class="result-box" style="display:none;">
+            <div class="result-header" id="backtestTitle">📋 BACKTEST</div>
+            <div id="backtestContent"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ==================== TABEL RUMUS ====================
+            const TABEL = {
+                index: { name: 'Index', map: { 0: 5, 1: 6, 2: 7, 3: 8, 4: 9, 5: 0, 6: 1, 7: 2, 8: 3, 9: 4 } },
+                ml: { name: 'Mistik Lama', map: { 1: 0, 0: 1, 2: 5, 5: 2, 3: 8, 8: 3, 4: 7, 7: 4, 6: 9, 9: 6 } },
+                mb: { name: 'Mistik Baru', map: { 0: 0, 1: 7, 2: 4, 3: 9, 4: 6, 5: 1, 6: 8, 7: 2, 8: 3, 9: 5 } },
+                ty: { name: 'Tesson', map: { 1: 4, 2: 9, 3: 6, 4: 1, 5: 8, 6: 3, 7: 0, 8: 5, 9: 2, 0: 7 } },
+                t2: { name: 'Tesson 2', map: { 0: 7, 1: 4, 2: 9, 3: 6, 4: 1, 5: 8, 6: 3, 7: 0, 8: 5, 9: 2 } },
+                t3: { name: 'Tesson 3', map: { 0: 3, 1: 6, 2: 9, 3: 2, 4: 5, 5: 8, 6: 1, 7: 4, 8: 7, 9: 0 } },
+                t7: { name: 'Tesson 7', map: { 0: 9, 1: 2, 2: 5, 3: 8, 4: 1, 5: 4, 6: 7, 7: 0, 8: 3, 9: 6 } }
+            };
+
+            // ==================== DATA ====================
+            const PASARAN_DEFAULT = [
+                'TOTO MACAU P1', 'TOTO MACAU P2', 'TOTO MACAU P3',
+                'TOTO MACAU P4', 'TOTO MACAU P5', 'TOTO MACAU P6',
+                'HONGKONG', 'SINGAPORE', 'SYDNEY'
+            ];
+            let customMarkets = [];
+            let DATA_HISTORIS = {};
+            let PRED_HISTORY = {};
+            const LAST_MARKET_KEY = 'algoLastMarket';
+
+            function loadCustomMarkets() {
+                const s = localStorage.getItem('algoCustomMarkets');
+                if (s) { try { customMarkets = JSON.parse(s); } catch (e) { customMarkets = []; } }
+            }
+
+            function saveCustomMarkets() {
+                localStorage.setItem('algoCustomMarkets', JSON.stringify(customMarkets));
+            }
+
+            function allMarkets() { return [...PASARAN_DEFAULT, ...customMarkets]; }
+
+            function populateDropdown() {
+                const sel = document.getElementById('pasaran');
+                const prev = localStorage.getItem(LAST_MARKET_KEY);
+                sel.innerHTML = '';
+                allMarkets().forEach(p => {
+                    const o = document.createElement('option');
+                    o.value = p;
+                    o.textContent = p;
+                    sel.appendChild(o);
+                });
+                if (allMarkets().length) {
+                    sel.value = (prev && allMarkets().includes(prev)) ? prev : allMarkets()[0];
+                    localStorage.setItem(LAST_MARKET_KEY, sel.value);
+                    updateDataCount();
+                }
+            }
+
+            window.tambahPasaran = function() {
+                const nama = prompt('Masukkan nama pasaran baru:');
+                if (!nama || !nama.trim()) return;
+                const t = nama.trim().toUpperCase();
+                if (allMarkets().includes(t)) return alert('Pasaran sudah ada!');
+                customMarkets.push(t);
+                saveCustomMarkets();
+                if (!DATA_HISTORIS[t]) DATA_HISTORIS[t] = [];
+                if (!PRED_HISTORY[t]) PRED_HISTORY[t] = [];
+                saveHistData();
+                savePredHistory();
+                populateDropdown();
+                updateDataCount();
+            };
+
+            function initHistData() {
+                loadCustomMarkets();
+                const s = localStorage.getItem('algoFinderHistData');
+                if (s) { try { DATA_HISTORIS = JSON.parse(s); } catch (e) { DATA_HISTORIS = {}; } }
+                let ch = false;
+                allMarkets().forEach(p => {
+                    if (!DATA_HISTORIS[p] || !Array.isArray(DATA_HISTORIS[p])) { DATA_HISTORIS[p] = [];
+                        ch = true; }
+                });
+                if (Object.values(DATA_HISTORIS).every(a => a.length === 0)) { genDummy(allMarkets());
+                    ch = true; }
+                if (ch) saveHistData();
+            }
+
+            function genDummy(list) {
+                list.forEach(p => {
+                    if (!DATA_HISTORIS[p]) DATA_HISTORIS[p] = [];
+                    if (DATA_HISTORIS[p].length === 0) {
+                        for (let i = 0; i < 500; i++) DATA_HISTORIS[p].push(String(Math.floor(Math.random() *
+                            10000)).padStart(4, '0'));
+                    }
+                });
+                saveHistData();
+            }
+
+            function saveHistData() { localStorage.setItem('algoFinderHistData', JSON.stringify(DATA_HISTORIS)); }
+
+            function getHist(p) { return DATA_HISTORIS[p] || []; }
+
+            // ==================== RIWAYAT PREDIKSI ====================
+            function loadPredHistory() {
+                const s = localStorage.getItem('algoPredHistory');
+                if (s) { try { PRED_HISTORY = JSON.parse(s); } catch (e) { PRED_HISTORY = {}; } }
+                allMarkets().forEach(p => { if (!Array.isArray(PRED_HISTORY[p])) PRED_HISTORY[p] = []; });
+            }
+
+            function savePredHistory() { localStorage.setItem('algoPredHistory', JSON.stringify(PRED_HISTORY)); }
+
+            function simpanPrediksi(market, result, lk, le, bbfsMB, bbfsEn, bbfs7D) {
+                if (!PRED_HISTORY[market]) PRED_HISTORY[market] = [];
+                const list = PRED_HISTORY[market];
+                const bbfsStr = bbfsMB.join('');
+                const last = list[list.length - 1];
+                if (last && last.result === result && last.bbfsMB === bbfsStr) return; // anti duplikat
+                list.push({
+                    id: Date.now() + Math.floor(Math.random() * 1000),
+                    waktu: new Date().toLocaleString('id-ID'),
+                    result: result,
+                    lk: lk,
+                    le: le,
+                    bbfsMB: bbfsStr,
+                    bbfsEn: bbfsEn.join(''),
+                    bbfs7D: bbfs7D.join(''),
+                    cek: null,
+                    hasil: null
+                });
+                if (list.length > 200) list.splice(0, list.length - 200);
+                savePredHistory();
+            }
+
+            function cekPrediksiTerakhir(market, resultBaru) {
+                const list = PRED_HISTORY[market] || [];
+                for (let i = list.length - 1; i >= 0; i--) {
+                    if (!list[i].cek && list[i].bbfsMB) {
+                        const target = new Set([+resultBaru[2], +resultBaru[3]]);
+                        const arr = list[i].bbfsMB.split('').map(Number);
+                        const match = arr.filter(d => target.has(d)).length;
+                        list[i].cek = match >= 2 ? 'JP' : 'ZONK';
+                        list[i].hasil = resultBaru;
+                        break;
+                    }
+                }
+                savePredHistory();
+            }
+
+            window.resetData = function() {
+                if (confirm('Hapus semua data historis & generate ulang 500 dummy?')) {
+                    DATA_HISTORIS = {};
+                    allMarkets().forEach(p => DATA_HISTORIS[p] = []);
+                    genDummy(allMarkets());
+                    updateDataCount();
+                    alert('Data direset.');
+                }
+            };
+
+            window.tambahDataHistori = function() {
+                const p = document.getElementById('pasaran').value;
+                const v = document.getElementById('resultInput').value.trim();
+                if (!/^\d{4}$/.test(v)) return alert('Masukkan 4 digit result!');
+                if (!DATA_HISTORIS[p]) DATA_HISTORIS[p] = [];
+                DATA_HISTORIS[p].push(v);
+                saveHistData();
+
+                // Cek prediksi terakhir pasaran ini terhadap result baru
+                cekPrediksiTerakhir(p, v);
+
+                updateDataCount();
+                alert(`Result ${v} ditambahkan ke pasaran ${p}.\nTotal: ${DATA_HISTORIS[p].length} draw.`);
+            };
+
+            window.updateDataCount = function() {
+                const p = document.getElementById('pasaran').value;
+                if (p) localStorage.setItem(LAST_MARKET_KEY, p);
+                document.getElementById('dataCount').innerText = 'Data: ' + getHist(p).length + ' draw';
+                const box = document.getElementById('predHistoryContainer');
+                if (box && box.style.display === 'block') renderPredHistory();
+            };
+
+            window.toggleMassInput = function() {
+                const c = document.getElementById('massInputContainer');
+                c.style.display = (c.style.display === 'none' || c.style.display === '') ? 'block' : 'none';
+            };
+
+            window.tambahMassalData = function() {
+                const p = document.getElementById('pasaran').value;
+                const raw = document.getElementById('massData').value.trim();
+                if (!raw) return alert('Tempel data dulu!');
+                const lines = raw.split(/[\n\r]+/).filter(l => /^\d{4}$/.test(l.trim()));
+                if (!lines.length) return alert('Tidak ada data 4 digit valid.');
+                if (lines.length > 500) { alert('Max 500, hanya 500 pertama diproses.');
+                    lines.length = 500; }
+                if (!DATA_HISTORIS[p]) DATA_HISTORIS[p] = [];
+                DATA_HISTORIS[p].push(...lines);
+                saveHistData();
+                lines.forEach(v => cekPrediksiTerakhir(p, v));
+                updateDataCount();
+                document.getElementById('massData').value = '';
+                alert(`Berhasil menambahkan ${lines.length} data ke ${p}. Total: ${DATA_HISTORIS[p].length} draw.`);
+            };
+
+            // ==================== RUMUS ====================
+            function bulat(n) { while (n > 9) n = n.toString().split('').reduce((a, b) => +a + +b, 0); return n; }
+
+            function bbfsDari(tbl, kop, eko) {
+                const off = tbl[bulat(kop + eko)] ?? 0;
+                const r = [];
+                for (let i = 0; i <= 9; i++) if (i !== off) r.push(i);
+                return r;
+            }
+
+            function lkDari(tbl, as, eko) { return tbl[bulat(as + eko)] ?? 0; }
+
+            function leDari(tbl, kop, kep) { return tbl[bulat(kop + kep)] ?? 0; }
+
+            // ==================== STATISTIK ====================
+            function statistik(data) {
+                const s = data.slice(-100);
+                const df = Array(10).fill(0),
+                    kf = Array(10).fill(0),
+                    ef = Array(10).fill(0);
+                const asf = Array(10).fill(0),
+                    kopf = Array(10).fill(0),
+                    kepf = Array(10).fill(0),
+                    ekf = Array(10).fill(0);
+                const map2D = new Map();
+
+                s.forEach(r => {
+                    const d = r.split('').map(Number);
+                    d.forEach(dg => df[dg]++);
+                    asf[d[0]]++;
+                    kopf[d[1]]++;
+                    kepf[d[2]]++;
+                    ekf[d[3]]++;
+                    kf[d[2]]++;
+                    ef[d[3]]++;
+                    const dua = r.slice(2);
+                    map2D.set(dua, (map2D.get(dua) || 0) + 1);
+                });
+
+                const dr = df.map((f, i) => ({ d: i, f })).sort((a, b) => b.f - a.f);
+                const topK = kepf.indexOf(Math.max(...kepf));
+                const topE = ekf.indexOf(Math.max(...ekf));
+                const sorted2D = [...map2D.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+                return {
+                    df,
+                    kf,
+                    ef,
+                    asf,
+                    kopf,
+                    kepf,
+                    ekf,
+                    hot: dr.slice(0, 3).map(x => x.d),
+                    cold: dr.slice(-3).map(x => x.d).reverse(),
+                    topK,
+                    topE,
+                    top2D: sorted2D,
+                    n: s.length
+                };
+            }
+
+            function enhanceBBFS(orig, st) {
+                if (!st || !st.n) return orig;
+                const fm = {};
+                orig.forEach(d => fm[d] = st.df[d]);
+                const sorted = [...orig].sort((a, b) => fm[a] - fm[b]);
+                const missing = st.hot.filter(d => !orig.includes(d));
+                const set = new Set(orig);
+                let rp = 0;
+                for (let i = 0; i < sorted.length && rp < missing.length && rp < 2; i++) {
+                    if (set.has(sorted[i])) { set.delete(sorted[i]);
+                        set.add(missing[rp]);
+                        rp++; }
+                }
+                return [...set].sort((a, b) => a - b);
+            }
+
+            // ==================== PROSES UTAMA ====================
+            window.prosesData = function() {
+                try {
+                    const ps = document.getElementById('pasaran').value;
+                    const rv = document.getElementById('resultInput').value.trim();
+                    if (!/^\d{4}$/.test(rv)) return alert('Masukkan 4 digit result!');
+                    const a = +rv[0],
+                        kp = +rv[1],
+                        ke = +rv[2],
+                        e = +rv[3];
+
+                    const bbfsMB = bbfsDari(TABEL.mb.map, kp, e);
+                    const lkIx = lkDari(TABEL.ml.map, a, e);
+                    const leIx = leDari(TABEL.ty.map, kp, ke);
+                    const st = statistik(getHist(ps));
+                    const bbfsEn = enhanceBBFS(bbfsMB, st);
+
+                    const combined = Array(10).fill(0);
+                    for (let i = 0; i < 10; i++) {
+                        combined[i] = st.asf[i] + st.kopf[i] + st.ekf[i];
+                    }
+                    const sortedComb = combined.map((f, i) => ({ d: i, f })).sort((a, b) => b.f - a.f);
+                    const bbfs7D = sortedComb.slice(0, 7).map(x => x.d).sort((a, b) => a - b);
+
+                    document.getElementById('resPasaran').innerText = ps;
+                    document.getElementById('resTerakhir').innerText = rv;
+                    document.getElementById('resLK').innerText = lkIx;
+                    document.getElementById('resLE').innerText = leIx;
+                    document.getElementById('resBBFS').innerText = bbfsMB.join('');
+                    document.getElementById('resBBFSEnhanced').innerText = bbfsEn.join('');
+                    document.getElementById('resBBFS7D').innerText = bbfs7D.join('');
+                    document.getElementById('statHotDigits').innerText = st.hot.join(', ');
+                    document.getElementById('statColdDigits').innerText = st.cold.join(', ');
+                    document.getElementById('statTopKepala').innerText = st.topK;
+                    document.getElementById('statTopEkor').innerText = st.topE;
+
+                    const top2DHTML = st.top2D.map(([dua, cnt]) => `<b>${dua}</b> (${cnt}x)`).join(' · ');
+                    document.getElementById('top2D').innerHTML = top2DHTML || '-';
+
+                    renderPosFreq('freqAs', st.asf, st.asf.indexOf(Math.max(...st.asf)));
+                    renderPosFreq('freqKop', st.kopf, st.kopf.indexOf(Math.max(...st.kopf)));
+                    renderPosFreq('freqKep', st.kepf, st.kepf.indexOf(Math.max(...st.kepf)));
+                    renderPosFreq('freqEkor', st.ekf, st.ekf.indexOf(Math.max(...st.ekf)));
+
+                    ['index', 'ml', 'mb', 'ty', 't2', 't3', 't7'].forEach(k => {
+                        const t = TABEL[k];
+                        document.getElementById(`altLK_${k}`).innerText = lkDari(t.map, a, e);
+                        document.getElementById(`altLE_${k}`).innerText = leDari(t.map, kp, ke);
+                        document.getElementById(`altBBFS_${k}`).innerText = bbfsDari(t.map, kp, e).join('');
+                    });
+
+                    // Simpan snapshot prediksi ke riwayat pasaran ini
+                    simpanPrediksi(ps, rv, lkIx, leIx, bbfsMB, bbfsEn, bbfs7D);
+
+                    document.getElementById('output').style.display = 'block';
+                } catch (er) { alert('Error: ' + er.message);
+                    console.error(er); }
+            };
+
+            function renderPosFreq(containerId, freqArr, topIdx) {
+                const container = document.getElementById(containerId);
+                container.innerHTML = '';
+                freqArr.forEach((f, i) => {
+                    const span = document.createElement('span');
+                    span.className = 'df-item';
+                    if (i === topIdx) span.classList.add('hot-digit');
+                    span.textContent = i + ':' + f;
+                    container.appendChild(span);
+                });
+            }
+
+            // ==================== BACKTEST (DENGAN BARIS MENUNGGU) ====================
+            function jalankanBacktest(data, title) {
+                const patterns = ['index', 'ml', 'mb', 'ty'];
+                let html = '<div style="overflow-x:auto;"><table class="backtest-table"><thead><tr><th>No</th><th>Result</th>';
+                patterns.forEach(p => html += `<th>BBFS ${TABEL[p].name}</th><th>JP?</th>`);
+                html += '</tr></thead><tbody>';
+
+                const totals = { index: 0, ml: 0, mb: 0, ty: 0 };
+                const n = data.length;
+
+                for (let i = 0; i < n; i++) {
+                    const draw = data[i];
+                    const a = +draw[0],
+                        kp = +draw[1],
+                        ke = +draw[2],
+                        e = +draw[3];
+
+                    html += `<tr><td>${i+1}</td><td>${draw}</td>`;
+
+                    // Baris terakhir -> waiting
+                    if (i === n - 1) {
+                        patterns.forEach(p => {
+                            const bbfsArr = bbfsDari(TABEL[p].map, kp, e);
+                            const bbfsStr = bbfsArr.join('');
+                            html += `<td>${bbfsStr}</td><td class="waiting">MENUNGGU</td>`;
+                        });
+                    } else {
+                        const nextDraw = data[i + 1];
+                        const nextKep = +nextDraw[2];
+                        const nextEkor = +nextDraw[3];
+                        const targetSet = new Set([nextKep, nextEkor]);
+
+                        patterns.forEach(p => {
+                            const bbfsArr = bbfsDari(TABEL[p].map, kp, e);
+                            const bbfsStr = bbfsArr.join('');
+                            const matchCount = bbfsArr.filter(d => targetSet.has(d)).length;
+                            const isJP = matchCount >= 2;
+                            if (isJP) totals[p]++;
+                            html +=
+                                `<td>${bbfsStr}</td><td class="${isJP ? 'jp' : 'zonk'}">${isJP ? 'JP' : 'ZONK'}</td>`;
+                        });
+                    }
+
+                    html += '</tr>';
+                }
+
+                html += '</tbody></table></div>';
+
+                // Ringkasan
+                html += '<div class="backtest-summary">';
+                patterns.forEach(p => {
+                    html +=
+                        `<div><span style="color:#aaa;">${TABEL[p].name}</span><div class="jp-count">${totals[p]} JP</div></div>`;
+                });
+                html += '</div>';
+                html += '<p class="info-text">* JP = minimal 2 digit BBFS muncul di Kepala & Ekor draw berikutnya. Baris terakhir MENUNGGU hasil selanjutnya.</p>';
+
+                document.getElementById('backtestTitle').innerText = '📋 ' + title;
+                document.getElementById('backtestContent').innerHTML = html;
+                document.getElementById('backtestOutput').style.display = 'block';
+                document.getElementById('backtestOutput').scrollIntoView({ behavior: 'smooth' });
+            }
+
+            window.backtest30 = function() {
+                const ps = document.getElementById('pasaran').value;
+                const history = getHist(ps);
+                if (history.length < 2) {
+                    alert('Minimal butuh 2 draw untuk backtest.');
+                    return;
+                }
+                const data = history.slice(-30);
+                jalankanBacktest(data, 'BACKTEST 30 DATA HISTORIS');
+            };
+
+            window.toggleManualBacktest = function() {
+                const c = document.getElementById('manualBacktestContainer');
+                c.style.display = (c.style.display === 'none' || c.style.display === '') ? 'block' : 'none';
+            };
+
+            window.backtestManual = function() {
+                const raw = document.getElementById('manualBacktestData').value.trim();
+                if (!raw) return alert('Tempel data dulu!');
+                const lines = raw.split(/[\n\r]+/).filter(l => /^\d{4}$/.test(l.trim()));
+                if (lines.length < 2) return alert('Minimal 2 result untuk backtest.');
+                if (lines.length > 30) {
+                    alert('Maksimal 30 baris, hanya 30 pertama yang diproses.');
+                    lines.length = 30;
+                }
+                jalankanBacktest(lines, 'BACKTEST MANUAL');
+            };
+
+            // ==================== TAMPILAN RIWAYAT PREDIKSI ====================
+            window.togglePredHistory = function() {
+                const c = document.getElementById('predHistoryContainer');
+                const show = (c.style.display === 'none' || c.style.display === '');
+                c.style.display = show ? 'block' : 'none';
+                if (show) renderPredHistory();
+            };
+
+            window.renderPredHistory = function() {
+                const p = document.getElementById('pasaran').value;
+                const list = (PRED_HISTORY[p] || []).slice().reverse();
+                const el = document.getElementById('predHistoryContent');
+                let html = `<div class="market-tag">📌 PASARAN: ${p}</div>`;
+
+                if (!list.length) {
+                    html += `<div class="pred-empty">Belum ada riwayat prediksi untuk pasaran <b>${p}</b>.<br>
+                             Klik <b>⚡ GENERATE</b> untuk menyimpan prediksi ke pasaran ini.</div>`;
+                    el.innerHTML = html;
+                    return;
+                }
+
+                // ===== STATISTIK AKURASI =====
+                const totalCek = (PRED_HISTORY[p] || []).filter(r => r.cek).length;
+                const totalJP = (PRED_HISTORY[p] || []).filter(r => r.cek === 'JP').length;
+                const totalZonk = totalCek - totalJP;
+                const akurasi = totalCek > 0 ? ((totalJP / totalCek) * 100).toFixed(1) : '0.0';
+
+                html += `
+                <div class="accuracy-grid">
+                    <div class="acc-card">
+                        <div class="acc-label">Total Prediksi</div>
+                        <div class="acc-val" style="color:#ffcc00;">${(PRED_HISTORY[p] || []).length}</div>
+                    </div>
+                    <div class="acc-card">
+                        <div class="acc-label">JP</div>
+                        <div class="acc-val">${totalJP}</div>
+                    </div>
+                    <div class="acc-card warn">
+                        <div class="acc-label">Zonk</div>
+                        <div class="acc-val">${totalZonk}</div>
+                    </div>
+                    <div class="acc-card">
+                        <div class="acc-label">Akurasi</div>
+                        <div class="acc-val">${akurasi}%</div>
+                        <div class="acc-sub">${totalCek} tervalidasi</div>
+                    </div>
+                </div>
+                `;
+
+                html += '<div style="overflow-x:auto;"><table class="pred-table"><thead><tr>' +
+                    '<th>#</th><th>Waktu</th><th>Result</th><th>LK</th><th>LE</th>' +
+                    '<th>BBFS 9D</th><th>BBFS Enh</th><th>BBFS 7D</th><th>Hasil</th><th>Status</th><th>X</th>' +
+                    '</tr></thead><tbody>';
+
+                list.forEach((r, idx) => {
+                    const statusHtml = r.cek === 'JP' ?
+                        '<span class="jp" style="padding:2px 6px;border-radius:3px;">JP</span>' :
+                        r.cek === 'ZONK' ?
+                        '<span class="zonk" style="padding:2px 6px;border-radius:3px;">ZONK</span>' :
+                        '<span class="pending" style="padding:2px 6px;border-radius:3px;">MENUNGGU</span>';
+
+                    html += `<tr>
+                        <td>${list.length - idx}</td>
+                        <td>${r.waktu || '-'}</td>
+                        <td><b>${r.result}</b></td>
+                        <td>${r.lk}</td>
+                        <td>${r.le}</td>
+                        <td class="bbfs-cell">${r.bbfsMB}</td>
+                        <td class="bbfs-cell">${r.bbfsEn || '-'}</td>
+                        <td class="bbfs-cell">${r.bbfs7D || '-'}</td>
+                        <td>${r.hasil || '-'}</td>
+                        <td>${statusHtml}</td>
+                        <td><span style="cursor:pointer;color:#ff4d4d;" onclick="hapusSatuPrediksi(${r.id})">✕</span></td>
+                    </tr>`;
+                });
+
+                html += '</tbody></table></div>';
+                html += '<p class="info-text">Status dihitung otomatis saat Anda menekan <b>+ HISTORI</b> (minimal 2 digit BBFS 9D muncul di Kepala & Ekor result berikutnya = JP).</p>';
+                el.innerHTML = html;
+            };
+
+            window.hapusSatuPrediksi = function(id) {
+                const p = document.getElementById('pasaran').value;
+                if (!PRED_HISTORY[p]) return;
+                PRED_HISTORY[p] = PRED_HISTORY[p].filter(r => r.id !== id);
+                savePredHistory();
+                renderPredHistory();
+            };
+
+            window.hapusPredHistory = function() {
+                const p = document.getElementById('pasaran').value;
+                if (!confirm(`Hapus semua riwayat prediksi pasaran ${p}?`)) return;
+                PRED_HISTORY[p] = [];
+                savePredHistory();
+                renderPredHistory();
+            };
+
+            // ==================== EXPORT CSV ====================
+            window.exportPredHistoryCSV = function() {
+                const p = document.getElementById('pasaran').value;
+                const list = PRED_HISTORY[p] || [];
+                if (!list.length) return alert('Belum ada riwayat untuk diexport.');
+
+                const header = ['No', 'Waktu', 'Pasaran', 'Result', 'LK', 'LE', 'BBFS_9D', 'BBFS_Enhanced', 'BBFS_7D', 'Hasil', 'Status'];
+                const rows = list.map((r, i) => [
+                    i + 1,
+                    r.waktu || '-',
+                    p,
+                    r.result,
+                    r.lk,
+                    r.le,
+                    r.bbfsMB,
+                    r.bbfsEn || '-',
+                    r.bbfs7D || '-',
+                    r.hasil || '-',
+                    r.cek || 'MENUNGGU'
+                ]);
+
+                const csv = [header, ...rows]
+                    .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+                    .join('\n');
+
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+                a.href = url;
+                a.download = `ALGOFINDER_${p.replace(/\s+/g, '_')}_${ts}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            };
+
+            // ==================== INIT ====================
+            window.addEventListener('DOMContentLoaded', () => {
+                initHistData();
+                loadPredHistory();
+                // Pastikan semua market punya slot riwayat
+                allMarkets().forEach(p => { if (!PRED_HISTORY[p]) PRED_HISTORY[p] = []; });
+                savePredHistory();
+                populateDropdown();
+                updateDataCount();
+            });
+        })();
+    </script>
+</body>
+</html>
