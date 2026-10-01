@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediksi Pola Jp Biji On Bertingkat</title>
+    <style>
+        :root {
+            --bg-main: #0b0c10;
+            --bg-card: #141a24;
+            --primary: #66fcf1;
+            --secondary: #45f3ff;
+            --text-main: #ffffff;
+            --text-muted: #c5c6c7;
+            --accent-as: #ffd700;
+            --accent-cop: #4caf50;
+            --accent-kepala: #2196f3;
+            --accent-ekor: #ff5722;
+            --accent-biji: #00e676;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background-color: #0f131a;
+            border: 1px solid #233142;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-top: 5px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #233142;
+            padding-bottom: 10px;
+        }
+
+        .pasaran-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .pasaran-group label {
+            font-weight: bold;
+            color: #ffb74d;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+        .pasaran-group input {
+            width: 100%;
+            height: 38px;
+            padding: 0 10px;
+            font-size: 14px;
+            font-weight: bold;
+            background: #070a0f;
+            border: 1.5px solid #233142;
+            color: #fff;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+        .pasaran-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .input-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin: 10px 0 15px 0;
+            background: var(--bg-card);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #1e2733;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            gap: 5px;
+        }
+        .input-group label {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+        .input-group input {
+            width: 100%;
+            max-width: 55px;
+            height: 40px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            background: #070a0f;
+            border: 1.5px solid #233142;
+            color: #fff;
+            border-radius: 6px;
+        }
+
+        .position-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            margin-bottom: 8px;
+            border-radius: 6px;
+            padding: 8px 12px;
+            border-left: 4px solid #fff;
+        }
+        .as-row { border-left-color: var(--accent-as); }
+        .cop-row { border-left-color: var(--accent-cop); }
+        .kepala-row { border-left-color: var(--accent-kepala); }
+        .ekor-row { border-left-color: var(--accent-ekor); }
+        
+        .title-label {
+            font-weight: bold;
+            font-size: 12px;
+            width: 55px;
+        }
+        .as-row .title-label { color: var(--accent-as); }
+        .cop-row .title-label { color: var(--accent-cop); }
+        .kepala-row .title-label { color: var(--accent-kepala); }
+        .ekor-row .title-label { color: var(--accent-ekor); }
+        
+        .select-pola {
+            background: #070a0f;
+            color: #fff;
+            border: 1px solid #233142;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            width: 100px;
+        }
+        .digit-display {
+            width: 35px;
+            height: 35px;
+            line-height: 33px;
+            background: #070a0f;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 1px solid #233142;
+        }
+        .op-select {
+            background: #070a0f;
+            color: #ffb74d;
+            border: 1px solid #ffb74d;
+            padding: 5px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-calc {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #00e676, #00b0ff);
+            color: black;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-panel {
+            margin-top: 20px;
+            background: #111622;
+            border: 1px dashed #233142;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #233142;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+        .result-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .result-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+        .display-pasaran {
+            font-size: 14px;
+            font-weight: 900;
+            color: #ff5722;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .final-box {
+            background: #1a233a;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            border: 1px solid var(--primary);
+        }
+
+        .tier-row { margin-bottom: 15px; }
+        .tier-label {
+            font-weight: bold;
+            color: #ffb74d;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+        .boxes-wrapper {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .classic-box {
+            width: 32px;
+            height: 32px;
+            line-height: 30px;
+            text-align: center;
+            background: linear-gradient(180deg, #1e293b, #0f172a);
+            border: 1.5px solid var(--accent-biji);
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+        .tier-small .classic-box {
+            width: 28px;
+            height: 28px;
+            line-height: 26px;
+            font-size: 13px;
+            border-color: #66fcf1;
+        }
+        .tier-top-biji .classic-box {
+            background: linear-gradient(180deg, #006064, #001a1c);
+            border-color: #00e5ff;
+            color: #00e5ff;
+            box-shadow: 0 0 8px rgba(0,229,255,0.5);
+        }
+
+        /* ====== AUTO FINDER CSS ====== */
+        .auto-finder-section {
+            margin-top: 20px;
+            border-top: 2px solid #233142;
+            padding-top: 16px;
+        }
+        .auto-finder-section summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 14px;
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .auto-finder-section summary::before { content: "🔍"; font-size: 18px; }
+        .auto-finder-body { margin-top: 12px; }
+        .auto-finder-body textarea {
+            width: 100%;
+            min-height: 60px;
+            background: #070a0f;
+            border: 1px solid #233142;
+            color: #fff;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 13px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+        .finder-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 14px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #0a0e14;
+            border-radius: 6px;
+            border: 1px solid #1a233a;
+        }
+        .finder-options label {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #b0b7c0;
+            cursor: pointer;
+        }
+        .finder-options label input[type="checkbox"] {
+            accent-color: var(--accent-biji);
+            width: 14px;
+            height: 14px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .btn-finder {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(90deg, #00695c, #00bcd4);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: opacity 0.2s;
+        }
+        .btn-finder:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-reset {
+            padding: 12px 20px;
+            background: linear-gradient(90deg, #d32f2f, #f44336);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: opacity 0.2s;
+        }
+        .btn-reset:hover { opacity: 0.9; }
+        
+        .finder-progress {
+            height: 8px;
+            background: #1a233a;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+            display: none;
+        }
+        .finder-progress.active { display: block; }
+        .finder-progress .bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00e676, #00b0ff);
+            border-radius: 4px;
+            transition: width 0.1s;
+        }
+        .finder-status {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 4px 0;
+            min-height: 20px;
+        }
+        .speed-indicator {
+            background: #1a233a;
+            padding: 8px;
+            border-radius: 6px;
+            margin: 8px 0;
+            font-size: 11px;
+            color: #b0b7c0;
+            text-align: center;
+        }
+        .finder-results {
+            margin-top: 12px;
+            max-height: 420px;
+            overflow-y: auto;
+            border: 1px solid #1a233a;
+            border-radius: 6px;
+        }
+        .finder-results table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        .finder-results th {
+            background: #1a233a;
+            color: var(--secondary);
+            padding: 6px 4px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            font-size: 10px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #233142;
+        }
+        .finder-results td {
+            padding: 5px 3px;
+            text-align: center;
+            border-bottom: 1px solid #0e1520;
+            color: #d0d7e0;
+            font-size: 10px;
+        }
+        .finder-results tr:nth-child(even) td { background: #0a0f17; }
+        .finder-results tr:hover td { background: #16202f; }
+        
+        .finder-results .rank { font-weight: bold; color: #ffb74d; font-size: 11px; }
+        .finder-results .rank.gold { color: #ffd700; }
+        .finder-results .rank.silver { color: #c0c0c0; }
+        .finder-results .rank.bronze { color: #cd7f32; }
+        .finder-results .rate { font-weight: bold; font-size: 12px; }
+        .finder-results .rate.high { color: #4caf50; }
+        .finder-results .rate.mid { color: #ffb74d; }
+        .finder-results .rate.low { color: #f44336; }
+        .finder-results .badge-mode {
+            background: #1a233a;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: bold;
+            color: #b0b7c0;
+            display: inline-block;
+            margin: 0 1px;
+        }
+        .finder-results .badge-op { color: #ffb74d; font-weight: bold; }
+        .finder-results .apply-btn {
+            background: #00695c;
+            border: none;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .finder-results .apply-btn:hover { background: #00897b; }
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 10px; }
+            .position-row { flex-wrap: wrap; gap: 4px; }
+            .select-pola { width: 80px; font-size: 10px; }
+            .finder-results table { font-size: 9px; }
+            .btn-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Prediksi Pola Biji On Bertingkat</h1>
+    
+    <div class="pasaran-group">
+        <label>NAMA PASARAN</label>
+        <input type="text" id="input_pasaran" value="SGP - SINGAPORE" placeholder="Contoh: HONGKONG, SYDNEY" oninput="updatePasaranView()">
+    </div>
+
+    <div class="input-section">
+        <div class="input-group">
+            <label>AS</label>
+            <input type="text" id="input_as" maxlength="1" value="1" oninput="calculateBiji()">
+        </div>
+        <div class="input-group">
+            <label>COP</label>
+            <input type="text" id="input_cop" maxlength="1" value="1" oninput="calculateBiji()">
+        </div>
+        <div class="input-group">
+            <label>KEPALA</label>
+            <input type="text" id="input_kepala" maxlength="1" value="4" oninput="calculateBiji()">
+        </div>
+        <div class="input-group">
+            <label>EKOR</label>
+            <input type="text" id="input_ekor" maxlength="1" value="5" oninput="calculateBiji()">
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <div class="position-row as-row">
+            <div class="title-label">AS</div>
+            <select class="select-pola" id="mode_as" onchange="calculateBiji()">
+                <option value="NORMAL">NORMAL</option>
+                <script>
+                    const rumusList = ['IX','TY','ML','MB','M0','M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12','M13','M14','M15','M16','M17','M18','M19'];
+                    rumusList.forEach(r => document.write(`<option value="${r}">MISTIK ${r}</option>`));
+                </script>
+            </select>
+            <div class="digit-display" id="val_as">1</div>
+            <select class="op-select" id="op_as_cop" onchange="calculateBiji()">
+                <option value="+">+</option>
+                <option value="-">-</option>
+            </select>
+        </div>
+
+        <div class="position-row cop-row">
+            <div class="title-label">COP</div>
+            <select class="select-pola" id="mode_cop" onchange="calculateBiji()">
+                <option value="NORMAL">NORMAL</option>
+                <script>rumusList.forEach(r => document.write(`<option value="${r}">MISTIK ${r}</option>`));</script>
+            </select>
+            <div class="digit-display" id="val_cop">1</div>
+            <select class="op-select" id="op_cop_kep" onchange="calculateBiji()">
+                <option value="+">+</option>
+                <option value="-">-</option>
+            </select>
+        </div>
+
+        <div class="position-row kepala-row">
+            <div class="title-label">KEPALA</div>
+            <select class="select-pola" id="mode_kepala" onchange="calculateBiji()">
+                <option value="NORMAL">NORMAL</option>
+                <script>rumusList.forEach(r => document.write(`<option value="${r}">MISTIK ${r}</option>`));</script>
+            </select>
+            <div class="digit-display" id="val_kepala">4</div>
+            <select class="op-select" id="op_kep_ekor" onchange="calculateBiji()">
+                <option value="+">+</option>
+                <option value="-">-</option>
+            </select>
+        </div>
+
+        <div class="position-row ekor-row">
+            <div class="title-label">EKOR</div>
+            <select class="select-pola" id="mode_ekor" onchange="calculateBiji()">
+                <option value="NORMAL">NORMAL</option>
+                <script>rumusList.forEach(r => document.write(`<option value="${r}">MISTIK ${r}</option>`));</script>
+            </select>
+            <div class="digit-display" id="val_ekor">5</div>
+            <div style="width:28px; text-align:center; color:#555; font-weight:bold;">=</div>
+        </div>
+    </div>
+
+    <button class="btn-calc" onclick="calculateBiji()">Hitung Pola Biji On</button>
+
+    <div class="result-panel">
+        <div class="result-header">
+            <div class="result-header-left">
+                <div class="result-title">Angka Pangkal Biji On</div>
+                <div class="display-pasaran" id="view_pasaran">PASARAN: SGP - SINGAPORE</div>
+            </div>
+            <div class="final-box" id="final_base">1</div>
+        </div>
+
+        <div class="bbfs-tier-container">
+            <div class="tier-row">
+                <div class="tier-label">BIJI ON 9 DIGIT</div>
+                <div class="boxes-wrapper" id="tier_9"></div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-label">BIJI ON 8 DIGIT</div>
+                <div class="boxes-wrapper" id="tier_8"></div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-label">BIJI ON 7 DIGIT</div>
+                <div class="boxes-wrapper" id="tier_7"></div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-label">BIJI ON 6 DIGIT</div>
+                <div class="boxes-wrapper" id="tier_6"></div>
+            </div>
+            <div class="tier-row tier-small">
+                <div class="tier-label">BIJI ON 5 DIGIT</div>
+                <div class="boxes-wrapper" id="tier_5"></div>
+            </div>
+            <div class="tier-row tier-small tier-top-biji">
+                <div class="tier-label" style="color: #00e5ff; font-weight: 900;">TOP BIJI (4 DIGIT)</div>
+                <div class="boxes-wrapper" id="tier_4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTO FINDER SECTION -->
+    <div class="auto-finder-section">
+        <details id="autoFinderDetails">
+            <summary>AUTO FINDER — Cari Rumus Terbaik</summary>
+            <div class="auto-finder-body">
+                <div style="margin-bottom: 8px;">
+                    <label style="font-size: 12px; color: #b0b7c0; display: block; margin-bottom: 4px;">
+                        📊 Data Historis (4D hasil, pisahkan dengan spasi / koma / newline)
+                    </label>
+                    <textarea id="historical_data" rows="3" placeholder="Contoh: 1234 5678 9012 3456 7890 2468 1357">1234 5678 9012 3456 7890 2468 1357</textarea>
+                </div>
+
+                <div class="finder-options" id="finderOptions">
+                    <span style="font-size: 11px; color: var(--secondary); width: 100%; margin-bottom: 4px; font-weight: bold;">Mode per posisi yang diuji:</span>
+                    <label><input type="checkbox" class="mode-chk" value="NORMAL" checked> NORMAL</label>
+                    <label><input type="checkbox" class="mode-chk" value="IX" checked> IX</label>
+                    <label><input type="checkbox" class="mode-chk" value="TY" checked> TY</label>
+                    <label><input type="checkbox" class="mode-chk" value="ML" checked> ML</label>
+                    <label><input type="checkbox" class="mode-chk" value="MB" checked> MB</label>
+                    <label style="margin-left: 4px; color: #666;">|</label>
+                    <label><input type="checkbox" class="mode-chk" value="M0"> M0</label>
+                    <label><input type="checkbox" class="mode-chk" value="M1"> M1</label>
+                    <label><input type="checkbox" class="mode-chk" value="M2"> M2</label>
+                    <label><input type="checkbox" class="mode-chk" value="M3"> M3</label>
+                    <label><input type="checkbox" class="mode-chk" value="M4"> M4</label>
+                    <label><input type="checkbox" class="mode-chk" value="M5"> M5</label>
+                    <label><input type="checkbox" class="mode-chk" value="M6"> M6</label>
+                    <label><input type="checkbox" class="mode-chk" value="M7"> M7</label>
+                    <label><input type="checkbox" class="mode-chk" value="M8"> M8</label>
+                    <label><input type="checkbox" class="mode-chk" value="M9"> M9</label>
+                    <label><input type="checkbox" class="mode-chk" value="M10"> M10</label>
+                    <label><input type="checkbox" class="mode-chk" value="M11"> M11</label>
+                    <label><input type="checkbox" class="mode-chk" value="M12"> M12</label>
+                    <label><input type="checkbox" class="mode-chk" value="M13"> M13</label>
+                    <label><input type="checkbox" class="mode-chk" value="M14"> M14</label>
+                    <label><input type="checkbox" class="mode-chk" value="M15"> M15</label>
+                    <label><input type="checkbox" class="mode-chk" value="M16"> M16</label>
+                    <label><input type="checkbox" class="mode-chk" value="M17"> M17</label>
+                    <label><input type="checkbox" class="mode-chk" value="M18"> M18</label>
+                    <label><input type="checkbox" class="mode-chk" value="M19"> M19</label>
+                    <span style="font-size: 11px; color: #666; margin-left: 8px;">
+                        <button type="button" onclick="toggleAllModes(true)" style="background:transparent;border:1px solid #444;color:#b0b7c0;border-radius:4px;padding:0 8px;cursor:pointer;font-size:10px;">Semua</button>
+                        <button type="button" onclick="toggleAllModes(false)" style="background:transparent;border:1px solid #444;color:#b0b7c0;border-radius:4px;padding:0 8px;cursor:pointer;font-size:10px;">Hapus</button>
+                    </span>
+                </div>
+
+                <div class="speed-indicator" id="speedIndicator">⚡ Mode: NORMAL (Optimized)</div>
+
+                <div class="finder-progress" id="finderProgress">
+                    <div class="bar" id="finderProgressBar"></div>
+                </div>
+                <div class="finder-status" id="finderStatus">Siap menjalankan auto finder...</div>
+
+                <div class="btn-group">
+                    <button class="btn-finder" id="btnFinder" onclick="runAutoFinder()">🚀 Jalankan Auto Finder</button>
+                    <button class="btn-reset" onclick="resetFinder()">🔄 Reset</button>
+                </div>
+
+                <div class="finder-results" id="finderResults">
+                    <div class="no-results">Hasil akan tampil di sini setelah pencarian.</div>
+                </div>
+            </div>
+        </details>
+    </div>
+</div>
+
+<script>
+    // TABEL MISTIK LENGKAP (0-9) untuk mencegah error saat scanning
+    const MISTIK_TABLE = {
+        'IX':  { '0': 5, '1': 6, '2': 7, '3': 8, '4': 9, '5': 0, '6': 1, '7': 2, '8': 3, '9': 4 },
+        'TY':  { '0': 7, '1': 4, '2': 9, '3': 6, '4': 1, '5': 8, '6': 3, '7': 0, '8': 5, '9': 2 },
+        'ML':  { '0': 1, '1': 0, '2': 5, '3': 8, '4': 7, '5': 2, '6': 9, '7': 4, '8': 3, '9': 6 },
+        'MB':  { '0': 8, '1': 7, '2': 6, '3': 9, '4': 5, '5': 4, '6': 2, '7': 1, '8': 0, '9': 3 },
+        'M0':  { '0': 6, '1': 5, '2': 8, '3': 7, '4': 9, '5': 1, '6': 0, '7': 3, '8': 2, '9': 4 },
+        'M1':  { '0': 1, '1': 0, '2': 9, '3': 8, '4': 7, '5': 6, '6': 5, '7': 4, '8': 3, '9': 2 },
+        'M2':  { '0': 2, '1': 8, '2': 0, '3': 9, '4': 7, '5': 6, '6': 5, '7': 4, '8': 1, '9': 3 },
+        'M3':  { '0': 3, '1': 2, '2': 1, '3': 0, '4': 9, '5': 8, '6': 7, '7': 6, '8': 5, '9': 4 },
+        'M4':  { '0': 6, '1': 5, '2': 3, '3': 2, '4': 7, '5': 1, '6': 0, '7': 4, '8': 9, '9': 8 },
+        'M5':  { '0': 5, '1': 4, '2': 3, '3': 2, '4': 1, '5': 0, '6': 9, '7': 8, '8': 7, '9': 6 },
+        'M6':  { '0': 6, '1': 8, '2': 4, '3': 5, '4': 2, '5': 3, '6': 0, '7': 9, '8': 1, '9': 7 },
+        'M7':  { '0': 7, '1': 6, '2': 5, '3': 4, '4': 3, '5': 2, '6': 1, '7': 0, '8': 9, '9': 8 },
+        'M8':  { '0': 8, '1': 7, '2': 6, '3': 5, '4': 9, '5': 3, '6': 2, '7': 1, '8': 0, '9': 4 },
+        'M9':  { '0': 9, '1': 8, '2': 7, '3': 6, '4': 5, '5': 4, '6': 3, '7': 2, '8': 1, '9': 0 },
+        'M10': { '0': 4, '1': 2, '2': 1, '3': 8, '4': 0, '5': 6, '6': 5, '7': 9, '8': 3, '9': 7 },
+        'M11': { '0': 1, '1': 0, '2': 5, '3': 4, '4': 3, '5': 2, '6': 8, '7': 9, '8': 6, '9': 7 },
+        'M12': { '0': 2, '1': 7, '2': 0, '3': 8, '4': 6, '5': 9, '6': 4, '7': 1, '8': 3, '9': 5 },
+        'M13': { '0': 3, '1': 9, '2': 7, '3': 0, '4': 6, '5': 8, '6': 4, '7': 2, '8': 5, '9': 1 },
+        'M14': { '0': 6, '1': 5, '2': 4, '3': 7, '4': 2, '5': 1, '6': 0, '7': 3, '8': 9, '9': 8 },
+        'M15': { '0': 5, '1': 6, '2': 4, '3': 9, '4': 2, '5': 0, '6': 1, '7': 8, '8': 7, '9': 3 },
+        'M16': { '0': 3, '1': 8, '2': 7, '3': 0, '4': 9, '5': 6, '6': 5, '7': 2, '8': 1, '9': 4 },
+        'M17': { '0': 9, '1': 4, '2': 8, '3': 6, '4': 1, '5': 7, '6': 3, '7': 5, '8': 2, '9': 0 },
+        'M18': { '0': 8, '1': 9, '2': 7, '3': 4, '4': 3, '5': 6, '6': 5, '7': 2, '8': 0, '9': 1 },
+        'M19': { '0': 7, '1': 8, '2': 3, '3': 2, '4': 9, '5': 6, '6': 5, '7': 0, '8': 1, '9': 4 }
+    };
+
+    // Pre-compile cache untuk kecepatan maksimal
+    const MISTIK_CACHE = {};
+    Object.keys(MISTIK_TABLE).forEach(mode => {
+        MISTIK_CACHE[mode] = {};
+        for (let i = 0; i < 10; i++) {
+            MISTIK_CACHE[mode][i] = MISTIK_TABLE[mode][i] !== undefined ? MISTIK_TABLE[mode][i] : i;
+        }
+    });
+
+    function updatePasaranView() {
+        let pName = document.getElementById("input_pasaran").value;
+        document.getElementById("view_pasaran").innerText = pName ? "PASARAN: " + pName : "PASARAN: -";
+        calculateBiji();
+    }
+
+    function getMistikValue(num, mode) {
+        if (mode === "NORMAL") return parseInt(num) || 0;
+        let cleanChar = parseInt(num.toString().trim().slice(-1)) || 0;
+        return MISTIK_CACHE[mode] ? (MISTIK_CACHE[mode][cleanChar] || cleanChar) : cleanChar;
+    }
+
+    function bulatkanSatuDigit(nilai) {
+        if (nilai < 0) nilai = Math.abs(nilai);
+        if (nilai < 10) return nilai;
+        if (nilai === 10) return 1;
+        if (nilai === 11) return 2;
+        while (nilai >= 10) {
+            let str = nilai.toString();
+            nilai = parseInt(str[0]) + parseInt(str[1]);
+        }
+        return nilai;
+    }
+
+    function generateHtmlBoxes(containerId, digitsArray) {
+        let container = document.getElementById(containerId);
+        container.innerHTML = "";
+        digitsArray.forEach(d => {
+            let box = document.createElement("div");
+            box.className = "classic-box";
+            box.innerText = d;
+            container.appendChild(box);
+        });
+    }
+
+    function calculateBiji() {
+        let raw_as = document.getElementById("input_as").value;
+        let raw_cop = document.getElementById("input_cop").value;
+        let raw_kepala = document.getElementById("input_kepala").value;
+        let raw_ekor = document.getElementById("input_ekor").value;
+
+        let mode_as = document.getElementById("mode_as").value;
+        let mode_cop = document.getElementById("mode_cop").value;
+        let mode_kepala = document.getElementById("mode_kepala").value;
+        let mode_ekor = document.getElementById("mode_ekor").value;
+
+        let val_as = getMistikValue(raw_as, mode_as);
+        let val_cop = getMistikValue(raw_cop, mode_cop);
+        let val_kepala = getMistikValue(raw_kepala, mode_kepala);
+        let val_ekor = getMistikValue(raw_ekor, mode_ekor);
+
+        document.getElementById("val_as").innerText = val_as;
+        document.getElementById("val_cop").innerText = val_cop;
+        document.getElementById("val_kepala").innerText = val_kepala;
+        document.getElementById("val_ekor").innerText = val_ekor;
+
+        let op_as_cop = document.getElementById("op_as_cop").value;
+        let op_cop_kep = document.getElementById("op_cop_kep").value;
+        let op_kep_ekor = document.getElementById("op_kep_ekor").value;
+
+        let res1 = (op_as_cop === "+") ? (val_as + val_cop) : Math.abs(val_as - val_cop);
+        let res2 = (op_cop_kep === "+") ? (res1 + val_kepala) : Math.abs(res1 - val_kepala);
+        let total_akhir = (op_kep_ekor === "+") ? (res2 + val_ekor) : Math.abs(res2 - val_ekor);
+
+        let hasil_pangkat = bulatkanSatuDigit(total_akhir);
+        document.getElementById("final_base").innerText = hasil_pangkat;
+
+        let p = hasil_pangkat;
+        let b9 = [p, (p+2)%10, (p+3)%10, (p+4)%10, (p+5)%10, (p+6)%10, (p+7)%10, (p+8)%10, (p+9)%10];
+        let b8 = [p, (p+2)%10, (p+3)%10, (p+4)%10, (p+5)%10, (p+6)%10, (p+7)%10, (p+8)%10];
+        let b7 = [p, (p+2)%10, (p+3)%10, (p+4)%10, (p+5)%10, (p+6)%10, (p+7)%10];
+        let b6 = [(p+2)%10, (p+3)%10, (p+4)%10, (p+5)%10, (p+6)%10, (p+7)%10];
+        let b5 = [(p+3)%10, (p+4)%10, (p+5)%10, (p+6)%10, (p+7)%10];
+        let b4 = [(p+3)%10, (p+4)%10, (p+5)%10, (p+6)%10];
+
+        generateHtmlBoxes("tier_9", b9);
+        generateHtmlBoxes("tier_8", b8);
+        generateHtmlBoxes("tier_7", b7);
+        generateHtmlBoxes("tier_6", b6);
+        generateHtmlBoxes("tier_5", b5);
+        generateHtmlBoxes("tier_4", b4);
+    }
+
+    // ====== AUTO FINDER LOGIC ======
+    let isRunning = false;
+    let shouldStop = false;
+
+    function toggleAllModes(checked) {
+        document.querySelectorAll('.mode-chk').forEach(cb => cb.checked = checked);
+    }
+
+    function getSelectedModes() {
+        let modes = [];
+        document.querySelectorAll('.mode-chk:checked').forEach(cb => modes.push(cb.value));
+        return modes;
+    }
+
+    function parseHistoricalData(text) {
+        let cleaned = text.replace(/,/g, ' ').replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+        if (!cleaned) return [];
+        let parts = cleaned.split(' ');
+        let results = [];
+        for (let p of parts) {
+            let digits = p.replace(/[^0-9]/g, '');
+            if (digits.length >= 4) {
+                let d = digits.slice(0, 4).split('').map(Number);
+                if (d.every(n => !isNaN(n) && n >= 0 && n <= 9)) {
+                    results.push(d);
+                }
+            }
+        }
+        return results;
+    }
+
+    function computeBijiForDigits(digits, modes, ops) {
+        let [d_as, d_cop, d_kep, d_ekor] = digits;
+        let v_as = getMistikValue(d_as, modes[0]);
+        let v_cop = getMistikValue(d_cop, modes[1]);
+        let v_kep = getMistikValue(d_kep, modes[2]);
+        let v_ekor = getMistikValue(d_ekor, modes[3]);
+
+        let r1 = (ops[0] === '+') ? (v_as + v_cop) : Math.abs(v_as - v_cop);
+        let r2 = (ops[1] === '+') ? (r1 + v_kep) : Math.abs(r1 - v_kep);
+        let total = (ops[2] === '+') ? (r2 + v_ekor) : Math.abs(r2 - v_ekor);
+        return bulatkanSatuDigit(total);
+    }
+
+    function getStandardBiji(digits) {
+        let [a, c, k, e] = digits;
+        let total = (parseInt(a) || 0) + (parseInt(c) || 0) + (parseInt(k) || 0) + (parseInt(e) || 0);
+        return bulatkanSatuDigit(total);
+    }
+
+    function resetFinder() {
+        if (isRunning) {
+            shouldStop = true;
+            document.getElementById('finderStatus').innerText = '⏹️ Dihentikan oleh pengguna';
+            setTimeout(() => {
+                isRunning = false;
+                document.getElementById('btnFinder').disabled = false;
+                document.getElementById('finderProgress').classList.remove('active');
+            }, 500);
+        }
+        document.getElementById('finderResults').innerHTML = '<div class="no-results">Hasil akan tampil di sini setelah pencarian.</div>';
+        document.getElementById('finderStatus').innerText = 'Siap menjalankan auto finder...';
+        document.getElementById('finderProgress').classList.remove('active');
+        document.getElementById('finderProgressBar').style.width = '0%';
+        document.getElementById('btnFinder').disabled = false;
+        document.getElementById('btnFinder').innerText = '🚀 Jalankan Auto Finder';
+        shouldStop = false;
+    }
+
+    function runAutoFinder() {
+        if (isRunning) {
+            resetFinder();
+            return;
+        }
+
+        const btn = document.getElementById('btnFinder');
+        const status = document.getElementById('finderStatus');
+        const progress = document.getElementById('finderProgress');
+        const bar = document.getElementById('finderProgressBar');
+        const resultsContainer = document.getElementById('finderResults');
+        const speedIndicator = document.getElementById('speedIndicator');
+
+        isRunning = true;
+        shouldStop = false;
+
+        let rawText = document.getElementById('historical_data').value;
+        let history = parseHistoricalData(rawText);
+        if (history.length < 2) {
+            status.innerText = '❌ Minimal butuh 2 data historis (4D).';
+            isRunning = false;
+            return;
+        }
+
+        let selectedModes = getSelectedModes();
+        if (selectedModes.length === 0) {
+            status.innerText = '❌ Pilih minimal 1 mode per posisi.';
+            isRunning = false;
+            return;
+        }
+
+        const opCombos = [
+            ['+', '+', '+'], ['+', '+', '-'], ['+', '-', '+'], ['+', '-', '-'],
+            ['-', '+', '+'], ['-', '+', '-'], ['-', '-', '+'], ['-', '-', '-']
+        ];
+
+        const totalModeCombos = Math.pow(selectedModes.length, 4);
+        const totalCombos = totalModeCombos * opCombos.length;
+        
+        let speedMode = 'NORMAL';
+        if (totalCombos > 100000) speedMode = 'SLOW (Banyak Kombinasi)';
+        else if (totalCombos > 10000) speedMode = 'MEDIUM';
+        else speedMode = 'FAST';
+        speedIndicator.innerHTML = `⚡ Mode: ${speedMode} - Total: ${totalCombos.toLocaleString()} kombinasi`;
+
+        let processed = 0;
+        progress.classList.add('active');
+        bar.style.width = '0%';
+        btn.disabled = false;
+        btn.innerText = '⏹️ Hentikan';
+        status.innerText = `⏳ Menguji ${totalCombos.toLocaleString()} kombinasi...`;
+
+        let allResults = [];
+        let bestRate = 0;
+
+        let standardBijis = [];
+        for (let i = 1; i < history.length; i++) {
+            standardBijis.push(getStandardBiji(history[i]));
+        }
+
+        let modeCombos = [];
+        for (let m0 of selectedModes) {
+            for (let m1 of selectedModes) {
+                for (let m2 of selectedModes) {
+                    for (let m3 of selectedModes) {
+                        modeCombos.push([m0, m1, m2, m3]);
+                    }
+                }
+            }
+        }
+
+        const BATCH_SIZE = 500;
+        let currentBatch = 0;
+
+        function processBatch() {
+            if (shouldStop) {
+                finishFinder();
+                return;
+            }
+
+            let processedInBatch = 0;
+
+            while (currentBatch < modeCombos.length && processedInBatch < BATCH_SIZE) {
+                let modes = modeCombos[currentBatch];
+                
+                for (let ops of opCombos) {
+                    let success = 0;
+                    for (let i = 0; i < history.length - 1; i++) {
+                        let predicted = computeBijiForDigits(history[i], modes, ops);
+                        if (predicted === standardBijis[i]) success++;
+                    }
+                    
+                    let total = history.length - 1;
+                    let rate = total > 0 ? (success / total) * 100 : 0;
+                    
+                    if (rate >= bestRate || allResults.length < 50) {
+                        allResults.push({
+                            modes: modes.slice(),
+                            ops: ops.slice(),
+                            success: success,
+                            total: total,
+                            rate: rate
+                        });
+                        if (rate > bestRate) bestRate = rate;
+                        
+                        if (allResults.length > 100) {
+                            allResults.sort((a, b) => b.rate - a.rate);
+                            allResults = allResults.slice(0, 100);
+                        }
+                    }
+                    processed++;
+                }
+                currentBatch++;
+                processedInBatch++;
+            }
+
+            let pct = Math.min(100, (processed / totalCombos) * 100);
+            bar.style.width = pct + '%';
+            status.innerText = `⏳ ${processed.toLocaleString()} / ${totalCombos.toLocaleString()} (${pct.toFixed(1)}%) - Terbaik: ${bestRate.toFixed(1)}%`;
+
+            if (currentBatch < modeCombos.length && !shouldStop) {
+                setTimeout(processBatch, 0);
+            } else {
+                finishFinder();
+            }
+        }
+
+        function finishFinder() {
+            bar.style.width = '100%';
+            allResults.sort((a, b) => b.rate - a.rate || (b.success - a.success));
+            let top = allResults.slice(0, 30);
+
+            let html = `<table>
+                <thead><tr>
+                    <th>#</th>
+                    <th>MODE (AS | COP | KEP | EKR)</th>
+                    <th>OP</th>
+                    <th>SUKSES</th>
+                    <th>RATE</th>
+                    <th>AKSI</th>
+                </tr></thead><tbody>`;
+
+            if (top.length === 0) {
+                html += `<tr><td colspan="6" style="text-align:center;padding:20px;color:#666;">Tidak ada hasil.</td></tr>`;
+            } else {
+                top.forEach((r, idx) => {
+                    let rankClass = '', medal = '';
+                    if (idx === 0) { rankClass = 'gold'; medal = '🥇'; } 
+                    else if (idx === 1) { rankClass = 'silver'; medal = '🥈'; } 
+                    else if (idx === 2) { rankClass = 'bronze'; medal = '🥉'; }
+                    
+                    let rateClass = r.rate >= 70 ? 'high' : (r.rate >= 45 ? 'mid' : 'low');
+                    let modesStr = r.modes.map(m => `<span class="badge-mode">${m}</span>`).join(' ');
+                    let opsStr = r.ops.join(' ');
+                    let applyData = `${r.modes.join('|')}|${r.ops.join('|')}`;
+                    
+                    html += `<tr>
+                        <td class="rank ${rankClass}">${medal || (idx+1)}</td>
+                        <td>${modesStr}</td>
+                        <td><span class="badge-op">${opsStr}</span></td>
+                        <td>${r.success}/${r.total}</td>
+                        <td class="rate ${rateClass}">${r.rate.toFixed(1)}%</td>
+                        <td><button class="apply-btn" onclick="applyFinderResult('${applyData}')">Terapkan</button></td>
+                    </tr>`;
+                });
+            }
+            html += `</tbody></table>`;
+            resultsContainer.innerHTML = html;
+
+            progress.classList.remove('active');
+            btn.disabled = false;
+            btn.innerText = '🚀 Jalankan Auto Finder';
+            status.innerText = `✅ Selesai! ${allResults.length.toLocaleString()} kombinasi diuji. Top ${top.length} ditampilkan.`;
+            isRunning = false;
+            shouldStop = false;
+        }
+
+        processBatch();
+    }
+
+    function applyFinderResult(data) {
+        let parts = data.split('|');
+        if (parts.length !== 7) {
+            alert("Gagal menerapkan rumus: format data tidak sesuai.");
+            return;
+        }
+        document.getElementById('mode_as').value = parts[0];
+        document.getElementById('mode_cop').value = parts[1];
+        document.getElementById('mode_kepala').value = parts[2];
+        document.getElementById('mode_ekor').value = parts[3];
+        document.getElementById('op_as_cop').value = parts[4];
+        document.getElementById('op_cop_kep').value = parts[5];
+        document.getElementById('op_kep_ekor').value = parts[6];
+
+        calculateBiji();
+        document.getElementById('autoFinderDetails').removeAttribute('open');
+        document.querySelector('.result-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    window.onload = function() {
+        calculateBiji();
+        updatePasaranView();
+    }
+</script>
+
+</body>
+</html>
