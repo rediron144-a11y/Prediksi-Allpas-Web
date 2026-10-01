@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediksi Pola JP COP Bertingkat & Auto Finder</title>
+    <style>
+        :root {
+            --bg-main: #0b0c10;
+            --bg-card: #141a24;
+            --primary: #66fcf1;
+            --secondary: #45f3ff;
+            --text-main: #ffffff;
+            --text-muted: #c5c6c7;
+            --accent-as: #ffd700;
+            --accent-cop: #4caf50; /* Hijau untuk COP */
+            --accent-kepala: #2196f3;
+            --accent-ekor: #ff5722;
+            --purple-neon: #e040fb;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background-color: #0f131a;
+            border: 1px solid #233142;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-top: 5px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #233142;
+            padding-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--secondary);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* INPUT PASARAN */
+        .pasaran-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .pasaran-group label {
+            font-weight: bold;
+            color: #ffb74d;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .pasaran-group input {
+            width: 100%;
+            height: 38px;
+            padding: 0 10px;
+            font-size: 14px;
+            font-weight: bold;
+            background: #070a0f;
+            border: 1.5px solid #233142;
+            color: #fff;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .pasaran-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* INPUT UTAMA */
+        .input-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin: 10px 0 15px 0;
+            background: var(--bg-card);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #1e2733;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            max-width: 55px;
+            height: 40px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            background: #070a0f;
+            border: 1.5px solid #233142;
+            color: #fff;
+            border-radius: 6px;
+        }
+
+        /* OPSI POLA JALUR */
+        .position-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            margin-bottom: 8px;
+            border-radius: 6px;
+            padding: 8px 12px;
+            border-left: 4px solid #fff;
+        }
+
+        .as-row { border-left-color: var(--accent-as); }
+        .cop-row { border-left-color: var(--accent-cop); }
+        .kepala-row { border-left-color: var(--accent-kepala); }
+        .ekor-row { border-left-color: var(--accent-ekor); }
+
+        .title-label {
+            font-weight: bold;
+            font-size: 12px;
+            width: 55px;
+        }
+        .as-row .title-label { color: var(--accent-as); }
+        .cop-row .title-label { color: var(--accent-cop); }
+        .kepala-row .title-label { color: var(--accent-kepala); }
+        .ekor-row .title-label { color: var(--accent-ekor); }
+
+        .switch-container {
+            display: flex;
+            align-items: center;
+            margin-right: 8px;
+        }
+        .switch-container input {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--secondary);
+        }
+
+        .select-pola {
+            background: #070a0f;
+            color: #fff;
+            border: 1px solid #233142;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            width: 100px;
+        }
+
+        .digit-display {
+            width: 35px;
+            height: 35px;
+            line-height: 33px;
+            background: #070a0f;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 1px solid #233142;
+        }
+
+        .op-select {
+            background: #070a0f;
+            color: #ffb74d;
+            border: 1px solid #ffb74d;
+            padding: 5px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-calc {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #11998e, #38ef7d); /* Gradient Hijau untuk COP */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* BACKTEST & AUTO FINDER STYLES */
+        .textarea-backtest {
+            width: 100%;
+            height: 100px;
+            background: #070a0f;
+            color: #03dac6;
+            border: 1px solid #233142;
+            border-radius: 6px;
+            padding: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            resize: none;
+        }
+        .backtest-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 11px;
+        }
+        .stat-box {
+            background: #0d1117;
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #1e2733;
+            text-align: center;
+        }
+        .card-panel {
+            background: var(--bg-card);
+            border: 1px solid #1e2733;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        /* PANEL HASIL AKHIR HZ */
+        .result-panel {
+            margin-top: 20px;
+            background: #111622;
+            border: 1px dashed #233142;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #233142;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .result-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .result-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .display-pasaran {
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--accent-cop); /* Warna COP */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .final-box {
+            background: #1a233a;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            border: 1px solid var(--accent-cop);
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .tier-row {
+            margin-bottom: 15px;
+        }
+
+        .tier-label {
+            font-weight: bold;
+            color: #ffb74d;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .boxes-wrapper {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .classic-box {
+            width: 32px;
+            height: 32px;
+            line-height: 30px;
+            text-align: center;
+            background: linear-gradient(180deg, #1e293b, #0f172a);
+            border: 1.5px solid var(--accent-cop); /* Tema COP Hijau */
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .tier-small .classic-box {
+            width: 28px;
+            height: 28px;
+            line-height: 26px;
+            font-size: 13px;
+            border-color: #66fcf1;
+        }
+
+        /* Spesial Desain Top COP */
+        .tier-top-cop .classic-box {
+            background: linear-gradient(180deg, #1b5e20, #0d3311) !important;
+            border-color: #69f0ae !important;
+            color: #69f0ae !important;
+            box-shadow: 0 0 8px rgba(105, 240, 174, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Prediksi Pola COP Bertingkat</h1>
+    
+    <div class="pasaran-group">
+        <label>NAMA PASARAN</label>
+        <input type="text" id="input_pasaran" value="SGP - SINGAPORE" placeholder="Contoh: HONGKONG, SYDNEY" oninput="updatePasaranView()">
+    </div>
+
+    <div class="input-section">
+        <div class="input-group">
+            <label>AS</label>
+            <input type="text" id="input_as" maxlength="1" value="1" oninput="calculateCop()">
+        </div>
+        <div class="input-group">
+            <label>COP</label>
+            <input type="text" id="input_cop" maxlength="1" value="1" oninput="calculateCop()">
+        </div>
+        <div class="input-group">
+            <label>KEPALA</label>
+            <input type="text" id="input_kepala" maxlength="1" value="4" oninput="calculateCop()">
+        </div>
+        <div class="input-group">
+            <label>EKOR</label>
+            <input type="text" id="input_ekor" maxlength="1" value="5" oninput="calculateCop()">
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <div class="position-row as-row">
+            <div class="switch-container"><input type="checkbox" id="switch_as" checked onchange="calculateCop()"></div>
+            <div class="title-label">AS</div>
+            <select class="select-pola" id="mode_as" onchange="calculateCop()">
+                <option value="NORMAL">NORMAL</option>
+                <script>
+                    const rumusList = ['IX','TY','ML','MB','M0','M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12','M13','M14','M15','M16','M17','M18','M19'];
+                    rumusList.forEach(r => document.write(`<option value="${r}">MISTIK ${r}</option>`));
+                </script>
+            </select>
+            <div class="digit-display" id="val_as">1</div>
+            <select class="op-select" id="op_as_cop" onchange="calculateCop()">
+                <option value="+">+</option>
+                <option value="-">-</option>
+            </select>
+        </div>
+
+        <div class="position-row cop-row">
+            <div class="switch-container"><input type="checkbox" id="switch_cop" checked onchange="calculateCop()"></div>
+            <div class="title-label">COP</div>
+            <select class="select-pola" id="mode_cop" onchange="calculateCop()">
+                <option value="NORMAL">NORMAL</option>
+                <script>rumusList.forEach(r => document.write(`<option value="${r}">MISTIK ${r}</option>`));</script>
+            </select>
+            <div class="digit-display" id="val_cop">1</div>
+            <select class="op-select" id="op_cop_kep" onchange="calculateCop()">
+                <option value="+">+</option>
+                <option value="-">-</option>
+            </select>
+        </div>
+
+        <div class="position-row kepala-row">
+            <div class="switch-container"><input type="checkbox" id="switch_kepala" checked onchange="calculateCop()"></div>
+            <div class="title-label">KEPALA</div>
+            <select class="select-pola" id="mode_kepala" onchange="calculateCop()">
+                <option value="NORMAL">NORMAL</option>
+                <script>rumusList.forEach(r => document.write(`<option value="${r}">MISTIK ${r}</option>`));</script>
+            </select>
+            <div class="digit-display" id="val_kepala">4</div>
+            <select class="op-select" id="op_kep_ekor" onchange="calculateCop()">
+                <option value="+">+</option>
+                <option value="-">-</option>
+            </select>
+        </div>
+
+        <div class="position-row ekor-row">
+            <div class="switch-container"><input type="checkbox" id="switch_ekor" checked onchange="calculateCop()"></div>
+            <div class="title-label">EKOR</div>
+            <select class="select-pola" id="mode_ekor" onchange="calculateCop()">
+                <option value="NORMAL">NORMAL</option>
+                <script>rumusList.forEach(r => document.write(`<option value="${r}">MISTIK ${r}</option>`));</script>
+            </select>
+            <div class="digit-display" id="val_ekor">5</div>
+            <div style="width:28px; text-align:center; color:#555; font-weight:bold;">=</div>
+        </div>
+    </div>
+
+    <button class="btn-calc" onclick="calculateCop()">Hitung Pola COP</button>
+
+    <!-- BACKTESTING ENGINE -->
+    <div class="section-title" style="margin-top: 20px;">
+        <span>History Data & Backtesting (Last 30)</span>
+        <button onclick="ambilDataDariSheets()" style="background: var(--secondary); color: #000; border: none; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer;">🔄 Tarik Data</button>
+    </div>
+    <div class="card-panel">
+        <textarea class="textarea-backtest" id="area_backtest" placeholder="Masukkan data 4D di sini..." oninput="calculateCop()">1145
+2389
+9012
+5471
+8823
+1234
+5678
+9012</textarea>
+        <div class="backtest-stats">
+            <div class="stat-box">Total Diuji: <strong id="bt_total" style="color:var(--secondary)">0</strong></div>
+            <div class="stat-box">Akurasi Top 4 COP: <strong id="bt_rate" style="color:#69f0ae">0%</strong></div>
+        </div>
+    </div>
+
+    <!-- AUTO FINDER ENGINE -->
+    <div class="card-panel">
+        <div class="section-title">
+            <span>Auto Finder Rumus AI</span>
+            <select id="auto_scope" style="background:#070a0f;color:#ffd700;border:1px solid #ffb74d;padding:4px;border-radius:4px;font-size:11px;font-weight:bold;">
+                <option value="cepat">Mode Cepat (6)</option>
+                <option value="lengkap">Mode Lengkap (26)</option>
+            </select>
+        </div>
+        <button class="btn-calc" onclick="jalankanAutoFinder()" style="margin-bottom:8px; background: linear-gradient(90deg, #4a148c, #e040fb);">🔍 Scan Auto Finder</button>
+        <div id="auto_status" style="font-size:11px;color:var(--text-muted);margin-bottom:4px;"></div>
+        <div id="auto_result" style="font-size:12px;color:var(--secondary);white-space:pre-wrap;"></div>
+    </div>
+
+    <!-- HASIL OUTPUT COP BERTINGKAT -->
+    <div class="result-panel">
+        <div class="result-header">
+            <div class="result-header-left">
+                <div class="result-title">Angka Pangkal COP</div>
+                <div class="display-pasaran" id="view_pasaran">PASARAN: SGP - SINGAPORE</div>
+            </div>
+            <div class="final-box" id="final_base">1</div>
+        </div>
+
+        <div class="bbfs-tier-container">
+            <div class="tier-row">
+                <div class="tier-label">COP 9 DIGIT</div>
+                <div class="boxes-wrapper" id="tier_9"></div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-label">COP 8 DIGIT</div>
+                <div class="boxes-wrapper" id="tier_8"></div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-label">COP 7 DIGIT</div>
+                <div class="boxes-wrapper" id="tier_7"></div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-label">COP 6 DIGIT</div>
+                <div class="boxes-wrapper" id="tier_6"></div>
+            </div>
+            <div class="tier-row tier-small">
+                <div class="tier-label">COP 5 DIGIT</div>
+                <div class="boxes-wrapper" id="tier_5"></div>
+            </div>
+            <div class="tier-row tier-small tier-top-cop">
+                <div class="tier-label" style="color: #69f0ae; font-weight: 900;">TOP COP (4 DIGIT)</div>
+                <div class="boxes-wrapper" id="tier_4"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Variabel global untuk Auto Finder
+    let lastAutoFinderResults = [];
+    let lastAutoFinderSw = [];
+
+    // TABEL MISTIK LENGKAP
+    const MISTIK_TABLE = {
+        'IX':  { '0': 5, '1': 6, '2': 7, '3': 8, '4': 9, '5': 0, '6': 1, '7': 2, '8': 3, '9': 4 },
+        'TY':  { '0': 7, '1': 4, '2': 9, '3': 6, '4': 1, '5': 8, '6': 3, '7': 0, '8': 5, '9': 2 },
+        'ML':  { '0': 1, '1': 0, '2': 5, '3': 8, '4': 7, '5': 2, '6': 9, '7': 4, '8': 3, '9': 6 }, 
+        'MB':  { '0': 8, '1': 7, '2': 6, '3': 9, '4': 5, '5': 4, '6': 2, '7': 1, '8': 0, '9': 3 },
+        'M0':  { '0': 6, '1': 5, '2': 8, '3': 7, '4': 9, '5': 1, '6': 0, '7': 3, '8': 2, '9': 4 }, 
+        'M1':  { '0': 1, '1': 0, '2': 9, '3': 8, '4': 7, '5': 6, '6': 5, '7': 4, '8': 3, '9': 2 },
+        'M2':  { '0': 2, '1': 8, '2': 0, '3': 9, '4': 7, '5': 6, '6': 5, '7': 4, '8': 1, '9': 3 }, 
+        'M3':  { '0': 3, '1': 2, '2': 1, '3': 0, '4': 9, '5': 8, '6': 7, '7': 6, '8': 5, '9': 4 },
+        'M4':  { '0': 6, '1': 5, '2': 3, '3': 2, '4': 7, '5': 1, '6': 0, '7': 4, '8': 9, '9': 8 }, 
+        'M5':  { '0': 5, '1': 4, '2': 3, '3': 2, '4': 1, '5': 0, '6': 9, '7': 8, '8': 7, '9': 6 },
+        'M6':  { '0': 6, '1': 8, '2': 4, '3': 5, '4': 2, '5': 3, '6': 0, '7': 9, '8': 1, '9': 7 }, 
+        'M7':  { '0': 7, '1': 6, '2': 5, '3': 4, '4': 3, '5': 2, '6': 1, '7': 0, '8': 9, '9': 8 },
+        'M8':  { '0': 8, '1': 7, '2': 6, '3': 5, '4': 9, '5': 3, '6': 2, '7': 1, '8': 0, '9': 4 }, 
+        'M9':  { '0': 9, '1': 8, '2': 7, '3': 6, '4': 5, '5': 4, '6': 3, '7': 2, '8': 1, '9': 0 },
+        'M10': { '0': 4, '1': 2, '2': 1, '3': 8, '4': 0, '5': 6, '6': 5, '7': 9, '8': 3, '9': 7 }, 
+        'M11': { '0': 1, '1': 0, '2': 5, '3': 4, '4': 3, '5': 2, '6': 8, '7': 9, '8': 6, '9': 7 }, 
+        'M12': { '0': 2, '1': 7, '2': 0, '3': 8, '4': 6, '5': 9, '6': 4, '7': 1, '8': 3, '9': 5 }, 
+        'M13': { '0': 3, '1': 9, '2': 7, '3': 0, '4': 6, '5': 8, '6': 4, '7': 2, '8': 5, '9': 1 },
+        'M14': { '0': 6, '1': 5, '2': 4, '3': 7, '4': 2, '5': 1, '6': 0, '7': 3, '8': 9, '9': 8 }, 
+        'M15': { '0': 5, '1': 6, '2': 4, '3': 9, '4': 2, '5': 0, '6': 1, '7': 8, '8': 7, '9': 3 },
+        'M16': { '0': 3, '1': 8, '2': 7, '3': 0, '4': 9, '5': 6, '6': 5, '7': 2, '8': 1, '9': 4 }, 
+        'M17': { '0': 9, '1': 4, '2': 8, '3': 6, '4': 1, '5': 7, '6': 3, '7': 5, '8': 2, '9': 0 },
+        'M18': { '0': 8, '1': 9, '2': 7, '3': 4, '4': 3, '5': 6, '6': 5, '7': 2, '8': 0, '9': 1 }, 
+        'M19': { '0': 7, '1': 8, '2': 3, '3': 2, '4': 9, '5': 6, '6': 5, '7': 0, '8': 1, '9': 4 }
+    };
+
+    function updatePasaranView() {
+        let pName = document.getElementById("input_pasaran").value;
+        document.getElementById("view_pasaran").innerText = pName ? "PASARAN: " + pName : "PASARAN: -";
+    }
+
+    function getMistikValue(num, mode) {
+        if (mode === "NORMAL") return parseInt(num) || 0;
+        let cleanChar = num.toString().trim().slice(-1);
+        if (MISTIK_TABLE[mode] && MISTIK_TABLE[mode][cleanChar] !== undefined) {
+            return MISTIK_TABLE[mode][cleanChar];
+        }
+        return parseInt(num) || 0;
+    }
+
+    function bulatkanSatuDigit(nilai) {
+        if (nilai < 0) nilai = Math.abs(nilai);
+        if (nilai === 10) return 1;
+        if (nilai === 11) return 2;
+        while (nilai >= 10) {
+            let str = nilai.toString();
+            nilai = parseInt(str[0]) + parseInt(str[1]);
+        }
+        return nilai;
+    }
+
+    function generateHtmlBoxes(containerId, digitsArray) {
+        let container = document.getElementById(containerId);
+        container.innerHTML = "";
+        digitsArray.forEach(d => {
+            let box = document.createElement("div");
+            box.className = "classic-box";
+            box.innerText = d;
+            container.appendChild(box);
+        });
+    }
+
+    function calculateCop() {
+        let raw_as = document.getElementById("input_as").value;
+        let raw_cop = document.getElementById("input_cop").value;
+        let raw_kepala = document.getElementById("input_kepala").value;
+        let raw_ekor = document.getElementById("input_ekor").value;
+
+        let mode_as = document.getElementById("mode_as").value;
+        let mode_cop = document.getElementById("mode_cop").value;
+        let mode_kepala = document.getElementById("mode_kepala").value;
+        let mode_ekor = document.getElementById("mode_ekor").value;
+
+        let sw_as = document.getElementById("switch_as").checked;
+        let sw_cop = document.getElementById("switch_cop").checked;
+        let sw_kepala = document.getElementById("switch_kepala").checked;
+        let sw_ekor = document.getElementById("switch_ekor").checked;
+
+        let val_as = sw_as ? getMistikValue(raw_as, mode_as) : 0;
+        let val_cop = sw_cop ? getMistikValue(raw_cop, mode_cop) : 0;
+        let val_kepala = sw_kepala ? getMistikValue(raw_kepala, mode_kepala) : 0;
+        let val_ekor = sw_ekor ? getMistikValue(raw_ekor, mode_ekor) : 0;
+
+        document.getElementById("val_as").innerText = sw_as ? val_as : "X";
+        document.getElementById("val_cop").innerText = sw_cop ? val_cop : "X";
+        document.getElementById("val_kepala").innerText = sw_kepala ? val_kepala : "X";
+        document.getElementById("val_ekor").innerText = sw_ekor ? val_ekor : "X";
+
+        let op_as_cop = document.getElementById("op_as_cop").value;
+        let op_cop_kep = document.getElementById("op_cop_kep").value;
+        let op_kep_ekor = document.getElementById("op_kep_ekor").value;
+
+        let res1 = (op_as_cop === "+") ? (val_as + val_cop) : Math.abs(val_as - val_cop);
+        let res2 = (op_cop_kep === "+") ? (res1 + val_kepala) : Math.abs(res1 - val_kepala);
+        let total_akhir = (op_kep_ekor === "+") ? (res2 + val_ekor) : Math.abs(res2 - val_ekor);
+
+        let hasil_pangkat = bulatkanSatuDigit(total_akhir);
+        document.getElementById("final_base").innerText = hasil_pangkat;
+
+        let p = hasil_pangkat;
+        
+        // Pola Khusus COP
+        let c9 = [p, (p+1)%10, (p+2)%10, (p+3)%10, (p+4)%10, (p+5)%10, (p+7)%10, (p+8)%10, (p+9)%10];
+        let c8 = [p, (p+1)%10, (p+2)%10, (p+3)%10, (p+4)%10, (p+5)%10, (p+7)%10, (p+8)%10];
+        let c7 = [p, (p+1)%10, (p+2)%10, (p+3)%10, (p+4)%10, (p+5)%10, (p+7)%10];
+        let c6 = [(p+1)%10, (p+2)%10, (p+3)%10, (p+4)%10, (p+5)%10, (p+7)%10];
+        let c5 = [(p+1)%10, (p+2)%10, (p+4)%10, (p+5)%10, (p+7)%10];
+        let c4 = [(p+1)%10, (p+2)%10, (p+5)%10, (p+7)%10]; // Top COP 4 Digit
+
+        generateHtmlBoxes("tier_9", c9);
+        generateHtmlBoxes("tier_8", c8);
+        generateHtmlBoxes("tier_7", c7);
+        generateHtmlBoxes("tier_6", c6);
+        generateHtmlBoxes("tier_5", c5);
+        generateHtmlBoxes("tier_4", c4);
+
+        // Jalankan backtest otomatis setiap perhitungan berubah
+        runBacktestEngine(mode_as, mode_cop, mode_kepala, mode_ekor, op_as_cop, op_cop_kep, op_kep_ekor, sw_as, sw_cop, sw_kepala, sw_ekor);
+    }
+
+    function runBacktestEngine(mAs, mCop, mKep, mEkor, op1, op2, op3, swAs, swCop, swKep, swEkor) {
+        let lines = document.getElementById("area_backtest").value.split('\n');
+        let validRows = [];
+        lines.forEach(line => {
+            let clean = line.replace(/\D/g, '');
+            if (clean.length === 4) validRows.push(clean);
+        });
+
+        let limitedRows = validRows.slice(0, 30);
+        if (limitedRows.length === 0) {
+            document.getElementById("bt_total").innerText = "0";
+            document.getElementById("bt_rate").innerText = "0%";
+            return;
+        }
+
+        let totalHits = 0;
+        limitedRows.forEach(num4d => {
+            let dAs = num4d[0], dCop = num4d[1], dKep = num4d[2], dEkor = num4d[3];
+            
+            let vAs = swAs ? getMistikValue(dAs, mAs) : 0;
+            let vCop = swCop ? getMistikValue(dCop, mCop) : 0;
+            let vKep = swKep ? getMistikValue(dKep, mKep) : 0;
+            let vEkor = swEkor ? getMistikValue(dEkor, mEkor) : 0;
+
+            let r1 = (op1 === "+") ? (vAs + vCop) : Math.abs(vAs - vCop);
+            let r2 = (op2 === "+") ? (r1 + vKep) : Math.abs(r1 - vKep);
+            let tot = (op3 === "+") ? (r2 + vEkor) : Math.abs(r2 - vEkor);
+            let p = bulatkanSatuDigit(tot);
+
+            // Target validasi diganti ke COP (dCop) dengan pola c4
+            let targetC4 = [(p+1)%10, (p+2)%10, (p+5)%10, (p+7)%10];
+            if (targetC4.includes(parseInt(dCop))) {
+                totalHits++;
+            }
+        });
+
+        let rate = Math.round((totalHits / limitedRows.length) * 100);
+        document.getElementById("bt_total").innerText = limitedRows.length + " Baris";
+        document.getElementById("bt_rate").innerText = rate + "% Rate JP";
+    }
+
+    function ambilDataDariSheets() {
+        const areaBacktest = document.getElementById("area_backtest");
+        const loaderTombol = document.querySelector(".section-title button");
+        loaderTombol.innerText = "⏳ Memproses...";
+        loaderTombol.style.opacity = "0.6";
+
+        const primaryUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://sheetdb.io/api/v1/1da8mze28?cast_numbers=true");
+        const fallbackUrl = "https://sheetdb.io/api/v1/1da8mze28?cast_numbers=true"; 
+
+        function parseDanMasukkanData(rawJsonStringOrArray) {
+            let data = typeof rawJsonStringOrArray === 'string' ? JSON.parse(rawJsonStringOrArray) : rawJsonStringOrArray;
+            if(!Array.isArray(data)) return false;
+            let kumpulan4D = [];
+            let dataReversed = data.slice().reverse();
+            dataReversed.forEach(row => {
+                let targetVal = row.ragilbagus || row.Ragilbagus || row.RAGILBAGUS || Object.values(row)[0];
+                if (targetVal) {
+                    let angkaClean = targetVal.toString().trim().replace(/\D/g, '');
+                    if (angkaClean.length === 4) kumpulan4D.push(angkaClean);
+                }
+            });
+            if (kumpulan4D.length === 0) return false;
+            areaBacktest.value = kumpulan4D.join("\n");
+            calculateCop();
+            alert("Mantap bosq! Berhasil menarik " + kumpulan4D.length + " data terbaru.");
+            return true;
+        }
+
+        fetch(primaryUrl).then(res => { if(!res.ok) throw new Error(); return res.json(); })
+        .then(wrapper => {
+            if(!parseDanMasukkanData(wrapper.contents)) throw new Error();
+            resetTombol();
+        }).catch(() => {
+            fetch(fallbackUrl).then(res => res.json()).then(data => {
+                if(!parseDanMasukkanData(data)) alert("Data kosong atau format berubah bosq.");
+                resetTombol();
+            }).catch(err => {
+                console.error(err);
+                alert("Koneksi ditolak sistem lokal bosq!");
+                resetTombol();
+            });
+        });
+
+        function resetTombol() {
+            loaderTombol.innerText = "🔄 Tarik Data";
+            loaderTombol.style.opacity = "1";
+        }
+    }
+
+    // ============ AUTO FINDER ENGINE ============
+    function bacaHistoryRows(maxRow = 50) {
+        const lines = document.getElementById("area_backtest").value.split('\n');
+        const rows = [];
+        for (let line of lines) {
+            const clean = line.replace(/\D/g, '');
+            if (clean.length === 4) {
+                rows.push(clean);
+                if (rows.length >= maxRow) break;
+            }
+        }
+        return rows;
+    }
+
+    function buatModeList(scope) {
+        const base = ["NORMAL", "IX", "TY", "ML", "MB", "M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", "M11", "M12", "M13", "M14", "M15", "M16", "M17", "M18", "M19"];
+        if (scope === "cepat") return ["NORMAL", "IX", "TY", "ML", "MB", "M0"];
+        return base;
+    }
+
+    function buatTabelTransform(mode) {
+        const arr = new Array(10);
+        for (let d = 0; d < 10; d++) arr[d] = getMistikValue(d, mode);
+        return arr;
+    }
+
+    function digitSumCepat(n) {
+        n = Math.abs(n);
+        while (n >= 10) n = Math.floor(n / 10) + (n % 10);
+        return n;
+    }
+
+    function formatRumusAuto(modesActive, ops, sw) {
+        const posNames = ["AS", "COP", "KEPALA", "EKOR"];
+        const parts = [];
+        let activeIdx = 0;
+        for (let i = 0; i < 4; i++) {
+            if (!sw[i]) { parts.push(posNames[i] + "(OFF)"); continue; }
+            const mode = modesActive[activeIdx++];
+            parts.push(posNames[i] + (mode === "NORMAL" ? "" : "[" + mode + "]"));
+        }
+        let expr = parts[0];
+        for (let i = 1; i < parts.length; i++) expr += " " + ops[i - 1] + " " + parts[i];
+        return expr;
+    }
+
+    function jalankanAutoFinder() {
+        const scope = document.getElementById("auto_scope").value;
+        const modeList = buatModeList(scope);
+        const rows = bacaHistoryRows(50);
+        const statusEl = document.getElementById("auto_status");
+        const resultEl = document.getElementById("auto_result");
+        resultEl.innerHTML = "";
+
+        if (rows.length === 0) { statusEl.innerText = "❌ Data history kosong!"; return; }
+
+        const sw = [
+            document.getElementById("switch_as").checked,
+            document.getElementById("switch_cop").checked,
+            document.getElementById("switch_kepala").checked,
+            document.getElementById("switch_ekor").checked
+        ];
+        const nActive = sw.filter(Boolean).length;
+        if (nActive === 0) { statusEl.innerText = "❌ Minimal satu posisi harus aktif!"; return; }
+
+        if (scope === "lengkap" && nActive === 4) {
+            if (!confirm("Mode lengkap 4 posisi aktif membutuhkan waktu lama. Lanjutkan?")) return;
+        }
+
+        statusEl.innerText = "⏳ Scanning formula, jangan tutup halaman...";
+
+        // Precompute hit mask khusus untuk COP (index 1)
+        const hitMasks = rows.map(row => {
+            const dC = parseInt(row[1]); // Target COP
+            const mask = new Array(10);
+            for (let p = 0; p < 10; p++) {
+                const c4 = [(p+1)%10, (p+2)%10, (p+5)%10, (p+7)%10];
+                mask[p] = c4.includes(dC);
+            }
+            return mask;
+        });
+
+        const transformTables = {};
+        modeList.forEach(mode => { transformTables[mode] = buatTabelTransform(mode); });
+
+        const zeroArray = new Array(rows.length).fill(0);
+        const valuePos = [null, null, null, null];
+        for (let i = 0; i < 4; i++) {
+            if (!sw[i]) { valuePos[i] = { zero: zeroArray }; continue; }
+            const mapByMode = {};
+            modeList.forEach(mode => {
+                const table = transformTables[mode];
+                mapByMode[mode] = rows.map(row => table[parseInt(row[i])]);
+            });
+            valuePos[i] = mapByMode;
+        }
+
+        const opCombos = [["+", "+", "+"], ["+", "+", "-"], ["+", "-", "+"], ["+", "-", "-"], ["-", "+", "+"], ["-", "+", "-"], ["-", "-", "+"], ["-", "-", "-"]];
+        const topResults = [];
+        const MAX_TOP = 5;
+
+        function evaluateFormula(modesActive) {
+            const allVals = [];
+            let activeCounter = 0;
+            for (let i = 0; i < 4; i++) {
+                if (sw[i]) { allVals.push(valuePos[i][modesActive[activeCounter]]); activeCounter++; }
+                else { allVals.push(zeroArray); }
+            }
+
+            for (let oc = 0; oc < 8; oc++) {
+                const op1 = opCombos[oc][0], op2 = opCombos[oc][1], op3 = opCombos[oc][2];
+                const bPerRow = new Array(rows.length);
+                for (let r = 0; r < rows.length; r++) {
+                    const v0 = allVals[0][r], v1 = allVals[1][r], v2 = allVals[2][r], v3 = allVals[3][r];
+                    const r1 = (op1 === "+") ? (v0 + v1) : Math.abs(v0 - v1);
+                    const r2 = (op2 === "+") ? (r1 + v2) : Math.abs(r1 - v2);
+                    const tot = (op3 === "+") ? (r2 + v3) : Math.abs(r2 - v3);
+                    bPerRow[r] = digitSumCepat(tot);
+                }
+
+                for (let f = 0; f < modeList.length; f++) {
+                    const finalMode = modeList[f];
+                    const table = transformTables[finalMode];
+                    let hits = 0;
+                    for (let r = 0; r < rows.length; r++) {
+                        const p = table[bPerRow[r]];
+                        if (hitMasks[r][p]) hits++;
+                    }
+                    const accuracy = hits / rows.length;
+                    const result = { modes: modesActive.slice(), ops: opCombos[oc].slice(), final: finalMode, hits, total: rows.length, accuracy };
+                    topResults.push(result);
+                    topResults.sort((a, b) => b.accuracy - a.accuracy || b.hits - a.hits);
+                    if (topResults.length > MAX_TOP) topResults.pop();
+                }
+            }
+        }
+
+        function rekursifActive(activeIndex, currentModes) {
+            if (activeIndex === nActive) { evaluateFormula(currentModes); return; }
+            for (let m = 0; m < modeList.length; m++) {
+                currentModes[activeIndex] = modeList[m];
+                rekursifActive(activeIndex + 1, currentModes);
+            }
+        }
+
+        setTimeout(() => {
+            const startTime = performance.now();
+            rekursifActive(0, []);
+            const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+            tampilkanHasilAutoFinder(topResults, sw, elapsed);
+        }, 50);
+    }
+
+    function tampilkanHasilAutoFinder(topResults, sw, elapsed) {
+        lastAutoFinderResults = topResults;
+        lastAutoFinderSw = sw;
+        const statusEl = document.getElementById("auto_status");
+        const resultEl = document.getElementById("auto_result");
+        statusEl.innerText = `✅ Scan selesai dalam ${elapsed} detik. Top ${topResults.length} rumus terbaik:`;
+        let html = "";
+        topResults.forEach((res, idx) => {
+            const rumus = formatRumusAuto(res.modes, res.ops, sw);
+            html += `<div style="margin-bottom:8px;padding:8px;background:#0d1117;border-radius:6px;border:1px solid #1e2733;">
+                <div style="color:var(--purple-neon);font-weight:bold;margin-bottom:4px;">#${idx + 1} Akurasi Top 4 COP: ${(res.accuracy * 100).toFixed(1)}% (${res.hits}/${res.total})</div>
+                <div style="color:#fff;font-family:monospace;font-size:11px;margin-bottom:8px;line-height:1.4;">${rumus} => Final [${res.final}]</div>
+                <button onclick="terapkanRumus(${idx})" style="width:100%;padding:8px;background:var(--secondary);color:#000;border:none;border-radius:4px;font-weight:bold;cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;transition:all 0.2s;">⚡ Terapkan Rumus Ini</button>
+            </div>`;
+        });
+        resultEl.innerHTML = html;
+    }
+
+    function terapkanRumus(idx) {
+        const res = lastAutoFinderResults[idx];
+        const sw = lastAutoFinderSw;
+        if (!res) return;
+
+        document.getElementById("switch_as").checked = sw[0];
+        document.getElementById("switch_cop").checked = sw[1];
+        document.getElementById("switch_kepala").checked = sw[2];
+        document.getElementById("switch_ekor").checked = sw[3];
+
+        let activeIdx = 0;
+        if (sw[0]) { document.getElementById("mode_as").value = res.modes[activeIdx]; activeIdx++; }
+        if (sw[1]) { document.getElementById("mode_cop").value = res.modes[activeIdx]; activeIdx++; }
+        if (sw[2]) { document.getElementById("mode_kepala").value = res.modes[activeIdx]; activeIdx++; }
+        if (sw[3]) { document.getElementById("mode_ekor").value = res.modes[activeIdx]; activeIdx++; }
+
+        document.getElementById("op_as_cop").value = res.ops[0];
+        document.getElementById("op_cop_kep").value = res.ops[1];
+        document.getElementById("op_kep_ekor").value = res.ops[2];
+
+        calculateCop();
+
+        const btn = event.target;
+        const originalText = btn.innerText;
+        btn.innerText = "✅ Berhasil Diterapkan!";
+        btn.style.background = "#4caf50";
+        btn.style.color = "#fff";
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.background = "var(--secondary)";
+            btn.style.color = "#000";
+        }, 1500);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.onload = function() {
+        calculateCop();
+        updatePasaranView();
+    }
+</script>
+
+</body>
+</html>
