@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BACKTEST HK POOLS · Ekspor/Impor JSON</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0f0f12; --surface: #1a1a20; --card: #252530;
+            --accent: #ff4444; --accent2: #cc0000;
+            --text: #e8e8ee; --muted: #888899; --danger: #ff4d6a; --success: #4caf50;
+            --border: #553333; --input-bg: #1e1e28; --waiting: #5d5d1a;
+            --radius: 10px; --font: 'Segoe UI', system-ui, sans-serif;
+        }
+        body { background: var(--bg); color: var(--text); font-family: var(--font); padding: 16px; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
+        .app { max-width: 1300px; width: 100%; margin: 0 auto; background: var(--surface); border-radius: var(--radius); padding: 20px 24px 28px; border: 1px solid var(--border); box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
+        h1 { text-align: center; color: var(--accent); font-size: 22px; letter-spacing: 2px; text-transform: uppercase; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 18px; }
+        h1 small { display: block; font-size: 12px; color: var(--muted); letter-spacing: 1px; font-weight: 400; text-transform: none; margin-top: 2px; }
+        .top-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px; background: var(--card); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); }
+        .top-bar label { font-size: 13px; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .top-bar select, .top-bar input { background: var(--input-bg); border: 1px solid var(--border); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 13px; outline: none; }
+        .top-bar select:focus, .top-bar input:focus { border-color: var(--accent); }
+        .top-bar select { min-width: 160px; }
+        .top-bar .btn-sm { padding: 6px 14px; border: none; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer; transition: 0.2s; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); }
+        .top-bar .btn-sm:hover { border-color: var(--accent); }
+        .top-bar .btn-sm.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; font-weight: 700; }
+        .top-bar .btn-sm.primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 68, 68, 0.25); }
+        .top-bar .btn-sm.danger { background: #b71c1c; color: #fff; border: none; }
+        .top-bar .btn-sm.danger:hover { background: #d32f2f; }
+        .sumber-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .pasaran-label { font-weight: 700; color: var(--accent); font-size: 15px; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+        .mode-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+        .mode-tabs .tab { padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border); background: var(--input-bg); color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .mode-tabs .tab:hover { border-color: var(--accent); }
+        .mode-tabs .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
+        .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+        .toolbar button { padding: 7px 16px; border: none; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer; transition: 0.2s; background: var(--card); color: var(--text); border: 1px solid var(--border); }
+        .toolbar button:hover { background: var(--input-bg); border-color: var(--accent); }
+        .toolbar button.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; }
+        .toolbar button.primary:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(255, 68, 68, 0.3); }
+        .toolbar button.danger { background: #b71c1c; color: #fff; border: none; }
+        .toolbar button.danger:hover { background: #d32f2f; }
+        .toolbar button.export { background: #5e1a1a; color: #ff8888; border-color: #5e1a1a; }
+        .toolbar button.export:hover { background: #7e2a2a; }
+        .toolbar button.import { background: #3a5e1a; color: #a5d6a7; border-color: #3a5e1a; }
+        .toolbar button.import:hover { background: #4a7e2a; }
+        .toolbar button.excel { background: #1d6f42; color: #a5d6a7; border-color: #1d6f42; }
+        .toolbar button.excel:hover { background: #2a8a55; }
+        .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 900px; }
+        table th { background: #2a1a1a; color: var(--accent); font-weight: 700; padding: 8px 5px; text-align: center; border-bottom: 2px solid var(--border); font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 2; }
+        table td { padding: 5px 3px; text-align: center; border-bottom: 1px solid #3a2a2a; vertical-align: middle; }
+        table tr:hover td { background: #2a1a1a; }
+        table input { background: var(--input-bg); border: 1px solid var(--border); color: #fff; padding: 5px 6px; border-radius: 4px; font-size: 12px; width: 100%; max-width: 90px; text-align: center; font-family: 'Courier New', monospace; outline: none; transition: border 0.2s; }
+        table input:focus { border-color: var(--accent); }
+        table input.bbfs-input { max-width: 120px; font-size: 11px; }
+        .no-col { width: 40px; color: var(--muted); font-size: 11px; font-weight: 600; }
+        .status-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-weight: 700; font-size: 9px; letter-spacing: 0.3px; text-transform: uppercase; white-space: nowrap; min-width: 50px; }
+        .status-badge.jp { background: #1b5e20; color: #a5d6a7; }
+        .status-badge.zonk { background: #4a1515; color: #ef9a9a; }
+        .status-badge.waiting { background: #5d5d1a; color: #ffff88; }
+        .status-badge.na { background: #333; color: #666; }
+        .del-btn { background: transparent; border: none; color: var(--danger); font-size: 14px; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+        .del-btn:hover { background: rgba(255,77,106,0.15); }
+        .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; background: #14141c; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border); }
+        .summary .stat { text-align: center; }
+        .summary .stat .label { font-size: 8px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.5px; }
+        .summary .stat .value { font-weight: 700; font-size: 18px; color: var(--accent); margin-top: 2px; }
+        .summary .stat .sub { font-size: 9px; color: #666; }
+        .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 10px; color: var(--muted); justify-content: center; }
+        .legend span { display: inline-flex; align-items: center; gap: 4px; }
+        .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
+        .dot.green { background: #1b5e20; }
+        .dot.red { background: #4a1515; }
+        .dot.yellow { background: #5d5d1a; }
+        .info-foot { font-size: 9px; color: #555; text-align: center; margin-top: 12px; letter-spacing: 0.3px; }
+        #fileInput { display: none; }
+        @media (max-width: 700px) {
+            .app { padding: 12px; }
+            table { font-size: 11px; min-width: 650px; }
+            table input { max-width: 60px; font-size: 10px; }
+            table input.bbfs-input { max-width: 80px; }
+            .summary { grid-template-columns: 1fr 1fr; }
+            .top-bar { flex-direction: column; align-items: stretch; }
+            .mode-tabs .tab { font-size: 10px; padding: 4px 10px; }
+            .sumber-row { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h1>📊 BACKTEST HK POOLS <small>BBFS · KEPALA · EKOR · AI 2D · BIJI OFF · SHIO OFF · SELISIH KE OFF</small></h1>
+
+        <div class="top-bar">
+            <div class="pasaran-label">📌 PASARAN: HK POOLS</div>
+
+            <div class="sumber-row">
+                <label>📖 Sumber
+                    <select id="sumberSelect" onchange="switchSumber()"></select>
+                </label>
+                <button class="btn-sm primary" onclick="tambahSumber()">+ Tambah</button>
+                <button class="btn-sm danger" onclick="hapusSumber()">✕ Hapus</button>
+            </div>
+
+            <label style="margin-left:auto; color:var(--muted); font-weight:400;" id="rowCount">0 baris</label>
+        </div>
+
+        <div class="mode-tabs" id="modeTabs">
+            <span class="tab active" data-mode="bbfs" onclick="setMode('bbfs')">BBFS (4 Kolom)</span>
+            <span class="tab" data-mode="kepala" onclick="setMode('kepala')">KEPALA</span>
+            <span class="tab" data-mode="ekor" onclick="setMode('ekor')">EKOR</span>
+            <span class="tab" data-mode="angkontrol" onclick="setMode('angkontrol')">ANGKA KONTROL</span>
+            <span class="tab" data-mode="bijioff" onclick="setMode('bijioff')">BIJI OFF</span>
+            <span class="tab" data-mode="shiooff" onclick="setMode('shiooff')">SHIO OFF</span>
+            <span class="tab" data-mode="selisihke" onclick="setMode('selisihke')">SELISIH KEPALA-EKOR OFF</span>
+        </div>
+
+        <div class="toolbar">
+            <button class="primary" onclick="addRow()">➕ Tambah Baris</button>
+            <button onclick="removeLastRow()">➖ Hapus Terakhir</button>
+            <button class="danger" onclick="clearAll()">🗑️ Hapus Semua</button>
+            <button onclick="loadSample()">📥 Contoh Data</button>
+            <button class="export" onclick="exportJSON()">📤 Ekspor JSON</button>
+            <button class="import" onclick="document.getElementById('fileInput').click()">📥 Impor JSON</button>
+            <button class="excel" onclick="exportExcel()">📊 Ekspor Excel</button>
+            <input type="file" id="fileInput" accept=".json" onchange="importJSON(event)">
+        </div>
+
+        <div class="table-wrap">
+            <table id="backtestTable">
+                <thead id="tableHead"></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="summary" id="summaryBox">
+            <div class="stat"><div class="label" id="label1">Kolom 1</div><div class="value" id="sum1">0</div><div class="sub" id="sub1">0 test</div></div>
+            <div class="stat"><div class="label" id="label2">Kolom 2</div><div class="value" id="sum2">0</div><div class="sub" id="sub2">0 test</div></div>
+            <div class="stat"><div class="label" id="label3">Kolom 3</div><div class="value" id="sum3">0</div><div class="sub" id="sub3">0 test</div></div>
+            <div class="stat"><div class="label" id="label4">Kolom 4</div><div class="value" id="sum4">0</div><div class="sub" id="sub4">0 test</div></div>
+        </div>
+
+        <div class="legend" id="legendBox">
+            <span><span class="dot green"></span> JP</span>
+            <span><span class="dot red"></span> ZONK</span>
+            <span><span class="dot yellow"></span> MENUNGGU</span>
+        </div>
+        <div class="info-foot" id="infoFoot">
+            * Status dihitung dari result baris berikutnya sesuai mode yang dipilih.
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  STATE & STORAGE (ISOLATED FOR HK)
+        // ================================================================
+        const STORAGE_KEY = 'backtestHKPools_v1';
+        const SUMBER_KEY = 'backtestSumberHK';
+        let data = {};
+        const currentPasaran = 'HK POOLS';
+        let currentMode = 'bbfs';
+        let currentSumber = '';
+        let sumberList = [];
+
+        // SHIO NAMA MAPPING
+        const SHIO_NAME_MAP = {
+            'MONYET': 1, 'AYAM': 2, 'ANJING': 3, 'BABI': 4,
+            'TIKUS': 5, 'KERBAU': 6, 'MACAN': 7, 'KELINCI': 8,
+            'NAGA': 9, 'ULAR': 10, 'KUDA': 11, 'KAMBING': 12
+        };
+
+        const $ = id => document.getElementById(id);
+        const sumberSelect = $('sumberSelect');
+        const tbody = $('tableBody');
+        const thead = $('tableHead');
+        const rowCount = $('rowCount');
+        const sumEls = {
+            1: { val: $('sum1'), sub: $('sub1'), label: $('label1') },
+            2: { val: $('sum2'), sub: $('sub2'), label: $('label2') },
+            3: { val: $('sum3'), sub: $('sub3'), label: $('label3') },
+            4: { val: $('sum4'), sub: $('sub4'), label: $('label4') }
+        };
+        const infoFoot = $('infoFoot');
+
+        // ================================================================
+        //  SUMBER LIST MANAGEMENT
+        // ================================================================
+        function loadSumberList() {
+            try {
+                const raw = localStorage.getItem(SUMBER_KEY);
+                if (raw) {
+                    sumberList = JSON.parse(raw);
+                    if (!Array.isArray(sumberList)) sumberList = [];
+                    return;
+                }
+            } catch (e) {}
+            sumberList = [];
+            saveSumberList();
+        }
+
+        function saveSumberList() {
+            localStorage.setItem(SUMBER_KEY, JSON.stringify(sumberList));
+        }
+
+        function populateSumberDropdown() {
+            sumberSelect.innerHTML = '';
+            const optKosong = document.createElement('option');
+            optKosong.value = '';
+            optKosong.textContent = '— (kosong) —';
+            sumberSelect.appendChild(optKosong);
+
+            sumberList.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s;
+                opt.textContent = s;
+                sumberSelect.appendChild(opt);
+            });
+
+            if (sumberList.includes(currentSumber)) {
+                sumberSelect.value = currentSumber;
+            } else {
+                sumberSelect.value = '';
+                currentSumber = '';
+            }
+        }
+
+        function tambahSumber() {
+            const nama = prompt('Masukkan nama sumber baru:');
+            if (!nama || !nama.trim()) return;
+            const s = nama.trim();
+            if (sumberList.includes(s)) return alert('Sumber sudah ada!');
+            sumberList.push(s);
+            saveSumberList();
+            populateSumberDropdown();
+            currentSumber = s;
+            sumberSelect.value = s;
+            switchSumber();
+        }
+
+        function hapusSumber() {
+            const selected = sumberSelect.value;
+            if (!selected) return alert('Pilih sumber yang ingin dihapus, atau sumber sudah kosong.');
+            if (!confirm(`Hapus sumber "${selected}" dari daftar? Data backtest untuk sumber ini akan tetap tersimpan tapi tidak bisa diakses.`)) return;
+            sumberList = sumberList.filter(s => s !== selected);
+            saveSumberList();
+            if (currentSumber === selected) {
+                currentSumber = '';
+            }
+            populateSumberDropdown();
+        }
+
+        function switchSumber() {
+            currentSumber = sumberSelect.value;
+            render();
+        }
+
+        // ================================================================
+        //  DATA STORAGE
+        // ================================================================
+        function loadStorage() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed && parsed[currentPasaran]) {
+                        data = { [currentPasaran]: parsed[currentPasaran] };
+                    } else {
+                        const keys = Object.keys(parsed);
+                        if (keys.length > 0) {
+                            data = { [currentPasaran]: parsed[keys[0]] };
+                        } else {
+                            data = { [currentPasaran]: { mode: 'bbfs', sources: { '_default': { rows: [], mode: 'bbfs' } } } };
+                        }
+                    }
+                    
+                    if (data[currentPasaran]) {
+                        if (data[currentPasaran].rows && !data[currentPasaran].sources) {
+                            const oldRows = data[currentPasaran].rows;
+                            const oldMode = data[currentPasaran].mode || 'bbfs';
+                            const oldSumber = data[currentPasaran].sumber || '';
+                            data[currentPasaran] = {
+                                mode: oldMode,
+                                sources: {}
+                            };
+                            const sourceKey = oldSumber || '_default';
+                            data[currentPasaran].sources[sourceKey] = { rows: oldRows, mode: oldMode };
+                        } else if (!data[currentPasaran].sources) {
+                            data[currentPasaran] = { mode: data[currentPasaran].mode || 'bbfs', sources: {} };
+                        }
+                        
+                        if (data[currentPasaran].sources) {
+                            for (const s in data[currentPasaran].sources) {
+                                if (!data[currentPasaran].sources[s].mode) data[currentPasaran].sources[s].mode = data[currentPasaran].mode || 'bbfs';
+                                if (!data[currentPasaran].sources[s].rows) data[currentPasaran].sources[s].rows = [];
+                            }
+                        }
+                    }
+                    saveStorage();
+                    return;
+                }
+            } catch (e) {
+                console.error('Error loading storage:', e);
+            }
+            
+            data = {
+                [currentPasaran]: { 
+                    mode: 'bbfs', 
+                    sources: {
+                        '_default': { rows: [], mode: 'bbfs' }
+                    } 
+                }
+            };
+            saveStorage();
+        }
+
+        function saveStorage() { 
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); 
+        }
+        
+        function getRows() { 
+            const pasaran = data[currentPasaran];
+            if (!pasaran || !pasaran.sources) return [];
+            
+            const sourceKey = currentSumber || '_default';
+            if (!pasaran.sources[sourceKey]) {
+                pasaran.sources[sourceKey] = { rows: [], mode: currentMode };
+            }
+            
+            return pasaran.sources[sourceKey].rows || [];
+        }
+        
+        function setRows(rows) {
+            if (!data[currentPasaran]) {
+                data[currentPasaran] = { mode: currentMode, sources: {} };
+            }
+            if (!data[currentPasaran].sources) {
+                data[currentPasaran].sources = {};
+            }
+            
+            const sourceKey = currentSumber || '_default';
+            data[currentPasaran].sources[sourceKey] = {
+                rows: rows,
+                mode: currentMode
+            };
+            saveStorage();
+        }
+        
+        function getMode() { 
+            const pasaran = data[currentPasaran];
+            if (!pasaran || !pasaran.sources) return currentMode;
+            
+            const sourceKey = currentSumber || '_default';
+            if (!pasaran.sources[sourceKey]) return currentMode;
+            
+            return pasaran.sources[sourceKey].mode || currentMode;
+        }
+        
+        function setModePasaran(mode) {
+            if (!data[currentPasaran]) {
+                data[currentPasaran] = { mode: mode, sources: {} };
+            }
+            if (!data[currentPasaran].sources) {
+                data[currentPasaran].sources = {};
+            }
+            
+            const sourceKey = currentSumber || '_default';
+            if (!data[currentPasaran].sources[sourceKey]) {
+                data[currentPasaran].sources[sourceKey] = { rows: [], mode: mode };
+            }
+            
+            data[currentPasaran].sources[sourceKey].mode = mode;
+            data[currentPasaran].mode = mode;
+            saveStorage();
+        }
+
+        // ================================================================
+        //  UTILITY & KEY MAPPING
+        // ================================================================
+        function getKepala(s) { if (!s || s.length < 4) return null; return parseInt(s[2]); }
+        function getEkor(s) { if (!s || s.length < 4) return null; return parseInt(s[3]); }
+        function get2D(s) { if (!s || s.length < 4) return null; return parseInt(s.slice(2)); }
+        function isDigitInBbfs(bbfs, digit) {
+            if (!bbfs || digit === null || digit === undefined) return false;
+            return bbfs.includes(String(digit));
+        }
+
+        function hitungBiji2D(duaD) {
+            if (duaD === 0) return 9;
+            let total = duaD;
+            while (total > 9) {
+                total = String(total).split('').reduce((sum, d) => sum + parseInt(d), 0);
+            }
+            return total;
+        }
+
+        function hitungShio2D(duaD) {
+            let sisa = duaD % 12;
+            return sisa === 0 ? 12 : sisa;
+        }
+
+        function getKey(mode, b) {
+            switch(mode) {
+                case 'bbfs': return 'bbfs' + b;
+                case 'kepala': return 'kepala' + b;
+                case 'ekor': return 'ekor' + b;
+                case 'angkontrol': return 'ai' + b;
+                case 'bijioff': return 'biji' + b;
+                case 'shiooff': return 'shio' + b;
+                case 'selisihke': return 'selisihke' + b;
+                default: return 'bbfs' + b;
+            }
+        }
+
+        function getColumnLabel(mode, index) {
+            const base = { 
+                'bbfs': 'BBFS', 
+                'kepala': 'KEPALA', 
+                'ekor': 'EKOR', 
+                'angkontrol': 'AI 2D',
+                'bijioff': 'BIJI OFF',
+                'shiooff': 'SHIO OFF',
+                'selisihke': 'SELISIH KE OFF'
+            }[mode] || 'BBFS';
+            return `${base} ${index}`;
+        }
+        
+        function getColumnPlaceholder(mode, index) {
+            const base = { 
+                'bbfs': 'BBFS', 
+                'kepala': 'KEPALA', 
+                'ekor': 'EKOR', 
+                'angkontrol': 'AI 2D',
+                'bijioff': 'OFF',
+                'shiooff': 'OFF',
+                'selisihke': 'OFF'
+            }[mode] || 'BBFS';
+            return `${base} ${index}`;
+        }
+
+        function getStatus(mode, inputValue, nextResult) {
+            if (!inputValue || !nextResult || nextResult.length < 4) return { label: '—', cls: 'na' };
+
+            if (mode === 'bbfs') {
+                const kep = getKepala(nextResult); const ekor = getEkor(nextResult); let match = 0;
+                if (kep !== null && inputValue.includes(String(kep))) match++;
+                if (ekor !== null && inputValue.includes(String(ekor))) match++;
+                if (match >= 2) return { label: 'JP', cls: 'jp' };
+                return { label: 'ZONK', cls: 'zonk' };
+            }
+
+            if (mode === 'kepala') {
+                const kep = getKepala(nextResult); if (kep === null) return { label: '—', cls: 'na' };
+                return isDigitInBbfs(inputValue, kep) ? { label: 'JP', cls: 'jp' } : { label: 'ZONK', cls: 'zonk' };
+            }
+
+            if (mode === 'ekor') {
+                const ekor = getEkor(nextResult); if (ekor === null) return { label: '—', cls: 'na' };
+                return isDigitInBbfs(inputValue, ekor) ? { label: 'JP', cls: 'jp' } : { label: 'ZONK', cls: 'zonk' };
+            }
+
+            if (mode === 'angkontrol') {
+                const kep = getKepala(nextResult); const ekor = getEkor(nextResult); let match = 0;
+                if (kep !== null && inputValue.includes(String(kep))) match++;
+                if (ekor !== null && inputValue.includes(String(ekor))) match++;
+                if (match >= 1) return { label: 'JP', cls: 'jp' };
+                return { label: 'ZONK', cls: 'zonk' };
+            }
+
+            if (mode === 'bijioff') {
+                const duaD = get2D(nextResult);
+                if (duaD === null) return { label: '—', cls: 'na' };
+                
+                const bijiResult = hitungBiji2D(duaD);
+                const offList = inputValue.split(/[\s,]+/).map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+                if (offList.length === 0) return { label: '—', cls: 'na' };
+                
+                if (!offList.includes(bijiResult)) {
+                    return { label: 'JP', cls: 'jp' };
+                }
+                return { label: 'ZONK', cls: 'zonk' };
+            }
+
+            if (mode === 'shiooff') {
+                const duaD = get2D(nextResult);
+                if (duaD === null) return { label: '—', cls: 'na' };
+                
+                const shioResult = hitungShio2D(duaD);
+                const items = inputValue.split(/[\s,]+/).map(s => s.trim().toUpperCase()).filter(s => s !== "");
+                if (items.length === 0) return { label: '—', cls: 'na' };
+                
+                let offList = [];
+                items.forEach(item => {
+                    if (SHIO_NAME_MAP[item] !== undefined) {
+                        offList.push(SHIO_NAME_MAP[item]);
+                    } else {
+                        const num = parseInt(item);
+                        if (!isNaN(num)) offList.push(num);
+                    }
+                });
+                
+                if (!offList.includes(shioResult)) {
+                    return { label: 'JP', cls: 'jp' };
+                }
+                return { label: 'ZONK', cls: 'zonk' };
+            }
+
+            if (mode === 'selisihke') {
+                const kepala = getKepala(nextResult);
+                const ekor = getEkor(nextResult);
+                if (kepala === null || ekor === null) return { label: '—', cls: 'na' };
+                
+                const selisih = Math.abs(kepala - ekor);
+                const offAngka = parseInt(inputValue.trim());
+                if (isNaN(offAngka)) return { label: '—', cls: 'na' };
+                
+                if (selisih !== offAngka) {
+                    return { label: 'JP', cls: 'jp' };
+                } else {
+                    return { label: 'ZONK', cls: 'zonk' };
+                }
+            }
+
+            return { label: '—', cls: 'na' };
+        }
+
+        // ================================================================
+        //  RENDER
+        // ================================================================
+        function render() {
+            const rows = getRows();
+            const mode = getMode();
+            const n = rows.length;
+            
+            const sumberName = currentSumber || '(tanpa sumber)';
+            rowCount.textContent = `${n} baris | Sumber: ${sumberName}`;
+
+            let headHtml = `<tr><th style="width:40px;">No</th><th style="min-width:90px;">Result</th>`;
+            for (let b = 1; b <= 4; b++) {
+                const label = getColumnLabel(mode, b);
+                headHtml += `<th style="min-width:100px;">${label}</th><th style="min-width:70px;">Status</th>`;
+            }
+            headHtml += `<th style="width:36px;"></th></tr>`;
+            thead.innerHTML = headHtml;
+
+            let bodyHtml = '';
+            rows.forEach((row, idx) => {
+                const num = idx + 1;
+                bodyHtml += `<tr>`;
+                bodyHtml += `<td class="no-col">${num}</td>`;
+                bodyHtml += `<td><input type="text" class="result-input" value="${row.result || ''}" maxlength="4" placeholder="4d" data-index="${idx}"></td>`;
+
+                for (let b = 1; b <= 4; b++) {
+                    const key = getKey(mode, b);
+                    const val = row[key] || '';
+                    const placeholder = getColumnPlaceholder(mode, b);
+                    bodyHtml += `<td><input type="text" class="bbfs-input" value="${val}" placeholder="${placeholder}" data-index="${idx}" data-bbfs="${b}"></td>`;
+                    bodyHtml += `<td><span class="status-badge" id="status-${idx}-${b}">—</span></td>`;
+                }
+                bodyHtml += `<td><button class="del-btn" onclick="removeRow(${idx})">✕</button></td>`;
+                bodyHtml += `</tr>`;
+            });
+            tbody.innerHTML = bodyHtml;
+
+            document.querySelectorAll('.result-input').forEach(inp => {
+                inp.addEventListener('input', function() {
+                    const idx = parseInt(this.dataset.index);
+                    const rows2 = getRows();
+                    rows2[idx].result = this.value.trim().toUpperCase();
+                    setRows(rows2);
+                    updateAllStatuses();
+                    renderSummary();
+                });
+            });
+            
+            document.querySelectorAll('.bbfs-input').forEach(inp => {
+                inp.addEventListener('input', function() {
+                    const idx = parseInt(this.dataset.index);
+                    const b = parseInt(this.dataset.bbfs);
+                    const rows2 = getRows();
+                    const key = getKey(currentMode, b);
+                    rows2[idx][key] = this.value.trim();
+                    setRows(rows2);
+                    updateAllStatuses();
+                    renderSummary();
+                });
+            });
+
+            for (let b = 1; b <= 4; b++) {
+                const el = sumEls[b];
+                if (el.label) el.label.textContent = getColumnLabel(mode, b);
+            }
+
+            const modeNames = {
+                'bbfs': 'BBFS: minimal 2 digit cocok di Kepala + Ekor',
+                'kepala': 'KEPALA: digit ke-3 muncul di rumusan',
+                'ekor': 'EKOR: digit ke-4 muncul di rumusan',
+                'angkontrol': 'ANGKA KONTROL: 1 atau 2 digit di Kepala/Ekor muncul di rumusan',
+                'bijioff': 'BIJI OFF: JP jika total biji 2D belakang pada result besok TIDAK SAMA dengan angka OFF anda.',
+                'shiooff': 'SHIO OFF: JP jika Shio 2D belakang pada result besok TIDAK SAMA dengan nomor/nama Shio OFF anda.',
+                'selisihke': 'SELISIH KEPALA-EKOR OFF: JP jika selisih |kepala - ekor| result besok TIDAK SAMA dengan angka OFF anda.'
+            };
+            infoFoot.textContent = '* ' + (modeNames[mode] || modeNames.bbfs);
+
+            updateAllStatuses();
+            renderSummary();
+        }
+
+        function updateAllStatuses() {
+            const rows = getRows();
+            const mode = getMode();
+            const n = rows.length;
+            if (n === 0) return;
+
+            for (let i = 0; i < n; i++) {
+                const nextResult = (i < n - 1) ? rows[i + 1].result : null;
+                for (let b = 1; b <= 4; b++) {
+                    const statusEl = document.getElementById(`status-${i}-${b}`);
+                    if (!statusEl) continue;
+                    if (i === n - 1) { statusEl.textContent = 'MENUNGGU'; statusEl.className = 'status-badge waiting'; continue; }
+                    if (!nextResult || nextResult.length < 4) { statusEl.textContent = '—'; statusEl.className = 'status-badge na'; continue; }
+                    
+                    const key = getKey(mode, b);
+                    const inputValue = rows[i][key] || '';
+                    const status = getStatus(mode, inputValue, nextResult);
+                    statusEl.textContent = status.label;
+                    statusEl.className = 'status-badge ' + status.cls;
+                }
+            }
+        }
+
+        function renderSummary() {
+            const rows = getRows();
+            const mode = getMode();
+            const n = rows.length;
+            const stats = { 1: { jp: 0, test: 0 }, 2: { jp: 0, test: 0 }, 3: { jp: 0, test: 0 }, 4: { jp: 0, test: 0 } };
+
+            for (let i = 0; i < n - 1; i++) {
+                const nextResult = rows[i + 1].result;
+                if (!nextResult || nextResult.length < 4) continue;
+                for (let b = 1; b <= 4; b++) {
+                    const key = getKey(mode, b);
+                    const inputValue = rows[i][key] || '';
+                    if (!inputValue) continue;
+                    stats[b].test++;
+                    const status = getStatus(mode, inputValue, nextResult);
+                    if (status.label === 'JP') stats[b].jp++;
+                }
+            }
+            for (let b = 1; b <= 4; b++) {
+                const el = sumEls[b];
+                el.val.textContent = stats[b].jp;
+                el.sub.textContent = stats[b].test + ' test';
+            }
+        }
+
+        function addRow() {
+            const rows = getRows();
+            const newRow = { result: '' };
+            const modes = ['bbfs', 'kepala', 'ekor', 'angkontrol', 'bijioff', 'shiooff', 'selisihke'];
+            modes.forEach(m => { for(let b=1; b<=4; b++) newRow[getKey(m, b)] = ''; });
+            rows.push(newRow);
+            setRows(rows);
+            render();
+        }
+
+        function removeLastRow() { const rows = getRows(); if (rows.length === 0) return; rows.pop(); setRows(rows); render(); }
+        function removeRow(index) { const rows = getRows(); rows.splice(index, 1); setRows(rows); render(); }
+        function clearAll() {
+            const rows = getRows();
+            if (rows.length === 0) return;
+            if (confirm('Hapus semua baris untuk sumber ini?')) { setRows([]); render(); }
+        }
+
+        function loadSample() {
+            const sample = [
+                { result: '7547', bbfs1: '6', bbfs2: '9', bbfs3: '0123569', bbfs4: '0123569', selisihke1: '6', selisihke2: '3', selisihke3: '1', selisihke4: '5' },
+                { result: '7058', bbfs1: '9', bbfs2: '6', bbfs3: '0125689', bbfs4: '0125689', selisihke1: '3', selisihke2: '1', selisihke3: '7', selisihke4: '2' },
+                { result: '8654', bbfs1: '1', bbfs2: '2', bbfs3: '0123589', bbfs4: '0123589', selisihke1: '1', selisihke2: '4', selisihke3: '0', selisihke4: '9' }
+            ];
+            sample.forEach(row => {
+                const modes = ['bbfs', 'kepala', 'ekor', 'angkontrol', 'bijioff', 'shiooff', 'selisihke'];
+                modes.forEach(m => { 
+                    for(let b=1; b<=4; b++) {
+                        const k = getKey(m, b);
+                        if(row[k] === undefined) row[k] = '';
+                    }
+                });
+            });
+            setRows(sample);
+            render();
+        }
+
+        // ================================================================
+        //  EXPORT EXCEL
+        // ================================================================
+        function exportExcel() {
+            try {
+                const rows = getRows(); const mode = getMode(); const n = rows.length;
+                const pasaran = currentPasaran; const sumber = currentSumber || '(tidak diisi)';
+                if (n === 0) { alert('Tidak ada data untuk diekspor.'); return; }
+
+                let tableHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                <head><meta charset="UTF-8"><style>
+                    table { border-collapse: collapse; font-size: 11pt; font-family: 'Segoe UI', Arial, sans-serif; }
+                    th { background: #2a1a1a; color: #ff4444; font-weight: 700; padding: 6px 10px; border: 1px solid #664444; text-align: center; }
+                    td { padding: 4px 10px; border: 1px solid #664444; text-align: center; }
+                    .jp { background: #1b5e20; color: #a5d6a7; font-weight: 700; } .zonk { background: #4a1515; color: #ef9a9a; font-weight: 700; }
+                    .waiting { background: #5d5d1a; color: #ffff88; font-weight: 700; } .na { background: #333; color: #999; }
+                    .title { font-size: 14pt; font-weight: 700; color: #ff4444; background: #1a0f0f; padding: 8px; }
+                    .subtitle { font-size: 10pt; color: #aaa; background: #2a1a1a; padding: 4px 8px; }
+                    .summary-row td { background: #2a1a1a; color: #ff4444; font-weight: 700; }
+                </style></head><body><table>
+                    <tr><td colspan="10" class="title">📊 BACKTEST HK POOLS</td></tr>
+                    <tr><td colspan="10" class="subtitle">Pasaran: ${pasaran} &nbsp;|&nbsp; Mode: ${mode.toUpperCase()} &nbsp;|&nbsp; Sumber: ${sumber} &nbsp;|&nbsp; Tanggal: ${new Date().toLocaleDateString('id-ID')}</td></tr>
+                    <tr><th>No</th><th>Result</th>`;
+                for (let b = 1; b <= 4; b++) tableHtml += `<th>${getColumnLabel(mode, b)}</th><th>Status ${b}</th>`;
+                tableHtml += `</tr>`;
+
+                for (let i = 0; i < n; i++) {
+                    const row = rows[i]; tableHtml += `<tr><td>${i + 1}</td><td>${row.result || ''}</td>`;
+                    for (let b = 1; b <= 4; b++) {
+                        const key = getKey(mode, b); const val = row[key] || '';
+                        let statusLabel = '—'; let statusCls = 'na';
+                        if (i === n - 1) { statusLabel = 'MENUNGGU'; statusCls = 'waiting'; } 
+                        else {
+                            const nextResult = rows[i + 1]?.result;
+                            if (nextResult && nextResult.length >= 4) { const st = getStatus(mode, val, nextResult); statusLabel = st.label; statusCls = st.cls; }
+                        }
+                        tableHtml += `<td>${val}</td><td class="${statusCls}">${statusLabel}</td>`;
+                    }
+                    tableHtml += `</tr>`;
+                }
+
+                const stats = { 1: { jp: 0, test: 0 }, 2: { jp: 0, test: 0 }, 3: { jp: 0, test: 0 }, 4: { jp: 0, test: 0 } };
+                for (let i = 0; i < n - 1; i++) {
+                    const nextResult = rows[i + 1]?.result;
+                    if (!nextResult || nextResult.length < 4) continue;
+                    for (let b = 1; b <= 4; b++) {
+                        const key = getKey(mode, b); const inputValue = rows[i][key] || '';
+                        if (!inputValue) continue; stats[b].test++;
+                        if (getStatus(mode, inputValue, nextResult).label === 'JP') stats[b].jp++;
+                    }
+                }
+                tableHtml += `<tr class="summary-row"><td colspan="2"><b>JP / Test</b></td>`;
+                for (let b = 1; b <= 4; b++) tableHtml += `<td colspan="2"><b>${stats[b].jp} / ${stats[b].test}</b></td>`;
+                tableHtml += `</tr></table><p style="font-size:8pt;color:#888;margin-top:8px;">* Status dihitung dari result baris berikutnya sesuai mode yang dipilih.</p></body></html>`;
+
+                const bom = '\uFEFF';
+                const blob = new Blob([bom + tableHtml], { type: 'application/vnd.ms-excel' });
+                if (window.navigator && window.navigator.msSaveBlob) window.navigator.msSaveBlob(blob, `backtest_HK_${currentSumber || 'default'}_${new Date().toISOString().slice(0,10)}.xls`);
+                else {
+                    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+                    a.href = url; a.download = `backtest_HK_${currentSumber || 'default'}_${new Date().toISOString().slice(0,10)}.xls`;
+                    document.body.appendChild(a); a.click();
+                    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+                }
+            } catch (err) { alert('Terjadi kesalahan saat ekspor Excel: ' + err.message); }
+        }
+
+        // ================================================================
+        //  EXPORT / IMPORT JSON
+        // ================================================================
+        function exportJSON() {
+            const exportData = {
+                _sumberList: sumberList,
+                ...data
+            };
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob); const a = document.createElement('a');
+            a.href = url; a.download = `backtest_HK_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
+        }
+
+        function importJSON(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (typeof imported !== 'object' || Array.isArray(imported)) throw new Error('Format tidak valid.');
+                    
+                    let importedSumberList = [];
+                    if (Array.isArray(imported._sumberList)) {
+                        importedSumberList = imported._sumberList;
+                        delete imported._sumberList;
+                    }
+                    
+                    let newData = { mode: 'bbfs', sources: { '_default': { rows: [], mode: 'bbfs' } } };
+                    if (imported[currentPasaran]) {
+                        newData = imported[currentPasaran];
+                    } else {
+                        const keys = Object.keys(imported);
+                        if (keys.length > 0) newData = imported[keys[0]];
+                    }
+
+                    if (newData.rows && !newData.sources) {
+                        const oldRows = newData.rows;
+                        const oldMode = newData.mode || 'bbfs';
+                        const oldSumber = newData.sumber || '';
+                        newData = { mode: oldMode, sources: {} };
+                        const sourceKey = oldSumber || '_default';
+                        newData.sources[sourceKey] = { rows: oldRows, mode: oldMode };
+                    } else if (!newData.sources) {
+                        newData = { mode: newData.mode || 'bbfs', sources: {} };
+                    }
+                    
+                    if (newData.sources) {
+                        for (const s in newData.sources) {
+                            if (!newData.sources[s].mode) newData.sources[s].mode = newData.mode || 'bbfs';
+                            if (!newData.sources[s].rows) newData.sources[s].rows = [];
+                        }
+                    }
+                    
+                    if (confirm(`Data dari ${file.name} akan MENIMPA data ${currentPasaran} saat ini. Lanjutkan?`)) {
+                        data = { [currentPasaran]: newData };
+                        sumberList = importedSumberList;
+                        saveStorage();
+                        saveSumberList();
+                        
+                        currentMode = getMode();
+                        populateSumberDropdown();
+                        document.querySelectorAll('.mode-tabs .tab').forEach(el => el.classList.toggle('active', el.dataset.mode === currentMode));
+                        render(); 
+                        alert('Impor berhasil!');
+                    }
+                } catch (err) { alert('Gagal mengimpor file: ' + err.message); }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // ================================================================
+        //  MODE MANAGEMENT
+        // ================================================================
+        function setMode(mode) {
+            currentMode = mode; 
+            setModePasaran(mode);
+            document.querySelectorAll('.mode-tabs .tab').forEach(el => el.classList.toggle('active', el.dataset.mode === mode));
+            render();
+        }
+
+        // ================================================================
+        //  INIT
+        // ================================================================
+        loadStorage();
+        loadSumberList();
+        currentMode = getMode();
+        populateSumberDropdown();
+        document.querySelectorAll('.mode-tabs .tab').forEach(el => el.classList.toggle('active', el.dataset.mode === currentMode));
+        if (getRows().length === 0) loadSample();
+        else render();
+
+        window.addRow = addRow; window.removeLastRow = removeLastRow; window.removeRow = removeRow;
+        window.clearAll = clearAll; window.loadSample = loadSample; window.setMode = setMode;
+        window.exportJSON = exportJSON; window.importJSON = importJSON; window.exportExcel = exportExcel;
+        window.tambahSumber = tambahSumber; window.hapusSumber = hapusSumber; window.switchSumber = switchSumber;
+    </script>
+</body>
+</html>
