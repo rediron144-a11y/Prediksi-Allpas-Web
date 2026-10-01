@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Invest Harian Multi Pasaran - Dark</title>
+
+<style>
+  :root{
+    --header-bg: #1a1a2e;
+    --header-text: #f1c40f;
+    --panel: #1e1e2f;
+    --panel-light: #2a2a3e;
+    --bbfs1-bg: #1a3a5c;
+    --bbfs2-bg: #4a3a1a;
+    --bbfs-text1: #5dade2;
+    --bbfs-text2: #f4d03f;
+    --text-main: #e8e8e8;
+    --text-dim: #a0a0b0;
+    --border: #3a3a4e;
+  }
+
+  *{box-sizing:border-box}
+
+  body{
+    font-family:"Segoe UI",Roboto,Arial,sans-serif;
+    background:#0a0a15;
+    background: linear-gradient(135deg, #0a0a15 0%, #1a0a2e 50%, #0a1a2e 100%);
+    min-height: 100vh;
+    margin:0;
+    padding:10px;
+    color: var(--text-main);
+  }
+
+  h1{
+    font-size:16px;
+    text-align:center;
+    margin:10px 0;
+    color: var(--header-text);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(241,196,15,0.4);
+  }
+
+  .wrap{
+    max-width:1100px;
+    margin:0 auto;
+    background:var(--panel);
+    padding:12px;
+    border-radius:15px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.8), 0 0 0 1px var(--border);
+    color: var(--text-main);
+  }
+
+  .market-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 4px 2px 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  .market-tabs::-webkit-scrollbar { height: 4px; }
+  .market-tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .market-tab {
+    padding: 8px 12px;
+    background: var(--panel-light);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 11px;
+    color: var(--text-dim);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    transition: 0.2s;
+    font-family: inherit;
+  }
+  .market-tab.active {
+    background: var(--header-bg);
+    color: var(--header-text);
+    border-color: var(--header-text);
+    box-shadow: 0 0 15px rgba(241,196,15,0.3);
+  }
+  .market-tab .close-x {
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0.55;
+    padding: 0 3px;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  .market-tab .close-x:hover {
+    opacity: 1;
+    color: #e74c3c;
+    background: rgba(255,255,255,0.1);
+  }
+  .market-tab.add-tab {
+    background: #27ae60;
+    color: white;
+    border-color: #27ae60;
+  }
+  .market-tab.add-tab:hover { background: #219150; }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--border);
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 12px 6px;
+    background: var(--panel-light);
+    border: none;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-dim);
+    transition: 0.3s;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-family: inherit;
+  }
+  .tab-btn.active {
+    background: var(--header-bg);
+    color: var(--header-text);
+    box-shadow: 0 -4px 15px rgba(241,196,15,0.2);
+  }
+  .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+  .tab-content.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .controls{
+    background: var(--panel-light);
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .setting-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .acuan-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .acuan-box label {
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .inp-acuan {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #e67e22;
+    background: #0f0f1e;
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    color: #f39c12;
+    outline: none;
+  }
+  .inp-acuan:focus { box-shadow: 0 0 10px rgba(230,126,34,0.5); }
+
+  .btn-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+
+  button{
+    padding:10px 12px;
+    border-radius:8px;
+    border:none;
+    cursor:pointer;
+    font-weight: bold;
+    transition: 0.3s;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-family: inherit;
+  }
+  
+  #btnAddRow { background: #27ae60; color: #fff; flex: 1; min-width: 120px; }
+  #btnCopyAll { background: #2980b9; color: #fff; flex: 2; min-width: 150px; }
+  #btnReset { background: #c0392b; color: #fff; flex: 1; min-width: 80px; }
+  #btnSaveRumus { background: #8e44ad; color: #fff; flex: 1; min-width: 150px; }
+  #btnResetRumus { background: #e74c3c; color: #fff; flex: 1; min-width: 150px; }
+
+  button:hover{ opacity: 0.9; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
+
+  .table-container {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #14141f;
+  }
+
+  table{
+    width:100%;
+    min-width: 780px;
+    border-collapse:collapse;
+    font-size:13px;
+  }
+
+  thead{ position:sticky; top:0; z-index:100; }
+
+  thead th{
+    padding:12px 4px;
+    background:var(--header-bg);
+    color:var(--header-text);
+    font-weight:700;
+    border:1px solid var(--border);
+    text-align:center;
+    font-size: 11px;
+  }
+
+  tbody tr:nth-child(even) { background: #191924; }
+  tbody tr:hover { background: #22222f; }
+
+  tbody td{
+    padding:8px 4px;
+    border:1px solid var(--border);
+    text-align:center;
+    color: var(--text-main);
+  }
+
+  .inp{
+    width:80px;
+    padding:10px 5px;
+    border-radius:8px;
+    border: 2px solid var(--border);
+    background: #0f0f1e;
+    text-align:center;
+    font-weight: 800;
+    font-size: 15px;
+    color: #5dade2;
+    outline: none;
+  }
+  .inp:focus { border-color: #3498db; box-shadow: 0 0 8px rgba(52,152,219,0.4); }
+
+  .row-num {
+    font-weight: bold;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
+  .bbfs-box {
+    min-width: 120px;
+    padding: 10px 5px;
+    border-radius: 8px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    font-size: 15px;
+    margin: 0 auto;
+    border: 1px solid rgba(255,255,255,0.1);
+    font-family: 'Courier New', monospace;
+  }
+
+  .b1 { background: var(--bbfs1-bg); color: var(--bbfs-text1); border-left: 4px solid var(--bbfs-text1); }
+  .b2 { background: var(--bbfs2-bg); color: var(--bbfs-text2); border-left: 4px solid var(--bbfs-text2); }
+
+  .action-btn-group { display: flex; gap: 4px; justify-content: center; }
+
+  .copyBtn{
+    padding:7px 8px;
+    font-size:10px;
+    background: #34495e;
+    color: white;
+    border-radius: 6px;
+  }
+
+  .delBtn{
+    padding:7px 9px;
+    font-size:11px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 6px;
+  }
+
+  .rumus-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .rumus-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .rumus-field label {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--text-main);
+    text-transform: uppercase;
+  }
+  .rumus-inp {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    background: #0f0f1e;
+    font-size: 15px;
+    font-weight: bold;
+    color: #5dade2;
+    outline: none;
+    text-align: center;
+    font-family: inherit;
+  }
+  .rumus-inp:focus { border-color: #8e44ad; box-shadow: 0 0 8px rgba(142,68,173,0.4); }
+
+  select.rumus-inp {
+    color: #f1c40f;
+    cursor: pointer;
+    text-align: left;
+    padding-left: 14px;
+  }
+  select.rumus-inp option {
+    background: #0f0f1e;
+    color: #f1c40f;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    font-size: 10px;
+    padding: 8px;
+    background: var(--panel-light);
+    border-radius: 8px;
+    margin-top: 10px;
+    color: var(--text-dim);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .note-content {
+    padding: 6px;
+    line-height: 1.7;
+    font-size: 13px;
+    color: var(--text-main);
+  }
+  .note-content h2 {
+    color: var(--header-text);
+    font-size: 15px;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    border-left: 4px solid var(--header-text);
+    padding-left: 8px;
+    text-transform: uppercase;
+  }
+  .note-content h2:first-child { margin-top: 0; }
+  .note-content ul { padding-left: 20px; margin: 6px 0; }
+  .note-content li { margin-bottom: 4px; }
+  .note-content code {
+    background: #0f0f1e;
+    color: #f1c40f;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: bold;
+    border: 1px solid var(--border);
+  }
+  .note-content .step {
+    background: var(--panel-light);
+    border-left: 4px solid #3498db;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin: 8px 0;
+  }
+  .note-content .step-title {
+    font-weight: bold;
+    color: #5dade2;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+  .note-content .warn {
+    background: #3a2a1a;
+    border-left: 4px solid #e67e22;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin: 8px 0;
+    font-size: 12px;
+    color: #f0c070;
+  }
+  .note-content .success {
+    background: #1a3a2a;
+    border-left: 4px solid #27ae60;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin: 8px 0;
+    font-size: 12px;
+    color: #7ee8a2;
+  }
+
+  @media(max-width:720px){
+    h1 { font-size: 14px; }
+    thead th { font-size: 9px; padding: 8px 2px; }
+    tbody td { font-size: 10px; padding: 6px 2px; }
+    .inp { width: 65px; font-size: 13px; padding: 8px 2px; }
+    .bbfs-box { min-width: 88px; font-size: 11px; letter-spacing: 1px; }
+    button { font-size: 9px; padding: 6px 4px; }
+    table { min-width: 720px; }
+    .tab-btn { font-size: 10px; padding: 10px 4px; }
+    .market-tab { font-size: 10px; padding: 6px 10px; }
+    .note-content { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1 id="mainTitle">INVEST HARIAN MULTI PASARAN</h1>
+
+  <!-- MARKET TABS -->
+  <div class="market-tabs" id="marketTabs"></div>
+
+  <!-- MAIN TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab1" onclick="switchTab('tab1')">📊 Invest</button>
+    <button class="tab-btn" data-tab="tab2" onclick="switchTab('tab2')">⚙️ Rumus</button>
+    <button class="tab-btn" data-tab="tab3" onclick="switchTab('tab3')">📝 Note</button>
+  </div>
+
+  <!-- TAB 1 -->
+  <div id="tab1" class="tab-content active">
+    <div class="controls">
+      <div class="setting-row">
+        <div class="acuan-box">
+          <label for="multiplierAcuan">🔑 Angka Acuan (<span id="marketNameAcuan">-</span>):</label>
+          <input type="tel" id="multiplierAcuan" class="inp-acuan" value="45673210" placeholder="Contoh: 45673210">
+        </div>
+      </div>
+
+      <div class="btn-row">
+          <button id="btnAddRow">+ Tambah Baris</button>
+          <button id="btnCopyAll">Salin Semua Result</button>
+          <button id="btnReset">Reset Input</button>
+      </div>
+      <p style="font-size:11px; color:var(--text-dim); margin-top:8px; margin-bottom:0;">
+        💡 <em>Semua data & rumus disimpan khusus untuk pasaran <b><span id="marketNameTip">-</span></b>.</em>
+      </p>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:6%;">No</th>
+            <th style="width:14%;">Result</th>
+            <th style="width:36%;">BBFS 9 DIGIT</th>
+            <th style="width:34%;">CT 7 DIGIT</th>
+            <th style="width:10%;">Opsi</th>
+          </tr>
+        </thead>
+        <tbody id="tb"></tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:var(--bbfs1-bg); border-left:3px solid var(--bbfs-text1);"></span> BBFS 9D (angka unik dari hasil hitung)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--bbfs2-bg); border-left:3px solid var(--bbfs-text2);"></span> CT 7D (7 digit terakhir BBFS 9D)</div>
+    </div>
+  </div>
+
+  <!-- TAB 2 -->
+  <div id="tab2" class="tab-content">
+    <div class="controls">
+      <h3 style="margin-top:0; color:var(--text-main); font-size:16px;">💾 Rumus Khusus <span id="marketNameRumus">-</span></h3>
+      <p style="font-size:12px; color:var(--text-dim); margin-bottom:10px;">
+        Atur mode hitung & angka acuan khusus untuk pasaran ini. Jika dikosongkan, sistem otomatis pakai <b>Angka Acuan Global</b> di tab Invest.
+      </p>
+
+      <div class="rumus-form">
+        <div class="rumus-field">
+          <label for="rumusMode">🔢 Mode Rumus</label>
+          <select id="rumusMode" class="rumus-inp">
+            <option value="kali">✖️ Perkalian (Result × Acuan)</option>
+            <option value="bagi">➗ Pembagian (Acuan ÷ Result)</option>
+            <option value="hybrid">🔀 Gabungan (Kali + Bagi)</option>
+          </select>
+        </div>
+
+        <div class="rumus-field">
+          <label for="rumusKhusus">🎯 Angka Acuan Khusus</label>
+          <input type="text" id="rumusKhusus" class="rumus-inp" placeholder="Global: 45673210">
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button id="btnSaveRumus">Simpan Rumus</button>
+        <button id="btnResetRumus">Reset Rumus Khusus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3 - NOTE -->
+  <div id="tab3" class="tab-content">
+    <div class="controls">
+      <div class="note-content">
+
+        <h2>📖 Panduan Invest Harian Multi Pasaran</h2>
+        <p>Aplikasi ini bisa menampung <b>banyak pasaran sekaligus</b> dalam 1 file.
+        Setiap pasaran punya <b>data sendiri-sendiri</b> — baris result, angka acuan, mode rumus, dan rumus khusus.
+        Data antar pasaran <b>tidak akan tumpang tindih</b>.</p>
+
+        <div class="step">
+          <div class="step-title">➕ Tambah Pasaran Baru</div>
+          <p>Klik tombol <code>+ Pasaran</code> di barisan tab pasaran paling atas. Masukkan nama pasaran (misal <b>SINGAPORE</b>), lalu klik OK.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-title">🔄 Pindah Pasaran</div>
+          <p>Cukup klik tab pasaran di atas. Semua data (result, baris, rumus, acuan, mode) otomatis ganti sesuai pasaran yang dipilih.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-title">🗑️ Hapus Pasaran</div>
+          <p>Klik tanda <code>×</code> kecil di tab pasaran. Akan muncul konfirmasi. Minimal harus ada 1 pasaran yang tersisa.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-title">📊 BBFS 9D & CT 7D</div>
+          <p>Isi result 4D di kolom <b>Result</b>, hasil <b>BBFS 9 Digit</b> & <b>CT 7 Digit</b> akan otomatis muncul.
+          Klik <b>+ Tambah Baris</b> untuk nambah baris input di bawah (data lama aman), tombol <b>−</b> untuk hapus baris.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-title">⚙️ 3 Mode Rumus</div>
+          <ul>
+            <li><b>✖️ Perkalian:</b> Result × Acuan → ambil digit unik</li>
+            <li><b>➗ Pembagian:</b> Acuan ÷ Result → integer + 10 digit desimal digabung → ambil digit unik</li>
+            <li><b>🔀 Gabungan:</b> Hasil kali + hasil bagi digabung → ambil digit unik (variasi paling banyak)</li>
+          </ul>
+          <p>Mode ini <u>diatur per pasaran</u> di tab <b>Rumus</b>.</p>
+        </div>
+
+        <div class="success">
+          🎯 <b>Semua data auto-save!</b> Setiap perubahan langsung tersimpan di browser. Kalau tutup dan buka lagi, data tetap ada.
+        </div>
+
+        <div class="warn">
+          ⚠️ <b>Penting:</b><br>
+          Data disimpan di browser (localStorage), bukan di server. Kalau ganti HP/browser atau clear cache, data bisa hilang.
+          Biasakan salin (copy) hasil result sebelum tutup browser.
+        </div>
+
+        <h2>📦 Default Pasaran</h2>
+        <p>Waktu pertama kali dibuka, aplikasi memuat 3 pasaran default: HOKIDRAW, SINGAPORE, MACAU.
+        Kamu bisa hapus atau tambah sesuai kebutuhan.</p>
+
+        <h2>🧮 Cara Hitung</h2>
+        <ul>
+          <li><b>BBFS 9D:</b> Hasil hitung (kali/bagi/gabungan) → ambil digit unik kiri-ke-kanan → sampai 9 digit. Kalau kurang, auto-pad dari 0–9 yang belum muncul.</li>
+          <li><b>CT 7D:</b> 7 digit terakhir dari BBFS 9D.</li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   INVEST HARIAN MULTI PASARAN (Dark Theme) — v2
+   BBFS 9D + CT 7D + Mode Kali/Bagi/Hybrid
+============================================================ */
+
+const STORAGE_KEY = "invest_multipasaran_master_v1";
+const DEFAULT_MARKETS = ["HOKIDRAW", "SINGAPORE", "MACAU"];
+
+let appState = {
+  markets: [...DEFAULT_MARKETS],
+  activeMarket: DEFAULT_MARKETS[0],
+  data: {}
+};
+
+/* ============ DATA HELPER ============ */
+function getMarketData(market) {
+  if (!appState.data[market]) {
+    appState.data[market] = {
+      rowCount: 3,
+      acuan: "45673210",
+      multiplier: "",
+      mode: "kali",       // "kali" | "bagi" | "hybrid"
+      results: ["", "", ""]
+    };
+  }
+  // Migrasi data lama: pastikan field mode ada
+  if (!appState.data[market].mode) {
+    appState.data[market].mode = "kali";
+  }
+  return appState.data[market];
+}
+
+function loadState() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed && Array.isArray(parsed.markets) && parsed.markets.length) {
+        appState.markets = parsed.markets;
+        appState.activeMarket = parsed.activeMarket || parsed.markets[0];
+        appState.data = parsed.data || {};
+      }
+    } catch(e) { console.warn("Gagal load state:", e); }
+  }
+  appState.markets.forEach(m => {
+    const d = getMarketData(m);
+    while (d.results.length < d.rowCount) d.results.push("");
+    d.results = d.results.slice(0, d.rowCount);
+  });
+  if (!appState.markets.includes(appState.activeMarket)) {
+    appState.activeMarket = appState.markets[0];
+  }
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+}
+
+/* ============ SINKRONISASI DOM → DATA ============ */
+function syncFromDOM() {
+  const data = getMarketData(appState.activeMarket);
+  for (let i = 0; i < data.rowCount; i++) {
+    const inp = document.getElementById("inp" + i);
+    if (inp) data.results[i] = inp.value;
+  }
+  saveState();
+}
+
+/* ============ GENERATOR ============ */
+/**
+ * Bangun string digit "mentah" berdasarkan mode.
+ * - kali   : num * acuan
+ * - bagi   : acuan / num → integer + 10 digit desimal digabung
+ * - hybrid : hasil kali + hasil bagi (integer + desimal) digabung
+ */
+function buildRawString(num, acuan, mode) {
+  if (mode === "bagi") {
+    if (num === 0) return String(acuan);
+    const q = acuan / num;
+    const intPart = Math.floor(q);
+    const decPart = Math.floor((q - intPart) * 1e10); // 10 digit desimal
+    return String(intPart) + String(decPart).padStart(10, "0");
+  }
+
+  if (mode === "hybrid") {
+    const mult = num * acuan;
+    if (num === 0) return String(mult);
+    const q = acuan / num;
+    const intPart = Math.floor(q);
+    const decPart = Math.floor((q - intPart) * 1e10);
+    return String(mult) + String(intPart) + String(decPart).padStart(10, "0");
+  }
+
+  // default: kali
+  return String(num * acuan);
+}
+
+/**
+ * Ambil digit unik kiri-ke-kanan sampai 9 digit.
+ * Kalau kurang dari 9, auto-pad dengan angka 0-9 yang belum muncul.
+ */
+function generateBBFS9(num, acuan, mode) {
+  const rawStr = buildRawString(num, acuan, mode);
+  const uniqueDigits = [];
+  for (const char of rawStr) {
+    if (/^\d$/.test(char) && !uniqueDigits.includes(char)) uniqueDigits.push(char);
+  }
+  if (uniqueDigits.length < 9) {
+    for (let i = 0; i <= 9; i++) {
+      if (uniqueDigits.length >= 9) break;
+      if (!uniqueDigits.includes(String(i))) uniqueDigits.push(String(i));
+    }
+  }
+  return uniqueDigits.slice(0, 9).join("");
+}
+
+/** CT 7D = 7 digit terakhir dari BBFS 9D */
+function generateCT7(bbfs9) {
+  return bbfs9.slice(-7);
+}
+
+/* ============ RENDER MARKET TABS ============ */
+function renderMarketTabs() {
+  const container = document.getElementById("marketTabs");
+  container.innerHTML = "";
+
+  appState.markets.forEach(m => {
+    const btn = document.createElement("button");
+    btn.className = "market-tab" + (m === appState.activeMarket ? " active" : "");
+    btn.innerHTML = `<span>${m}</span><span class="close-x" data-market="${m}">×</span>`;
+    btn.addEventListener("click", (e) => {
+      if (e.target.classList.contains("close-x")) {
+        e.stopPropagation();
+        deleteMarket(e.target.dataset.market);
+      } else {
+        switchMarket(m);
+      }
+    });
+    container.appendChild(btn);
+  });
+
+  const addBtn = document.createElement("button");
+  addBtn.className = "market-tab add-tab";
+  addBtn.innerHTML = "+ Pasaran";
+  addBtn.addEventListener("click", addMarket);
+  container.appendChild(addBtn);
+}
+
+/* ============ RENDER TABLE ============ */
+function renderTable() {
+  const tb = document.getElementById("tb");
+  tb.innerHTML = "";
+  const data = getMarketData(appState.activeMarket);
+
+  for (let i = 0; i < data.rowCount; i++) {
+    const tr = document.createElement("tr");
+    tr.id = "row" + i;
+    const savedVal = data.results[i] || "";
+
+    tr.innerHTML = `
+      <td class="row-num">${i + 1}</td>
+      <td><input id="inp${i}" class="inp" type="tel" maxlength="4" placeholder="0000" value="${savedVal}"></td>
+      <td><div id="bbfs1_${i}" class="bbfs-box b1">-</div></td>
+      <td><div id="bbfs2_${i}" class="bbfs-box b2">-</div></td>
+      <td>
+        <div class="action-btn-group">
+          <button id="copy${i}" class="copyBtn">Salin</button>
+          <button id="del${i}" class="delBtn">-</button>
+        </div>
+      </td>
+    `;
+    tb.appendChild(tr);
+
+    document.getElementById("inp" + i).addEventListener("input", () => calculate(i));
+    document.getElementById("copy" + i).addEventListener("click", () => copyRow(i));
+    document.getElementById("del" + i).addEventListener("click", () => removeRow(i));
+
+    if (savedVal) calculate(i);
+  }
+}
+
+/* ============ CALCULATE ============ */
+function calculate(i) {
+  const data = getMarketData(appState.activeMarket);
+  const inp = document.getElementById("inp" + i);
+  if (!inp) return;
+
+  const val = inp.value;
+  data.results[i] = val;
+  saveState();
+
+  const b1 = document.getElementById("bbfs1_" + i);
+  const b2 = document.getElementById("bbfs2_" + i);
+
+  if (!val || isNaN(val)) {
+    b1.innerText = "-";
+    b2.innerText = "-";
+    return;
+  }
+
+  const num = parseInt(val);
+  const acuanGlobal = parseInt(data.acuan) || 45673210;
+
+  let acuan = acuanGlobal;
+  if (data.multiplier && !isNaN(data.multiplier)) {
+    acuan = parseInt(data.multiplier);
+  }
+
+  const mode = data.mode || "kali";
+  const bbfs = generateBBFS9(num, acuan, mode);
+  b1.innerText = bbfs;
+  b2.innerText = generateCT7(bbfs);
+}
+
+function recalculateAll() {
+  const data = getMarketData(appState.activeMarket);
+  for (let i = 0; i < data.rowCount; i++) {
+    const inp = document.getElementById("inp" + i);
+    if (inp && inp.value !== "") calculate(i);
+  }
+}
+
+/* ============ RENDER ALL ============ */
+function renderAll() {
+  const data = getMarketData(appState.activeMarket);
+
+  document.getElementById("mainTitle").innerText = `INVEST HARIAN MULTI PASARAN`;
+  document.getElementById("marketNameAcuan").innerText = appState.activeMarket;
+  document.getElementById("marketNameTip").innerText = appState.activeMarket;
+  document.getElementById("marketNameRumus").innerText = appState.activeMarket;
+
+  document.getElementById("multiplierAcuan").value = data.acuan;
+
+  renderMarketTabs();
+  renderTable();
+  loadRumusToForm();
+}
+
+/* ============ MARKET ACTIONS ============ */
+function switchMarket(market) {
+  if (market === appState.activeMarket) return;
+  syncFromDOM();
+  appState.activeMarket = market;
+  saveState();
+  renderAll();
+}
+
+function addMarket() {
+  syncFromDOM();
+  const name = prompt("Masukkan nama pasaran baru:");
+  if (!name || !name.trim()) return;
+  const cleanName = name.trim().toUpperCase();
+
+  if (appState.markets.includes(cleanName)) {
+    alert(`Pasaran "${cleanName}" sudah ada!`);
+    return;
+  }
+
+  appState.markets.push(cleanName);
+  getMarketData(cleanName);
+  appState.activeMarket = cleanName;
+  saveState();
+  renderAll();
+}
+
+function deleteMarket(market) {
+  if (appState.markets.length <= 1) {
+    alert("Minimal harus ada 1 pasaran!");
+    return;
+  }
+  if (!confirm(`Hapus pasaran "${market}"?\n\nSemua data (result, baris, rumus) akan hilang permanen.`)) return;
+
+  syncFromDOM();
+  appState.markets = appState.markets.filter(m => m !== market);
+  delete appState.data[market];
+
+  if (appState.activeMarket === market) {
+    appState.activeMarket = appState.markets[0];
+  }
+  saveState();
+  renderAll();
+}
+
+/* ============ ROW ACTIONS ============ */
+function addRow() {
+  syncFromDOM();
+  const data = getMarketData(appState.activeMarket);
+  data.rowCount++;
+  data.results.push("");
+  saveState();
+  renderTable();
+
+  setTimeout(() => {
+    const lastRow = document.getElementById("row" + (data.rowCount - 1));
+    if (lastRow) lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
+}
+
+function removeRow(i) {
+  syncFromDOM();
+  const data = getMarketData(appState.activeMarket);
+  if (data.rowCount <= 1) {
+    alert("Minimal harus ada 1 baris!");
+    return;
+  }
+  if (confirm(`Hapus baris ${i + 1}?`)) {
+    data.results.splice(i, 1);
+    data.rowCount--;
+    saveState();
+    renderTable();
+  }
+}
+
+/* ============ COPY ============ */
+function copyRow(i) {
+  const b1 = document.getElementById("bbfs1_" + i).innerText;
+  const b2 = document.getElementById("bbfs2_" + i).innerText;
+
+  if (b1 === "-") return alert("Isi result dulu Bosqu!");
+
+  const resultVal = document.getElementById("inp" + i).value;
+  const txt = `📊 ${appState.activeMarket}\nResult: ${resultVal}\nBBFS 9D: ${b1}\nCT 7D: ${b2}`;
+  navigator.clipboard.writeText(txt).then(() => alert("Salin Sukses!"));
+}
+
+function copyAll() {
+  syncFromDOM();
+  const data = getMarketData(appState.activeMarket);
+  let out = `🚀 INVEST HARIAN ${appState.activeMarket} 🚀\n\n`;
+  let hasData = false;
+  let rowNum = 1;
+
+  for (let i = 0; i < data.rowCount; i++) {
+    const inpEl = document.getElementById("inp" + i);
+    if (inpEl) {
+      const val = inpEl.value;
+      const b1 = document.getElementById("bbfs1_" + i).innerText;
+      const b2 = document.getElementById("bbfs2_" + i).innerText;
+      if (b1 !== "-") {
+        out += `📍 Baris ${rowNum} [${val}]\nBBFS 9D: ${b1}\nCT 7D: ${b2}\n\n`;
+        hasData = true;
+        rowNum++;
+      }
+    }
+  }
+
+  if (!hasData) return alert("Belum ada data result yang diisi!");
+  navigator.clipboard.writeText(out + "Salam JP Paus! 💰").then(() => alert("Semua Data Berhasil Disalin!"));
+}
+
+function resetAll() {
+  if (confirm(`Reset semua data inputan result untuk pasaran ${appState.activeMarket}?\n\n(Rumus khusus & jumlah baris tetap tersimpan)`)) {
+    const data = getMarketData(appState.activeMarket);
+    for (let i = 0; i < data.rowCount; i++) {
+      data.results[i] = "";
+      const inp = document.getElementById("inp" + i);
+      if (inp) {
+        inp.value = "";
+        document.getElementById("bbfs1_" + i).innerText = "-";
+        document.getElementById("bbfs2_" + i).innerText = "-";
+      }
+    }
+    saveState();
+  }
+}
+
+/* ============ TAB 2 - RUMUS ============ */
+function loadRumusToForm() {
+  const data = getMarketData(appState.activeMarket);
+  document.getElementById("rumusKhusus").value = data.multiplier || "";
+  document.getElementById("rumusMode").value = data.mode || "kali";
+}
+
+function saveRumus() {
+  const data = getMarketData(appState.activeMarket);
+  const val = document.getElementById("rumusKhusus").value.trim();
+  const mode = document.getElementById("rumusMode").value;
+
+  data.multiplier = (val && !isNaN(val)) ? val : "";
+  data.mode = mode;
+
+  saveState();
+  recalculateAll();
+
+  const modeLabel = { kali: "Perkalian", bagi: "Pembagian", hybrid: "Gabungan" }[mode] || mode;
+  alert(`✅ Rumus khusus ${appState.activeMarket} (${modeLabel}) berhasil disimpan!`);
+}
+
+function resetRumus() {
+  if (confirm(`⚠️ Hapus rumus khusus ${appState.activeMarket}?\n(Akan kembali menggunakan Angka Acuan Global + mode Perkalian)`)) {
+    const data = getMarketData(appState.activeMarket);
+    data.multiplier = "";
+    data.mode = "kali";
+    saveState();
+    loadRumusToForm();
+    recalculateAll();
+    alert("Rumus khusus berhasil direset.");
+  }
+}
+
+/* ============ TAB SWITCHER ============ */
+function switchTab(tabId) {
+  syncFromDOM();
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+  if (tabId === 'tab2') loadRumusToForm();
+}
+
+/* ============ INIT ============ */
+loadState();
+renderAll();
+
+document.getElementById("btnAddRow").addEventListener("click", addRow);
+document.getElementById("btnReset").addEventListener("click", resetAll);
+document.getElementById("btnCopyAll").addEventListener("click", copyAll);
+document.getElementById("btnSaveRumus").addEventListener("click", saveRumus);
+document.getElementById("btnResetRumus").addEventListener("click", resetRumus);
+
+document.getElementById("multiplierAcuan").addEventListener("input", (e) => {
+  const data = getMarketData(appState.activeMarket);
+  data.acuan = e.target.value;
+  saveState();
+  recalculateAll();
+});
+
+// Auto-save saat pindah tab browser / minimize / tutup
+window.addEventListener("beforeunload", syncFromDOM);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) syncFromDOM();
+});
+
+</script>
+</body>
+</html>
