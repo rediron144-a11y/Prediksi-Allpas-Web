@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>POLTAR MULTI-D // GOLD EDITION</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #FFC107;       /* Emas / Kuning Telur */
+  --primary-bright: #FFD54F;
+  --secondary: #FF9800;     /* Oranye */
+  --accent: #E65100;        /* Oranye Pekat */
+  --bg-dark: #0a0800;
+  --bg-panel: rgba(20, 16, 2, 0.85);
+  --text-main: #fff8e1;
+  --glow: rgba(255, 193, 7, 0.35);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Rajdhani', Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(255, 193, 7, 0.12), transparent 50%),
+    linear-gradient(135deg, var(--bg-dark) 0%, #1f1400 100%);
+  padding: 15px;
+  color: var(--text-main);
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Pattern Grid Halus */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 193, 7, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 193, 7, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.box {
+  position: relative;
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 20px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 193, 7, 0.15);
+  width: 100%;
+  max-width: 420px; /* Ukuran diperkecil agar lebih padat & ringkas */
+  z-index: 2;
+}
+
+h2 {
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  letter-spacing: 2px;
+  font-size: 20px;
+  margin: 0 0 2px;
+  background: linear-gradient(90deg, #FFF, var(--primary-bright), #FFF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--primary);
+  opacity: 0.85;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+/* Form Input Ringkas */
+.input-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.field-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.field-group label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--primary);
+  width: 45px;
+  text-align: right;
+}
+
+input {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 6px;
+  font-size: 14px;
+  color: #fff;
+  font-family: 'Rajdhani', monospace;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-align: center;
+  outline: none;
+  transition: all 0.2s;
+}
+
+input::placeholder {
+  color: rgba(255, 193, 7, 0.3);
+  letter-spacing: 0.5px;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 10px var(--glow);
+  background: rgba(25, 18, 0, 0.9);
+}
+
+/* Opsi Twin */
+.twin-controls {
+  display: flex;
+  gap: 6px;
+  margin: 12px 0 8px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 193, 7, 0.15);
+}
+
+.twin-btn {
+  flex: 1;
+  padding: 7px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 10px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  background: transparent;
+  color: rgba(255, 193, 7, 0.6);
+}
+
+.twin-btn.active {
+  background: var(--primary);
+  color: #000;
+  font-weight: 900;
+  box-shadow: 0 0 8px var(--glow);
+}
+
+/* Checkbox Kebalikan */
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-bright);
+  user-select: none;
+  margin-bottom: 14px;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--secondary);
+  cursor: pointer;
+}
+
+/* Tombol Aksi */
+.btn-row {
+  display: flex;
+  gap: 8px;
+}
+
+button.action-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+}
+
+button.action-btn:active { transform: scale(0.97); }
+
+.proses {
+  background: linear-gradient(135deg, #FFD54F, #FF9800);
+  color: #000;
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+}
+.proses:hover { opacity: 0.9; }
+
+.reset {
+  background: #333;
+  color: #ccc;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.reset:hover { background: #444; color: #fff; }
+
+.copy {
+  background: linear-gradient(135deg, #00E676, #008E3D);
+  color: #fff;
+}
+.copy:hover { opacity: 0.9; }
+
+/* Ringkasan & Hasil */
+#summary {
+  margin-top: 14px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--primary);
+  text-align: center;
+  font-size: 12px;
+  padding: 8px;
+  background: rgba(255, 193, 7, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 193, 7, 0.15);
+}
+
+/* Container Hasil Desain Baru (Kuning-Hitam & Kompak) */
+#hasil {
+  margin-top: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px;
+  border-radius: 8px;
+  min-height: 80px;
+  max-height: 250px;
+  overflow-y: auto;
+  font-size: 14px;
+  font-family: 'Rajdhani', monospace;
+  font-weight: 800;
+  letter-spacing: 1px;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+  line-height: 1.8;
+  word-break: break-all;
+  color: #FFD54F; /* Warna delimiter bintang */
+}
+
+#hasil::-webkit-scrollbar { width: 6px; }
+#hasil::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+#hasil::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+/* Badge Angka Hasil: Latar Belakang Kuning, Angka Hitam */
+.num-tag {
+  background: #FFC107;
+  color: #000000;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 800;
+  display: inline-block;
+  box-shadow: 0 0 4px rgba(255, 193, 7, 0.5);
+}
+
+.mode-badge {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  color: #000;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.mode-badge.d2 { background: var(--primary-bright); }
+.mode-badge.d3 { background: var(--secondary); }
+.mode-badge.d4 { background: #FF3D00; color: #fff; }
+
+.info-text {
+  text-align: center;
+  font-size: 10px;
+  color: rgba(255, 193, 7, 0.4);
+  margin-top: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h2>POLTAR MULTI-D</h2>
+  <div class="subtitle">// GOLD EDITION PERMUTATION //</div>
+
+  <div class="input-stack">
+    <div class="field-group">
+      <label>AS</label>
+      <input id="as" placeholder="Opsional" maxlength="12">
+    </div>
+    <div class="field-group">
+      <label>KOP</label>
+      <input id="kop" placeholder="Min. 1 digit" maxlength="12">
+    </div>
+    <div class="field-group">
+      <label>KEP</label>
+      <input id="kep" placeholder="Min. 1 digit" maxlength="12">
+    </div>
+    <div class="field-group">
+      <label>EKOR</label>
+      <input id="ekor" placeholder="Min. 1 digit" maxlength="12">
+    </div>
+  </div>
+
+  <div class="twin-controls">
+    <button id="btnTwin" class="twin-btn" onclick="setTwinMode(true)">TWIN (Bebas)</button>
+    <button id="btnNoTwin" class="twin-btn active" onclick="setTwinMode(false)">NO TWIN (Tanpa Kembar)</button>
+  </div>
+
+  <label class="checkbox-wrapper">
+    <input type="checkbox" id="kebalikan2d">
+    <span>✨ Sertakan Angka Kebalikan (Khusus 2D)</span>
+  </label>
+
+  <div class="btn-row">
+    <button class="action-btn proses" onclick="buat()">PROSES</button>
+    <button class="action-btn reset" onclick="resetData()">RESET</button>
+    <button class="action-btn copy" onclick="copyHasil()">SALIN</button>
+  </div>
+
+  <div id="summary">Menunggu input...</div>
+  <div id="hasil"></div>
+  <div class="info-text">Format pembatas (*) tanpa spasi.</div>
+</div>
+
+<script>
+let currentResults = [];
+let allowTwin = false;
+
+function setTwinMode(mode) {
+  allowTwin = mode;
+  document.getElementById('btnTwin').classList.toggle('active', mode);
+  document.getElementById('btnNoTwin').classList.toggle('active', !mode);
+}
+
+function buat() {
+  const fields = [
+    document.getElementById("as").value.trim(),
+    document.getElementById("kop").value.trim(),
+    document.getElementById("kep").value.trim(),
+    document.getElementById("ekor").value.trim()
+  ].filter(f => f.length > 0);
+
+  if (fields.length < 2) {
+    alert("Isi minimal 2 kolom untuk menghasilkan kombinasi!");
+    return;
+  }
+
+  const includeKebalikan = document.getElementById("kebalikan2d").checked;
+  const is2D = fields.length === 2;
+
+  let results = fields[0].split('');
+  
+  for (let i = 1; i < fields.length; i++) {
+    let nextChars = fields[i].split('');
+    let newResults = [];
+    
+    for (let r of results) {
+      for (let c of nextChars) {
+        if (!allowTwin && r.includes(c)) {
+          continue;
+        }
+        newResults.push(r + c);
+      }
+    }
+    results = newResults;
+  }
+
+  let finalSet = new Set();
+  for (let res of results) {
+    finalSet.add(res);
+    if (is2D && includeKebalikan) {
+      let rev = res.split('').reverse().join('');
+      finalSet.add(rev);
+    }
+  }
+
+  currentResults = Array.from(finalSet);
+  const mode = fields.length === 2 ? "2D" : (fields.length === 3 ? "3D" : "4D");
+  const modeClass = mode === "2D" ? "d2" : (mode === "3D" ? "d3" : "d4");
+
+  // Update Summary
+  document.getElementById("summary").innerHTML = 
+    `TOTAL : <span style="color:#FFF; font-size:16px;">${currentResults.length}</span> LINE ` +
+    `<span class="mode-badge ${modeClass}">${mode}</span>` +
+    `${!allowTwin ? ' <span style="font-size:9px; opacity:0.7;">(NO TWIN)</span>' : ''}`;
+
+  // Render Hasil: Angka dengan Background Kuning & Pembatas Bintang Tanpa Spasi
+  if (currentResults.length > 0) {
+    let formattedHTML = currentResults.map(item => `<span class="num-tag">${item}</span>`).join('*');
+    document.getElementById("hasil").innerHTML = formattedHTML;
+  } else {
+    document.getElementById("hasil").innerHTML = '<div style="width:100%; text-align:center; opacity:0.5; font-weight:normal; font-size:12px;">Tidak ada hasil (Cek opsi No Twin).</div>';
+  }
+}
+
+function resetData() {
+  document.getElementById("as").value = "";
+  document.getElementById("kop").value = "";
+  document.getElementById("kep").value = "";
+  document.getElementById("ekor").value = "";
+  setTwinMode(false);
+  document.getElementById("kebalikan2d").checked = false;
+  document.getElementById("hasil").innerHTML = "";
+  document.getElementById("summary").innerHTML = "Menunggu input...";
+  currentResults = [];
+}
+
+function copyHasil() {
+  if (currentResults.length === 0) {
+    alert("Belum ada hasil untuk disalin!");
+    return;
+  }
+  
+  // Salin dengan format murni dipisahkan bintang tanpa spasi
+  const textToCopy = currentResults.join("*");
+  
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    alert(`✅ Berhasil menyalin ${currentResults.length} line ke clipboard!`);
+  }).catch(() => {
+    let ta = document.createElement("textarea");
+    ta.value = textToCopy;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    alert(`✅ Berhasil menyalin ${currentResults.length} line!`);
+  });
+}
+
+// Hanya menerima input angka
+["as", "kop", "kep", "ekor"].forEach(id => {
+  let el = document.getElementById(id);
+  el.addEventListener("input", e => {
+    e.target.value = e.target.value.replace(/\D/g, "").slice(0, 12);
+  });
+});
+</script>
+
+</body>
+</html>
+
