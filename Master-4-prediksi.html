@@ -24,11 +24,12 @@ h1 span { color: var(--primary); }
 .global-bar label { font-size: 10px; font-weight: 800; color: #92400e; letter-spacing: 0.5px; white-space: nowrap; }
 .global-bar input { flex: 1; height: 32px; background: #fff; border: 1px solid var(--primary-border); color: var(--text-main); border-radius: 6px; padding: 0 10px; font-weight: 700; text-transform: uppercase; font-size: 12px; outline: none; }
 .global-bar input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(217,119,6,0.15); }
-.tab-bar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; background: var(--bg-soft); padding: 4px; border-radius: 10px; border: 1px solid var(--border-soft); margin-bottom: 12px; }
-.tab { padding: 10px 4px; background: transparent; border: none; color: var(--text-muted); font-weight: 800; font-size: 10px; border-radius: 6px; cursor: pointer; letter-spacing: 0.3px; text-transform: uppercase; }
+.tab-bar { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; background: var(--bg-soft); padding: 4px; border-radius: 10px; border: 1px solid var(--border-soft); margin-bottom: 12px; }
+.tab { padding: 10px 3px; background: transparent; border: none; color: var(--text-muted); font-weight: 800; font-size: 10px; border-radius: 6px; cursor: pointer; letter-spacing: 0.3px; text-transform: uppercase; }
 .tab:hover { background: rgba(217,119,6,0.08); color: var(--primary); }
 .tab.active { background: var(--primary); color: #fff; box-shadow: 0 2px 8px rgba(217,119,6,0.35); }
 .tab.tab-compare { color: var(--secondary); } .tab.tab-compare.active { background: var(--secondary); color: #fff; }
+.tab.tab-rumus { color: #7c3aed; } .tab.tab-rumus.active { background: #7c3aed; color: #fff; }
 .tab.tab-backtest { color: #16a34a; } .tab.tab-backtest.active { background: #16a34a; color: #fff; }
 .tab.tab-scan { color: #0284c7; } .tab.tab-scan.active { background: #0284c7; color: #fff; }
 .panel { display: none; } .panel.active { display: block; }
@@ -66,6 +67,8 @@ h1 span { color: var(--primary); }
 .in-digit:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(217,119,6,0.15); }
 .in-digit:disabled { opacity: 0.25; background: #f1f5f9; border-color: var(--border-soft); }
 .sel-pola-mini { width: 100%; font-size: 9px; font-weight: 700; background: var(--bg-soft); color: var(--text-main); border: 1px solid var(--border-soft); border-radius: 4px; height: 20px; outline: none; cursor: pointer; }
+.mistik-preview { font-size: 10px; font-weight: 900; color: var(--text-muted); text-align: center; height: 14px; line-height: 14px; letter-spacing: 0.5px; transition: all 0.15s; }
+.mistik-preview.aktif { color: #dc2626; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 3px; padding: 0 3px; }
 .cell-off { opacity: 0.45; }
 .config-row { display: flex; align-items: center; justify-content: space-between; background: var(--bg-soft); padding: 10px; border-radius: 8px; border: 1px solid var(--border-soft); gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 .op-group, .pangkal-group { display: flex; align-items: center; gap: 5px; }
@@ -122,6 +125,63 @@ h1 span { color: var(--primary); }
 .iris-box { width: 32px; height: 32px; line-height: 30px; text-align: center; background: #fff; border: 2px solid var(--secondary); color: #0e7490; font-size: 15px; font-weight: 900; border-radius: 6px; box-shadow: 0 2px 5px rgba(8,145,178,0.20); }
 .iris-empty { color: var(--text-muted); font-size: 11px; font-style: italic; }
 
+/* ============ RUMUS CEPAT ============ */
+.formula-row { display: flex; gap: 6px; align-items: center; background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid var(--primary-border); border-radius: 8px; padding: 8px 10px; margin-bottom: 4px; }
+.formula-row label.fx-lbl { font-size: 10px; font-weight: 900; color: #92400e; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+.formula-row input[type=text] { flex: 1; min-width: 0; height: 32px; padding: 0 10px; border: 1px solid var(--primary-border); border-radius: 6px; background: #fff; font-family: 'Courier New', monospace; font-weight: 800; text-transform: uppercase; font-size: 12px; color: var(--text-main); outline: none; letter-spacing: 1px; }
+.formula-row input[type=text]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(217,119,6,0.15); }
+.formula-row input[type=text]::placeholder { color: #cbd5e1; letter-spacing: 1px; }
+.formula-row button { padding: 0 14px; height: 32px; background: var(--primary); color: #fff; border: none; border-radius: 6px; font-weight: 800; font-size: 11px; cursor: pointer; letter-spacing: 0.5px; }
+.formula-row button:hover { background: #b45309; transform: translateY(-1px); }
+.formula-row button:active { transform: translateY(0); }
+.formula-hint { font-size: 9px; color: #92400e; margin: 0 0 12px 4px; font-weight: 600; line-height: 1.6; }
+.formula-hint b { color: var(--primary); }
+.formula-hint .append-lbl { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; font-weight: 900; color: #dc2626; background: #fff; padding: 2px 7px; border-radius: 4px; border: 1px solid #fca5a5; margin-right: 6px; font-size: 9px; }
+.formula-hint .append-lbl input { margin: 0; cursor: pointer; }
+.formula-hint .append-lbl.checked { background: #dc2626; color: #fff; border-color: #dc2626; }
+
+/* ============ RUMUS GLOBAL PANEL ============ */
+.rumus-quick { background: #f5f3ff; border: 2px dashed #7c3aed; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; font-size: 11px; color: #4c1d95; line-height: 1.7; font-weight: 600; }
+.rumus-quick b { color: #7c3aed; }
+.rumus-quick code { background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd6fe; font-family: 'Courier New', monospace; font-weight: 800; color: var(--primary); }
+.rumus-form { background: linear-gradient(180deg, #fffbeb, #fef9e7); border: 2px dashed var(--primary-border); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+.rumus-form label { display: block; font-size: 10px; font-weight: 800; color: #92400e; letter-spacing: 0.5px; margin-bottom: 4px; text-transform: uppercase; }
+.rumus-form input, .rumus-form select { width: 100%; padding: 8px 10px; border: 1px solid var(--primary-border); border-radius: 6px; background: #fff; font-size: 12px; font-weight: 700; color: var(--text-main); outline: none; margin-bottom: 8px; }
+.rumus-form input:focus, .rumus-form select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(217,119,6,0.15); }
+.rumus-form input#rumus_formula { font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
+.rumus-form .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rumus-form .btn-add { width: 100%; padding: 11px; background: linear-gradient(135deg, var(--primary), #b45309); color: #fff; border: none; border-radius: 7px; font-size: 12px; font-weight: 900; cursor: pointer; letter-spacing: 1px; text-transform: uppercase; box-shadow: 0 3px 10px rgba(217,119,6,0.30); margin-top: 4px; }
+.rumus-form .btn-add:hover { transform: translateY(-1px); }
+.rumus-form .btn-add.btn-update { background: linear-gradient(135deg, #16a34a, #15803d); }
+
+.rumus-toolbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.rumus-toolbar button { flex: 1; min-width: 90px; padding: 9px 10px; border: none; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; letter-spacing: 0.5px; }
+.rumus-toolbar .btn-export { background: #0284c7; color: #fff; }
+.rumus-toolbar .btn-import { background: #7c3aed; color: #fff; }
+.rumus-toolbar .btn-clear { background: #dc2626; color: #fff; }
+.rumus-toolbar button:hover { transform: translateY(-1px); }
+
+.rumus-list { display: flex; flex-direction: column; gap: 8px; }
+.rumus-card { background: #fff; border: 2px solid var(--border-soft); border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rumus-card.editing { border-color: var(--primary); background: #fffbeb; box-shadow: 0 0 0 3px rgba(217,119,6,0.10); }
+.rumus-card .rumus-info { flex: 1; min-width: 180px; }
+.rumus-card .rumus-name { font-size: 13px; font-weight: 900; color: var(--text-main); display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+.rumus-card .rumus-name .tag { font-size: 9px; padding: 2px 7px; border-radius: 4px; font-weight: 900; letter-spacing: 0.5px; white-space: nowrap; }
+.rumus-card .rumus-name .tag-A { background: #fef3c7; color: #92400e; border: 1px solid #fbbf24; }
+.rumus-card .rumus-name .tag-B { background: #d1fae5; color: #047857; border: 1px solid #34d399; }
+.rumus-card .rumus-name .tag-C { background: #dbeafe; color: #1d4ed8; border: 1px solid #60a5fa; }
+.rumus-card .rumus-name .tag-D { background: #fce7f3; color: #be185d; border: 1px solid #f472b6; }
+.rumus-card .rumus-name .tag-ALL { background: #e0e7ff; color: #3730a3; border: 1px solid #818cf8; }
+.rumus-card .rumus-code { font-family: 'Courier New', monospace; font-size: 12px; font-weight: 800; color: var(--primary); background: #fffbeb; padding: 5px 8px; border-radius: 5px; border: 1px dashed var(--primary-border); letter-spacing: 1px; word-break: break-all; }
+.rumus-card .rumus-note { font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 4px; font-weight: 600; }
+.rumus-card .rumus-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+.rumus-card .rumus-actions button { padding: 7px 12px; border: none; border-radius: 5px; font-size: 10px; font-weight: 900; cursor: pointer; letter-spacing: 0.3px; }
+.rumus-card .btn-apply { background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; }
+.rumus-card .btn-edit { background: #f59e0b; color: #fff; }
+.rumus-card .btn-del { background: #dc2626; color: #fff; padding: 7px 10px !important; }
+.rumus-card .rumus-actions button:hover { transform: translateY(-1px); }
+.rumus-empty { text-align: center; padding: 30px 15px; color: var(--text-muted); font-style: italic; font-size: 12px; background: var(--bg-soft); border: 2px dashed var(--border-soft); border-radius: 10px; font-weight: 600; }
+
 /* ============ AUTO-SCAN PANEL ============ */
 .scan-panel { background: linear-gradient(180deg, #f0f9ff, #e0f2fe); border: 2px solid #0284c7; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
 .scan-panel h3 { margin: 0 0 10px 0; font-size: 12px; color: #075985; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; }
@@ -168,6 +228,7 @@ h1 span { color: var(--primary); }
   .box-num { width: 25px; height: 25px; line-height: 23px; font-size: 12px; }
   .compare-grid { grid-template-columns: 1fr; }
   .tab-bar { grid-template-columns: repeat(3, 1fr); }
+  .rumus-form .row-2 { grid-template-columns: 1fr; }
 }
 
 #panel_BACKTEST * { box-sizing: border-box; }
@@ -280,6 +341,7 @@ h1 span { color: var(--primary); }
     <button class="tab" data-pola="C" onclick="switchTab('C')">POLA C<span style="display:block;font-size:7px;font-weight:600;">EKOR</span></button>
     <button class="tab" data-pola="D" onclick="switchTab('D')">POLA D<span style="display:block;font-size:7px;font-weight:600;">BIJI ON</span></button>
     <button class="tab tab-compare" data-pola="ALL" onclick="switchTab('ALL')">⚡ BANDING</button>
+    <button class="tab tab-rumus" data-pola="RUMUS" onclick="switchTab('RUMUS')">📚 RUMUS</button>
     <button class="tab tab-backtest" data-pola="BACKTEST" onclick="switchTab('BACKTEST')">📊 BACKTEST</button>
     <button class="tab tab-scan" data-pola="SCAN" onclick="switchTab('SCAN')">🔍 SCAN</button>
   </div>
@@ -299,6 +361,53 @@ h1 span { color: var(--primary); }
       <div class="iris-title">💎 ANGKA IRISAN (Muncul di ≥2 Pola — Kandidat Terkuat)</div>
       <div class="iris-body" id="iris_body"><span class="iris-empty">Belum diproses. Klik tombol merah di atas dulu.</span></div>
     </div>
+  </div>
+
+  <!-- ============ PANEL RUMUS GLOBAL ============ -->
+  <div class="panel" id="panel_RUMUS">
+    <h2 class="panel-title">📚 RUMUS GLOBAL — SIMPAN & PAKAI ULANG</h2>
+
+    <div class="rumus-quick">
+      <b>💡 Cara pakai:</b> Simpan rumusan favorit bosq di sini (nama + rumus + target pola).<br>
+      Kapan saja tinggal klik <b>APPLY</b> — rumus langsung diterapkan ke pola tujuan.<br>
+      Format: <code>A10:ML + C2 - E1:MB</code> · <b>A</b>=As · <b>C</b>=Cop · <b>K</b>=Kepala · <b>E</b>=Ekor · angka=putaran 1-10 · mistik opsional.
+    </div>
+
+    <div class="rumus-form">
+      <label>📝 Nama Rumus</label>
+      <input type="text" id="rumus_name" placeholder="Contoh: Andalan Minggu Ini" maxlength="40">
+
+      <label>⚡ Isi Rumus</label>
+      <input type="text" id="rumus_formula" placeholder="A10:ML + C2 - E1:MB" onkeydown="if(event.key==='Enter')saveGlobalFormula()">
+
+      <div class="row-2">
+        <div>
+          <label>🎯 Target Pola</label>
+          <select id="rumus_target">
+            <option value="A">POLA A (BBFS)</option>
+            <option value="B">POLA B (KEPALA)</option>
+            <option value="C">POLA C (EKOR)</option>
+            <option value="D">POLA D (BIJI ON)</option>
+            <option value="ALL">🌟 SEMUA POLA (A+B+C+D)</option>
+          </select>
+        </div>
+        <div>
+          <label>📌 Catatan (opsional)</label>
+          <input type="text" id="rumus_note" placeholder="Keterangan singkat" maxlength="60">
+        </div>
+      </div>
+
+      <button class="btn-add" id="rumus_btn_add" onclick="saveGlobalFormula()">💾 SIMPAN RUMUS</button>
+    </div>
+
+    <div class="rumus-toolbar">
+      <button class="btn-export" onclick="exportRumusJSON()">📤 Ekspor Rumus</button>
+      <button class="btn-import" onclick="document.getElementById('rumusFileInput').click()">📥 Impor Rumus</button>
+      <button class="btn-clear" onclick="clearAllRumus()">🗑️ Hapus Semua</button>
+      <input type="file" id="rumusFileInput" accept=".json" style="display:none" onchange="importRumusJSON(event)">
+    </div>
+
+    <div class="rumus-list" id="rumus_list"></div>
   </div>
 
   <div class="panel" id="panel_BACKTEST">
@@ -368,7 +477,6 @@ h1 span { color: var(--primary); }
     </div>
   </div>
 
-  <!-- ============ PANEL SCAN ============ -->
   <div class="panel" id="panel_SCAN">
     <h2 class="panel-title">🔍 AUTO-SCAN PATTERN STEP</h2>
 
@@ -555,6 +663,7 @@ function generateRoundsHTML(pola) {
           </div>
           <input type="number" class="in-digit" id="${pola}_in_r${r}_${p.key}" value="0" max="9" min="0"
                  oninput="if(this.value.length>1)this.value=this.value.slice(-1); runMegaFormula('${pola}');" disabled>
+          <div class="mistik-preview" id="${pola}_prev_r${r}_${p.key}"></div>
           <select class="sel-pola-mini" id="${pola}_mode_r${r}_${p.key}" onchange="runMegaFormula('${pola}')">
             ${POLA_OPTIONS_HTML}
           </select>
@@ -609,6 +718,21 @@ function generatePanelHTML(pola) {
             ${POLA_OPTIONS_HTML}
           </select>
         </div>
+      </div>
+
+      <div class="formula-row">
+        <label class="fx-lbl">⚡ RUMUS:</label>
+        <input type="text" id="${pre}formula_input" placeholder="A10:ML + C2 - E1:MB"
+               onkeydown="if(event.key==='Enter')applyFormula('${pola}')">
+        <button onclick="applyFormula('${pola}')">APPLY</button>
+      </div>
+      <div class="formula-hint">
+        <label class="append-lbl" id="${pre}append_lbl">
+          <input type="checkbox" id="${pre}append_chk" onchange="updateAppendLabel('${pola}')">
+          <span>APPEND</span>
+        </label>
+        Format: <b>[A/C/K/E][1-10](:MISTIK)?</b> — pisah dengan <b>+</b> / <b>-</b> / <b>,</b> — A=As · C=Cop · K=Kepala · E=Ekor · Mistik: ML, MB, IX, TY, M0-M19 (opsional).<br>
+        Contoh: <b>A10:ML + C2 - E1:MB</b> — APPEND: rumus ditambah, cell lain tetap ON.
       </div>
 
       <button class="btn-calc" onclick="runMegaFormula('${pola}')">PROSES AKUMULASI DATA</button>
@@ -713,6 +837,13 @@ function toggleCell(pola, r, pos) {
   runMegaFormula(pola);
 }
 
+function updateAppendLabel(pola) {
+  const lbl = document.getElementById(pola + '_append_lbl');
+  const chk = document.getElementById(pola + '_append_chk');
+  if (!lbl || !chk) return;
+  if (chk.checked) lbl.classList.add('checked'); else lbl.classList.remove('checked');
+}
+
 function kirimKeBox(pola) {
   const raw = document.getElementById('bulk_' + pola).value;
   let lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l.length >= 4);
@@ -743,6 +874,89 @@ function setCellValue(pola, r, pos, val) {
   }
 }
 
+/* ==================== RUMUS CEPAT — TOGGLE FORMULA ==================== */
+function applyFormula(pola, silent) {
+  const pre = pola + '_';
+  const inputEl = document.getElementById(pre + 'formula_input');
+  const raw = (inputEl?.value || '').trim();
+  if (!raw) {
+    if (!silent) alert('⚠️ Isi rumus cepat dulu.\n\nContoh:\nA10:ML + C2 - E1:MB');
+    return;
+  }
+
+  const appendMode = document.getElementById(pre + 'append_chk')?.checked === true;
+
+  if (!appendMode) {
+    for (let r = 1; r <= 10; r++) {
+      ['as','cop','kepala','ekor'].forEach(pos => {
+        const sw   = document.getElementById(`${pola}_sw_r${r}_${pos}`);
+        const cell = document.getElementById(`${pola}_cell_r${r}_${pos}`);
+        const inp  = document.getElementById(`${pola}_in_r${r}_${pos}`);
+        if (!sw || !cell || !inp) return;
+        if (sw.innerText === 'ON') {
+          sw.innerText = 'OFF'; sw.classList.remove('on');
+          cell.classList.add('cell-off'); inp.disabled = true;
+        }
+      });
+    }
+  }
+
+  const upper = raw.toUpperCase().replace(/\s+/g, ' ');
+  const parts = upper.split(/[+,\-;]/).map(s => s.trim()).filter(s => s);
+
+  const posMap = { A: 'as', C: 'cop', K: 'kepala', E: 'ekor' };
+  const validModes = new Set([
+    'NORMAL','IX','ML','MB','TY',
+    ...Array.from({ length: 20 }, (_, i) => 'M' + i)
+  ]);
+
+  let applied = 0;
+  const errors = [];
+
+  parts.forEach(part => {
+    const m = part.match(/^([ACKE])\s*(\d{1,2})(?:\s*[:=]?\s*([A-Z][A-Z0-9]*))?$/);
+    if (!m) { errors.push(part); return; }
+
+    const posKey = posMap[m[1]];
+    const r = parseInt(m[2]);
+    if (r < 1 || r > 10) { errors.push(part + ' (putaran?)'); return; }
+
+    const mistik = m[3] || null;
+    if (mistik && !validModes.has(mistik)) {
+      errors.push(part + ' (mistik ' + mistik + '?)');
+      return;
+    }
+
+    const sw      = document.getElementById(`${pola}_sw_r${r}_${posKey}`);
+    const cell    = document.getElementById(`${pola}_cell_r${r}_${posKey}`);
+    const inp     = document.getElementById(`${pola}_in_r${r}_${posKey}`);
+    const modeSel = document.getElementById(`${pola}_mode_r${r}_${posKey}`);
+
+    if (!sw || !cell || !inp || !modeSel) { errors.push(part); return; }
+
+    sw.innerText = 'ON'; sw.classList.add('on');
+    cell.classList.remove('cell-off'); inp.disabled = false;
+    if (mistik) modeSel.value = mistik;
+
+    applied++;
+  });
+
+  if (!silent) {
+    if (applied === 0) {
+      alert('❌ Rumus tidak valid.\n\nContoh format benar:\nA10:ML + C2 - E1:MB\n\nKeterangan:\n• A=As, C=Cop, K=Kepala, E=Ekor\n• Angka = putaran (1-10)\n• Pemisah: + - , ;\n• :XXX = mistik opsional (ML, MB, IX, TY, M0-M19)');
+    } else if (errors.length > 0) {
+      alert(`⚠️ ${applied} cell aktif. Bagian ini tidak dikenali:\n${errors.join('\n')}`);
+    } else if (typeof event !== 'undefined' && event && event.target && event.target.tagName === 'BUTTON') {
+      const btn = event.target;
+      const orig = btn.innerText;
+      btn.innerText = '✓ OK';
+      setTimeout(() => { btn.innerText = orig; }, 900);
+    }
+  }
+
+  runMegaFormula(pola);
+}
+
 function saveMegaPreset(pola, slot, e) {
   e.stopPropagation();
   const pre = `${pola}_`;
@@ -754,6 +968,8 @@ function saveMegaPreset(pola, slot, e) {
     ],
     pangkal: document.getElementById(pre + 'mode_pangkal').value,
     patternStep: document.getElementById(pre + 'pattern_step')?.value || 'DEFAULT',
+    formula: document.getElementById(pre + 'formula_input')?.value || '',
+    appendMode: document.getElementById(pre + 'append_chk')?.checked || false,
     rounds: {}
   };
   for (let r = 1; r <= 10; r++) {
@@ -784,6 +1000,10 @@ function loadMegaPreset(pola, slot) {
   if (d.pangkal) document.getElementById(pre + 'mode_pangkal').value = d.pangkal;
   const patEl = document.getElementById(pre + 'pattern_step');
   if (patEl && d.patternStep) patEl.value = d.patternStep;
+  const fEl = document.getElementById(pre + 'formula_input');
+  if (fEl && typeof d.formula === 'string') fEl.value = d.formula;
+  const apEl = document.getElementById(pre + 'append_chk');
+  if (apEl) { apEl.checked = d.appendMode === true; updateAppendLabel(pola); }
   for (let r = 1; r <= 10; r++) {
     ['as','cop','kepala','ekor'].forEach(pos => {
       const rData = d.rounds[r][pos];
@@ -834,6 +1054,14 @@ function runMegaFormula(pola) {
   let adaDataTerhitung = false;
   let textParts = [];
 
+  // Reset semua preview mistik dulu
+  for (let r = 1; r <= 10; r++) {
+    ['as','cop','kepala','ekor'].forEach(pos => {
+      const pEl = document.getElementById(`${pola}_prev_r${r}_${pos}`);
+      if (pEl) { pEl.textContent = ''; pEl.classList.remove('aktif'); }
+    });
+  }
+
   for (let r = 10; r >= 1; r--) {
     const statuses = {
       'as':     { on: document.getElementById(`${pola}_sw_r${r}_as`).innerText === 'ON', code: 'A', op: op1, style: 'as-style' },
@@ -848,6 +1076,19 @@ function runMegaFormula(pola) {
         const modeMistik = document.getElementById(`${pola}_mode_r${r}_${pos}`).value;
         const processedVal = getMistik(rawVal, modeMistik);
         const mstLabel = modeMistik !== 'NORMAL' ? ` (${modeMistik})` : '';
+
+        // Update preview mistik di cell
+        const pEl = document.getElementById(`${pola}_prev_r${r}_${pos}`);
+        if (pEl) {
+          if (modeMistik !== 'NORMAL') {
+            pEl.textContent = `★ ${processedVal}`;
+            pEl.classList.add('aktif');
+          } else {
+            pEl.textContent = '';
+            pEl.classList.remove('aktif');
+          }
+        }
+
         textParts.push({
           html: `<span class="ind-badge-part ${cur.style}">${cur.code}${r} (${processedVal}${mstLabel})</span>`,
           op: cur.op, val: processedVal
@@ -926,6 +1167,189 @@ function runAllPolas() {
   else irisBody.innerHTML = irisan.map(n => `<div class="iris-box">${n}</div>`).join('');
 }
 
+/* ==================== RUMUS GLOBAL (TAB RUMUS) ==================== */
+const RUMUS_KEY = 'bbfsGlobalRumus_v1';
+let rumusList = [];
+let editingRumusId = null;
+
+function loadRumusList() {
+  try {
+    const raw = localStorage.getItem(RUMUS_KEY);
+    if (raw) { rumusList = JSON.parse(raw); if (!Array.isArray(rumusList)) rumusList = []; }
+    else rumusList = [];
+  } catch(e) { rumusList = []; }
+}
+function saveRumusList() { localStorage.setItem(RUMUS_KEY, JSON.stringify(rumusList)); }
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderRumusList() {
+  const el = document.getElementById('rumus_list');
+  if (!el) return;
+  if (rumusList.length === 0) {
+    el.innerHTML = '<div class="rumus-empty">📭 Belum ada rumus tersimpan.<br>Isi form di atas lalu klik <b>SIMPAN RUMUS</b>.</div>';
+    return;
+  }
+  el.innerHTML = rumusList.map(r => {
+    const targetTag = r.target === 'ALL' ? 'tag-ALL' : ('tag-' + r.target);
+    const targetLabel = r.target === 'ALL' ? '🌟 ALL' : ('POLA ' + r.target);
+    return `
+      <div class="rumus-card ${editingRumusId === r.id ? 'editing' : ''}">
+        <div class="rumus-info">
+          <div class="rumus-name">
+            ${escapeHtml(r.name)}
+            <span class="tag ${targetTag}">${targetLabel}</span>
+          </div>
+          <div class="rumus-code">${escapeHtml(r.formula)}</div>
+          ${r.note ? `<div class="rumus-note">📌 ${escapeHtml(r.note)}</div>` : ''}
+        </div>
+        <div class="rumus-actions">
+          <button class="btn-apply" onclick="applyGlobalFormula('${r.id}')">▶ APPLY</button>
+          <button class="btn-edit" onclick="editGlobalFormula('${r.id}')">✏ EDIT</button>
+          <button class="btn-del" onclick="deleteGlobalFormula('${r.id}')">✕</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function clearRumusForm() {
+  document.getElementById('rumus_name').value = '';
+  document.getElementById('rumus_formula').value = '';
+  document.getElementById('rumus_note').value = '';
+  editingRumusId = null;
+  const btn = document.getElementById('rumus_btn_add');
+  if (btn) { btn.innerText = '💾 SIMPAN RUMUS'; btn.classList.remove('btn-update'); }
+}
+
+function saveGlobalFormula() {
+  const name = document.getElementById('rumus_name').value.trim();
+  const formula = document.getElementById('rumus_formula').value.trim().toUpperCase();
+  const target = document.getElementById('rumus_target').value;
+  const note = document.getElementById('rumus_note').value.trim();
+
+  if (!name) { alert('⚠️ Isi Nama Rumus dulu.'); return; }
+  if (!formula) { alert('⚠️ Isi Rumus dulu.'); return; }
+
+  if (editingRumusId) {
+    const idx = rumusList.findIndex(r => r.id === editingRumusId);
+    if (idx >= 0) {
+      rumusList[idx] = { ...rumusList[idx], name, formula, target, note };
+    }
+    editingRumusId = null;
+    const btn = document.getElementById('rumus_btn_add');
+    btn.innerText = '💾 SIMPAN RUMUS';
+    btn.classList.remove('btn-update');
+  } else {
+    rumusList.push({
+      id: 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+      name, formula, target, note,
+      created: new Date().toISOString()
+    });
+  }
+
+  saveRumusList(); renderRumusList(); clearRumusForm();
+}
+
+function editGlobalFormula(id) {
+  const r = rumusList.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('rumus_name').value = r.name;
+  document.getElementById('rumus_formula').value = r.formula;
+  document.getElementById('rumus_target').value = r.target;
+  document.getElementById('rumus_note').value = r.note || '';
+  editingRumusId = id;
+  const btn = document.getElementById('rumus_btn_add');
+  btn.innerText = '💾 UPDATE RUMUS';
+  btn.classList.add('btn-update');
+  renderRumusList();
+  const form = document.querySelector('#panel_RUMUS .rumus-form');
+  if (form) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function deleteGlobalFormula(id) {
+  const r = rumusList.find(x => x.id === id);
+  if (!r) return;
+  if (!confirm(`Hapus rumus "${r.name}"?`)) return;
+  rumusList = rumusList.filter(x => x.id !== id);
+  if (editingRumusId === id) clearRumusForm();
+  saveRumusList(); renderRumusList();
+}
+
+function applyGlobalFormula(id) {
+  const r = rumusList.find(x => x.id === id);
+  if (!r) return;
+  const targets = r.target === 'ALL' ? ['A','B','C','D'] : [r.target];
+  let applied = 0;
+  targets.forEach(pola => {
+    const pre = pola + '_';
+    const inputEl = document.getElementById(pre + 'formula_input');
+    if (!inputEl) return;
+    inputEl.value = r.formula;
+    const ap = document.getElementById(pre + 'append_chk');
+    if (ap) { ap.checked = false; updateAppendLabel(pola); }
+    applyFormula(pola, true);
+    applied++;
+  });
+  if (applied === 0) { alert('❌ Target pola tidak ditemukan.'); return; }
+  const label = r.target === 'ALL' ? 'SEMUA POLA' : ('POLA ' + r.target);
+  alert(`✅ Rumus "${r.name}" diterapkan ke ${label}.`);
+  switchTab(targets[0]);
+}
+
+function clearAllRumus() {
+  if (rumusList.length === 0) { alert('Belum ada rumus.'); return; }
+  if (!confirm(`Hapus SEMUA (${rumusList.length}) rumus tersimpan?`)) return;
+  rumusList = []; saveRumusList(); renderRumusList(); clearRumusForm();
+}
+
+function exportRumusJSON() {
+  if (rumusList.length === 0) { alert('Belum ada rumus untuk diekspor.'); return; }
+  const blob = new Blob([JSON.stringify({ _type: 'bbfs_global_rumus', _version: 1, rumus: rumusList }, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `rumus_global_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+}
+
+function importRumusJSON(event) {
+  const file = event.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      let incoming = [];
+      if (Array.isArray(parsed)) incoming = parsed;
+      else if (parsed && Array.isArray(parsed.rumus)) incoming = parsed.rumus;
+      else throw new Error('Format tidak valid. Harus array rumus atau { rumus: [...] }.');
+
+      incoming = incoming.filter(r => r && typeof r.name === 'string' && typeof r.formula === 'string');
+      if (incoming.length === 0) throw new Error('Tidak ada rumus valid di file.');
+
+      const mode = confirm(`Ditemukan ${incoming.length} rumus.\n\nOK = GABUNG dengan yang ada sekarang\nCancel = GANTI TOTAL semua rumus`);
+      const newOnes = incoming.map(r => ({
+        id: 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2,7) + '_' + Math.random().toString(36).slice(2,5),
+        name: r.name || 'Tanpa Nama',
+        formula: (r.formula || '').toUpperCase(),
+        target: ['A','B','C','D','ALL'].includes(r.target) ? r.target : 'A',
+        note: r.note || '',
+        created: new Date().toISOString()
+      }));
+
+      if (mode) rumusList = rumusList.concat(newOnes);
+      else rumusList = newOnes;
+
+      saveRumusList(); renderRumusList();
+      alert(`✅ ${newOnes.length} rumus berhasil diimpor.`);
+    } catch(err) { alert('Gagal mengimpor: ' + err.message); }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   POLAS.forEach(pola => {
     setCellValue(pola, 1, 'kepala', '4');
@@ -934,6 +1358,8 @@ window.addEventListener('DOMContentLoaded', () => {
     runMegaFormula(pola);
   });
   updateAllPasaran(document.getElementById('global_pasaran').value);
+  loadRumusList();
+  renderRumusList();
 });
 </script>
 
@@ -1614,6 +2040,17 @@ window.tarikSemuaPolaKeBacktest = tarikSemuaPolaKeBacktest; window.tarikPolaKeBa
 window.loadScanFromBacktest = loadScanFromBacktest;
 window.runAutoScan = runAutoScan;
 window.applyScanPattern = applyScanPattern;
+window.applyFormula = applyFormula;
+window.updateAppendLabel = updateAppendLabel;
+window.runMegaFormula = runMegaFormula;
+window.getMistik = getMistik;
+window.saveGlobalFormula = saveGlobalFormula;
+window.editGlobalFormula = editGlobalFormula;
+window.deleteGlobalFormula = deleteGlobalFormula;
+window.applyGlobalFormula = applyGlobalFormula;
+window.clearAllRumus = clearAllRumus;
+window.exportRumusJSON = exportRumusJSON;
+window.importRumusJSON = importRumusJSON;
 </script>
 </body>
 </html>
