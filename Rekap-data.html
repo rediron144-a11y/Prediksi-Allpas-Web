@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>TIKAM TREK ANALYZER MASTER V.2</title>
+<meta name="theme-color" content="#B71C1C">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary-red: #B71C1C;
+    --dark-red: #8B0000;
+    --primary-yellow: #FFD600;
+    --light-yellow: #FFF8E1;
+    --bg-dark: #1a0000;
+    --panel-bg: #2c0000;
+    --text-light: #FFF8E1;
+    --green-win: #00E676;
+    --red-lose: #FF5252;
+    --orange-wait: #FF9800;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: linear-gradient(135deg, #1a0000 0%, #4a0000 50%, #0a0000 100%);
+    margin: 0; padding: 8px; color: var(--text-light);
+    min-height: 100vh;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 10px; }
+  
+  .header-box {
+    background: linear-gradient(135deg, var(--dark-red), var(--primary-red));
+    border: 2px solid var(--primary-yellow);
+    border-radius: 10px;
+    padding: 10px 15px;
+    text-align: center;
+    margin-bottom: 12px;
+    box-shadow: 0 0 15px rgba(255, 214, 0, 0.3);
+  }
+  .header-box h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px; margin: 0; color: #fff;
+    text-transform: uppercase; letter-spacing: 1px; line-height: 1.2;
+  }
+  .header-box h1 span { color: var(--primary-yellow); }
+  .header-box .subtitle {
+    font-size: 10px; color: var(--primary-yellow);
+    margin-top: 4px; letter-spacing: 1px; font-weight: 700;
+  }
+
+  .panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--primary-red);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .panel-title {
+    font-size: 11px; color: var(--primary-yellow);
+    font-weight: 800; text-transform: uppercase;
+    margin-bottom: 8px; letter-spacing: 1px;
+  }
+
+  .input-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+  .form-group { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 100px; }
+  .form-group label { font-size: 10px; font-weight: 700; color: var(--primary-yellow); text-transform: uppercase; }
+  .inp {
+    padding: 8px 10px; border-radius: 6px;
+    border: 1px solid var(--primary-red);
+    background: #1a0000; color: var(--primary-yellow);
+    font-weight: 700; font-size: 13px;
+    outline: none; font-family: 'Rajdhani', sans-serif;
+  }
+  .inp:focus { border-color: var(--primary-yellow); box-shadow: 0 0 5px rgba(255,214,0,0.3); }
+  .inp::placeholder { color: rgba(255,214,0,0.4); }
+  select.inp { cursor: pointer; }
+  select.inp option { background: #1a0000; color: var(--primary-yellow); }
+
+  .btn {
+    padding: 8px 14px; border-radius: 6px; border: none;
+    cursor: pointer; font-weight: 800; transition: 0.2s;
+    text-transform: uppercase; font-size: 11px; white-space: nowrap;
+    font-family: 'Rajdhani', sans-serif;
+  }
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-buat { background: #00C853; color: #000; font-size: 13px; padding: 10px 16px; }
+  .btn-hapus-db { background: var(--primary-red); color: var(--primary-yellow); border: 1px solid var(--primary-yellow); }
+  .btn-simpan { background: var(--primary-yellow); color: var(--primary-red); }
+  .btn-export { background: var(--primary-red); color: var(--primary-yellow); border: 1px solid var(--primary-yellow); }
+  .btn-hapus-all { background: #5c0000; color: #fff; }
+
+  .db-label-row {
+    display: flex; align-items: center; gap: 8px;
+    background: #1a0000; border: 1px solid var(--primary-yellow);
+    border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;
+  }
+  .db-label-text {
+    flex: 1; font-size: 13px; font-weight: 800;
+    color: var(--primary-yellow); text-align: center;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .db-label-text .db-name { color: #00E676; }
+
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .stat-box {
+    background: var(--panel-bg); border: 1px solid var(--primary-red);
+    border-radius: 8px; padding: 10px; text-align: center;
+  }
+  .stat-box .stat-label {
+    font-size: 10px; color: #fff; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .stat-box .stat-value {
+    font-size: 22px; color: var(--primary-yellow);
+    font-weight: 900; font-family: 'Orbitron', sans-serif;
+    margin-top: 4px;
+  }
+  .win-rate-high { color: var(--green-win) !important; }
+  .win-rate-mid { color: var(--primary-yellow) !important; }
+  .win-rate-low { color: var(--red-lose) !important; }
+
+  .grid-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid-input .form-group label { font-size: 10px; color: var(--primary-yellow); }
+  .grid-input .inp { width: 100%; font-size: 14px; padding: 10px; }
+
+  .table-container {
+    max-height: 40vh; overflow-y: auto; overflow-x: auto;
+    border: 1px solid var(--primary-red); border-radius: 8px;
+    background: #1a0000;
+  }
+  table { width: 100%; min-width: 700px; border-collapse: collapse; }
+  thead { position: sticky; top: 0; z-index: 10; }
+  thead th {
+    padding: 6px 4px; background: var(--primary-red); color: var(--primary-yellow);
+    font-weight: 700; border: 1px solid var(--dark-red); text-align: center; font-size: 10px;
+  }
+  tbody tr:nth-child(even) { background: #2c0000; }
+  tbody tr:hover { background: #4a0000; }
+  tbody td { padding: 5px 4px; border: 1px solid var(--primary-red); text-align: center; font-size: 11px; color: var(--text-light); }
+  
+  .btn-del-row { background: var(--primary-red); color: var(--primary-yellow); padding: 3px 6px; font-size: 9px; border-radius: 4px; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .btn-row .btn { flex: 1; min-width: 120px; }
+
+  .status-win { color: var(--green-win); font-weight: 800; }
+  .status-lose { color: var(--red-lose); font-weight: 800; }
+  .status-wait { color: var(--orange-wait); font-weight: 800; animation: pulse 1.5s infinite; }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  @media(max-width: 600px) {
+    .header-box h1 { font-size: 14px; }
+    .input-row { flex-direction: column; }
+    .grid-input { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr 1fr 1fr; }
+    .btn-row { flex-direction: column; }
+    .db-label-row { flex-direction: column; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header-box">
+    <h1>TIKAM TREK <span>ANALYZER MASTER</span></h1>
+    <div class="subtitle">SISTEM VERIFIKASI MULTI-ITEM (FULL CHECK) V.2</div>
+  </div>
+
+  <!-- BUAT REKAPAN -->
+  <div class="panel">
+    <div class="panel-title">➕ BUAT REKAPAN BARU</div>
+    <div class="input-row">
+      <div class="form-group">
+        <label>PASARAN</label>
+        <input type="text" id="inpPasaran" class="inp" placeholder="Contoh: HK">
+      </div>
+      <div class="form-group">
+        <label>APK</label>
+        <input type="text" id="inpApk" class="inp" placeholder="Contoh: TIKAM">
+      </div>
+      <button class="btn btn-buat" onclick="buatRekapan()">➕ BUAT</button>
+    </div>
+  </div>
+
+  <!-- PILIH REKAPAN -->
+  <div class="panel">
+    <div class="panel-title"> PILIH REKAPAN :</div>
+    <select id="selectRekapan" class="inp" style="width:100%; padding:10px; font-size:14px;" onchange="pilihRekapan()">
+      <option value="">-- Pilih Rekapan --</option>
+    </select>
+  </div>
+
+  <!-- LABEL DATABASE + TOMBOL HAPUS -->
+  <div class="db-label-row" id="dbLabelRow" style="display:none;">
+    <div class="db-label-text">DATABASE: <span class="db-name" id="dbNameDisplay">-</span></div>
+    <button class="btn btn-hapus-db" onclick="hapusDatabaseAktif()">🗑️ HAPUS DB</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-label">TOTAL DATA</div>
+      <div class="stat-value" id="statTotal">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">WIN</div>
+      <div class="stat-value" id="statWin">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">WIN RATE</div>
+      <div class="stat-value" id="statWinRate">0%</div>
+    </div>
+  </div>
+
+  <!-- INPUT PREDIKSI & RESULT -->
+  <div class="panel">
+    <div class="panel-title">🎯 INPUT PREDIKSI & RESULT HARI INI</div>
+    <div class="grid-input">
+      <div class="form-group">
+        <label>RESULT HARI INI (4D)</label>
+        <input type="text" id="inpResult" class="inp" placeholder="4D" maxlength="4">
+      </div>
+      <div class="form-group">
+        <label>BBFS (BSK)</label>
+        <input type="text" id="inpBBFS" class="inp" placeholder="7 digit" maxlength="7">
+      </div>
+      <div class="form-group">
+        <label>KEPALA (BSK)</label>
+        <input type="text" id="inpKepala" class="inp" placeholder="Angka kepala" maxlength="9">
+      </div>
+      <div class="form-group">
+        <label>EKOR (BSK)</label>
+        <input type="text" id="inpEkor" class="inp" placeholder="Angka ekor" maxlength="9">
+      </div>
+      <div class="form-group">
+        <label>BIJI OFF (BSK)</label>
+        <input type="text" id="inpBijiOff" class="inp" placeholder="Angka off" maxlength="9">
+      </div>
+      <div class="form-group">
+        <label>LSKE (BSK)</label>
+        <input type="text" id="inpLSKE" class="inp" placeholder="Line shio/ekor" maxlength="20">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-simpan" onclick="simpanData()">💾 SIMPAN DATA</button>
+      <button class="btn btn-export" onclick="exportCSV()">📥 EXPORT CSV</button>
+    </div>
+  </div>
+
+  <!-- TABEL DATA -->
+  <div class="panel">
+    <div class="panel-title">📊 DATA REKAPAN (Prediksi N → Verifikasi Result N+1)</div>
+    <div style="font-size:10px; color:var(--orange-wait); margin-bottom:8px; padding:6px; background:#1a0000; border-radius:6px; border-left:3px solid var(--orange-wait);">
+      ⏳ <strong>Logika Verifikasi:</strong> Prediksi hari N dicek dengan Result hari N+1. Baris paling baru (terakhir diinput) statusnya <strong>WAIT</strong> karena belum ada result besok.
+    </div>
+    <div class="table-container">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Tanggal</th>
+            <th>Result</th>
+            <th>BBFS</th>
+            <th>Kepala</th>
+            <th>Ekor</th>
+            <th>Biji Off</th>
+            <th>LSKE</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-hapus-all" onclick="hapusSemuaDataAktif()">🗑️ HAPUS SEMUA DATA DB INI</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ==========================================
+// DATABASE
+// ==========================================
+const DB_KEY = 'tikam_trek_master_db';
+let db = JSON.parse(localStorage.getItem(DB_KEY)) || { rekapan: [], data: {} };
+let currentRekapan = null;
+
+function saveDB() {
+  localStorage.setItem(DB_KEY, JSON.stringify(db));
+}
+
+function buatRekapan() {
+  const pasaran = document.getElementById('inpPasaran').value.trim().toUpperCase();
+  const apk = document.getElementById('inpApk').value.trim().toUpperCase();
+  if (!pasaran || !apk) { alert("⚠️ Pasaran dan APK wajib diisi!"); return; }
+  const key = `${pasaran} - ${apk}`;
+  if (db.rekapan.includes(key)) { alert("️ Rekapan sudah ada!"); return; }
+  db.rekapan.push(key);
+  db.data[key] = [];
+  saveDB();
+  document.getElementById('inpPasaran').value = '';
+  document.getElementById('inpApk').value = '';
+  renderSelectRekapan();
+  alert(`✅ Rekapan "${key}" berhasil dibuat!`);
+}
+
+function renderSelectRekapan() {
+  const select = document.getElementById('selectRekapan');
+  select.innerHTML = '<option value="">-- Pilih Rekapan --</option>';
+  db.rekapan.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r;
+    opt.innerText = r;
+    if (r === currentRekapan) opt.selected = true;
+    select.appendChild(opt);
+  });
+}
+
+function pilihRekapan() {
+  currentRekapan = document.getElementById('selectRekapan').value || null;
+  renderAll();
+}
+
+function hapusDatabaseAktif() {
+  if (!currentRekapan) { alert("️ Pilih rekapan terlebih dahulu!"); return; }
+  const konfirmasi = prompt(
+    `️ HAPUS DATABASE: ${currentRekapan}\n\n` +
+    `Ketik "HAPUS" (tanpa tanda kutip) untuk menghapus database ini.\n` +
+    `Semua data rekapan ini akan hilang permanen!`
+  );
+  if (konfirmasi === 'HAPUS') {
+    db.rekapan = db.rekapan.filter(r => r !== currentRekapan);
+    delete db.data[currentRekapan];
+    currentRekapan = null;
+    saveDB();
+    renderSelectRekapan();
+    renderAll();
+    alert("✅ Database berhasil dihapus!");
+  } else if (konfirmasi !== null) {
+    alert("❌ Pembatalan: Kata kunci tidak sesuai.");
+  }
+}
+
+function hapusSatuData(index) {
+  if (!currentRekapan) return;
+  if (confirm("Hapus data baris ini?")) {
+    db.data[currentRekapan].splice(index, 1);
+    saveDB();
+    renderAll();
+  }
+}
+
+function hapusSemuaDataAktif() {
+  if (!currentRekapan) { alert("⚠️ Pilih rekapan terlebih dahulu!"); return; }
+  const dataCount = db.data[currentRekapan]?.length || 0;
+  if (dataCount === 0) { alert("Database sudah kosong."); return; }
+  const konfirmasi = prompt(
+    `️ HAPUS SEMUA DATA di ${currentRekapan}\n\n` +
+    `Total ${dataCount} baris akan dihapus.\n` +
+    `Ketik "HAPUS" untuk melanjutkan.`
+  );
+  if (konfirmasi === 'HAPUS') {
+    db.data[currentRekapan] = [];
+    saveDB();
+    renderAll();
+    alert("✅ Semua data berhasil dihapus!");
+  }
+}
+
+// ==========================================
+// LOGIKA VERIFIKASI: PREDIKSI N → RESULT N+1
+// ==========================================
+function cekPrediksiVsResult(prediksi, resultStr) {
+  // prediksi = { bbfs, kepala, ekor, bijiOff, lske }
+  // resultStr = string 4D, contoh "1234"
+  if (!resultStr || resultStr.length < 2) return false;
+  
+  const digits = resultStr.split('');
+  const kepalaDigit = digits[0];
+  const ekorDigit = digits[digits.length - 1];
+  
+  let hit = false;
+  
+  // Cek BBFS: apakah ada digit result yang masuk BBFS
+  if (prediksi.bbfs) {
+    const bbfsDigits = prediksi.bbfs.split('');
+    if (digits.some(d => bbfsDigits.includes(d))) hit = true;
+  }
+  
+  // Cek Kepala
+  if (prediksi.kepala && prediksi.kepala.includes(kepalaDigit)) hit = true;
+  
+  // Cek Ekor
+  if (prediksi.ekor && prediksi.ekor.includes(ekorDigit)) hit = true;
+  
+  // Cek Biji Off: result TIDAK boleh mengandung angka off
+  if (prediksi.bijiOff) {
+    const offDigits = prediksi.bijiOff.split('');
+    const allOff = digits.every(d => offDigits.includes(d));
+    if (allOff) hit = true; // semua digit result ada di off = JP off
+  }
+  
+  // Cek LSKE (line shio/ekor) - simple contains check
+  if (prediksi.lske && resultStr.includes(prediksi.lske.trim())) hit = true;
+  
+  return hit;
+}
+
+function hitungStatusSemua(data) {
+  // data[0] = paling baru (terakhir diinput, paling bawah di timeline)
+  // data[data.length-1] = paling lama
+  // Logika: Prediksi data[i] diverifikasi dengan Result data[i-1] (hari berikutnya = lebih baru)
+  // data[0] (paling baru) → status WAIT karena belum ada result besok
+  
+  const result = [];
+  for (let i = 0; i < data.length; i++) {
+    if (i === 0) {
+      // Baris paling baru → WAIT
+      result.push({ ...data[i], status: 'WAIT' });
+    } else {
+      // Bandingkan prediksi data[i] dengan result data[i-1] (hari N+1)
+      const prediksiN = data[i];
+      const resultNplus1 = data[i - 1].result;
+      const win = cekPrediksiVsResult(prediksiN, resultNplus1);
+      result.push({ ...prediksiN, status: win ? 'WIN' : 'ZONK' });
+    }
+  }
+  return result;
+}
+
+function simpanData() {
+  if (!currentRekapan) { alert("⚠️ Pilih rekapan terlebih dahulu!"); return; }
+  
+  const result = document.getElementById('inpResult').value.trim();
+  const bbfs = document.getElementById('inpBBFS').value.trim();
+  const kepala = document.getElementById('inpKepala').value.trim();
+  const ekor = document.getElementById('inpEkor').value.trim();
+  const bijiOff = document.getElementById('inpBijiOff').value.trim();
+  const lske = document.getElementById('inpLSKE').value.trim();
+  
+  if (!result) { alert("⚠️ Result Hari Ini wajib diisi!"); return; }
+  
+  const newData = {
+    tanggal: new Date().toLocaleDateString('id-ID'),
+    timestamp: Date.now(),
+    result,
+    bbfs,
+    kepala,
+    ekor,
+    bijiOff,
+    lske
+    // status TIDAK disimpan permanen, dihitung ulang saat render
+  };
+  
+  if (!db.data[currentRekapan]) db.data[currentRekapan] = [];
+  // unshift = tambah di awal array (paling baru di index 0)
+  db.data[currentRekapan].unshift(newData);
+  saveDB();
+  
+  document.getElementById('inpResult').value = '';
+  document.getElementById('inpBBFS').value = '';
+  document.getElementById('inpKepala').value = '';
+  document.getElementById('inpEkor').value = '';
+  document.getElementById('inpBijiOff').value = '';
+  document.getElementById('inpLSKE').value = '';
+  
+  renderAll();
+}
+
+function renderAll() {
+  const dbLabelRow = document.getElementById('dbLabelRow');
+  const dbNameDisplay = document.getElementById('dbNameDisplay');
+  
+  if (currentRekapan) {
+    dbLabelRow.style.display = 'flex';
+    dbNameDisplay.innerText = currentRekapan;
+  } else {
+    dbLabelRow.style.display = 'none';
+  }
+  
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  
+  const rawData = currentRekapan ? (db.data[currentRekapan] || []) : [];
+  const dataDenganStatus = hitungStatusSemua(rawData);
+  
+  // Tampilkan dari lama ke baru (reverse) agar baris lama di atas
+  const displayData = [...dataDenganStatus].reverse();
+  
+  displayData.forEach((item, displayIndex) => {
+    const originalIndex = dataDenganStatus.length - 1 - displayIndex;
+    const tr = document.createElement('tr');
+    
+    let statusClass = 'status-wait';
+    let statusIcon = '⏳';
+    if (item.status === 'WIN') { statusClass = 'status-win'; statusIcon = '✅'; }
+    else if (item.status === 'ZONK') { statusClass = 'status-lose'; statusIcon = '❌'; }
+    
+    tr.innerHTML = `
+      <td>${displayIndex + 1}</td>
+      <td>${item.tanggal}</td>
+      <td><strong>${item.result}</strong></td>
+      <td>${item.bbfs || '-'}</td>
+      <td>${item.kepala || '-'}</td>
+      <td>${item.ekor || '-'}</td>
+      <td>${item.bijiOff || '-'}</td>
+      <td>${item.lske || '-'}</td>
+      <td class="${statusClass}">${statusIcon} ${item.status}</td>
+      <td><button class="btn-del-row" onclick="hapusSatuData(${originalIndex})">🗑️</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  
+  // Update stats (hitung hanya yang sudah ada status WIN/ZONK, abaikan WAIT)
+  const verified = dataDenganStatus.filter(d => d.status !== 'WAIT');
+  const total = verified.length;
+  const winCount = verified.filter(d => d.status === 'WIN').length;
+  const winRate = total > 0 ? Math.round((winCount / total) * 100) : 0;
+  
+  document.getElementById('statTotal').innerText = rawData.length;
+  document.getElementById('statWin').innerText = winCount;
+  const winRateEl = document.getElementById('statWinRate');
+  winRateEl.innerText = winRate + '%';
+  winRateEl.className = 'stat-value ' + (winRate >= 70 ? 'win-rate-high' : winRate >= 40 ? 'win-rate-mid' : 'win-rate-low');
+}
+
+function exportCSV() {
+  if (!currentRekapan) { alert("⚠️ Pilih rekapan terlebih dahulu!"); return; }
+  const rawData = db.data[currentRekapan] || [];
+  if (rawData.length === 0) { alert("Tidak ada data untuk diexport!"); return; }
+  
+  const dataDenganStatus = hitungStatusSemua(rawData);
+  
+  let csvContent = "data:text/csv;charset=utf-8,";
+  csvContent += "No,Tanggal,Result,BBFS,Kepala,Ekor,BijiOff,LSKE,STATUS\n";
+  
+  const displayData = [...dataDenganStatus].reverse();
+  displayData.forEach((item, index) => {
+    csvContent += `${index+1},${item.tanggal},${item.result},"${item.bbfs||''}","${item.kepala||''}","${item.ekor||''}","${item.bijiOff||''}","${item.lske||''}",${item.status}\n`;
+  });
+  
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  const safeName = currentRekapan.replace(/\s+/g, '_');
+  link.setAttribute("download", `REKAPAN_${safeName}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// INISIALISASI
+renderSelectRekapan();
+renderAll();
+</script>
+</body>
+</html>
