@@ -1,0 +1,1860 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>MASTER INVEST HOKIDRAW</title>
+
+<meta name="theme-color" content="#B71C1C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HOKIDRAW">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js" async defer></script>
+
+<style>
+  :root{
+    /* TEMA MERAH & KUNING */
+    --header-bg: #B71C1C;
+    --header-text: #FFD600;
+    --panel: #FFFDE7; /* Krem/Kuning sangat muda */
+    --ke-kepala-bg: #FFF8E1; --ke-kepala-text: #F57F17;
+    --ke-ctkepala-bg: #FFEBEE; --ke-ctkepala-text: #C62828;
+    --ke-ekor-bg: #FFF8E1; --ke-ekor-text: #F57F17;
+    --ke-ctekor-bg: #FFEBEE; --ke-ctekor-text: #C62828;
+    --ng-on-bg: #FFF8E1; --ng-on-text: #F57F17;
+    --ng-on-core-bg: #FFECB3; --ng-on-core-text: #FF6F00;
+    --ng-selisih-bg: #FFEBEE; --ng-selisih-text: #C62828;
+    --ng-selisih-pred-bg: #FFCDD2; --ng-selisih-pred-text: #B71C1C;
+    --shio-on-bg: #FFF8E1; --shio-on-text: #F57F17;
+    --shio-lemah-bg: #FFEBEE; --shio-lemah-text: #C62828;
+    --shio-on2-bg: #FFF8E1; --shio-on2-text: #F57F17;
+    --export-bg: #D32F2F;
+    --drive-bg: #FBC02D;
+    
+    /* POLTAR Red & Gold Theme */
+    --pol-primary: #FFD600;
+    --pol-primary-bright: #FFEA00;
+    --pol-secondary: #FF6F00;
+    --pol-accent: #B71C1C;
+    --pol-bg-dark: #2c0000;
+    --pol-bg-panel: rgba(60, 10, 10, 0.85);
+    --pol-text-main: #FFFDE7;
+    --pol-glow: rgba(255, 214, 0, 0.35);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    font-family:"Segoe UI",Roboto,Arial,sans-serif;
+    background: linear-gradient(135deg, #4a0000 0%, #8B0000 50%, #2c0000 100%);
+    margin:0; padding:10px; color:#eee;
+  }
+  h1{
+    font-size:18px; text-align:center; margin:10px 0;
+    color: var(--header-text); text-transform: uppercase;
+    letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  }
+  .wrap{
+    max-width:1100px; margin:0 auto; background:var(--panel);
+    padding:12px; border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5); color: #333;
+    border: 2px solid var(--header-text);
+  }
+
+  /* PASARAN BAR */
+  .pasaran-bar {
+    display: flex; gap: 10px; margin-bottom: 15px; align-items: center;
+    background: #B71C1C; padding: 10px; border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+  .pasaran-select {
+    flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #FFD600;
+    background: #FFFDE7; color: #B71C1C; font-weight: 800; font-size: 16px;
+    outline: none; cursor: pointer; text-transform: uppercase;
+  }
+  .btn-add-pasaran {
+    padding: 12px 16px; background: #FFD600; color: #B71C1C; border: none;
+    border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 14px;
+    text-transform: uppercase; transition: 0.2s; white-space: nowrap;
+  }
+  .btn-add-pasaran:hover { background: #FFEA00; transform: translateY(-2px); }
+
+  /* MAIN TABS */
+  .main-tabs {
+    display: flex; gap: 4px; margin-bottom: 15px;
+    background: #8B0000; padding: 5px; border-radius: 12px;
+    overflow-x: auto;
+  }
+  .main-tab-btn {
+    flex: 1; padding: 10px 6px; background: transparent; border: none;
+    border-radius: 8px; cursor: pointer; font-weight: bold;
+    color: #FFCDD2; transition: 0.3s; font-size: 11px;
+    text-transform: uppercase; text-align: center; min-width: 80px;
+    white-space: nowrap;
+  }
+  .main-tab-btn.active {
+    background: var(--header-text); color: var(--header-bg);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+  .main-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+  .main-content.active { display: block; }
+
+  /* SUB TABS */
+  .sub-tabs {
+    display: flex; gap: 8px; margin-bottom: 15px;
+    border-bottom: 2px solid #FFCDD2;
+  }
+  .sub-tab-btn {
+    flex: 1; padding: 10px; background: #FFEBEE; border: none;
+    border-radius: 10px 10px 0 0; cursor: pointer;
+    font-weight: bold; color: #B71C1C; transition: 0.3s;
+    font-size: 12px; text-transform: uppercase;
+  }
+  .sub-tab-btn.active {
+    background: var(--header-bg); color: var(--header-text);
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+  }
+  .sub-content { display: none; }
+  .sub-content.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .controls{
+    background: #FFF8E1; padding: 12px; border-radius: 10px;
+    margin-bottom: 12px; border: 1px solid #FFCDD2;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .setting-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .acuan-box { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .acuan-box label { font-size: 11px; font-weight: bold; color: #B71C1C; text-transform: uppercase; }
+  .inp-acuan {
+    width: 100%; padding: 10px; border-radius: 8px;
+    border: 2px solid #F57F17; font-weight: bold;
+    font-size: 15px; text-align: center; color: #B71C1C; outline: none;
+  }
+  .btn-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+  button{
+    padding:10px 12px; border-radius:8px; border:none;
+    cursor:pointer; font-weight: bold; transition: 0.3s;
+    text-transform: uppercase; font-size: 11px;
+  }
+  .btn-add { background: #D32F2F; color: #fff; flex: 1; min-width: 120px; }
+  .btn-copy { background: #F57F17; color: #fff; flex: 2; min-width: 150px; }
+  .btn-export { background: #B71C1C; color: #FFD600; flex: 2; min-width: 150px; border: 1px solid #FFD600; }
+  .btn-reset { background: #8B0000; color: #fff; flex: 1; min-width: 80px; }
+  .btn-save-rumus { background: #F57F17; color: #fff; flex: 1; min-width: 150px; }
+  .btn-reset-rumus { background: #D32F2F; color: #fff; flex: 1; min-width: 150px; }
+  .btn-drive { background: var(--drive-bg); color: #B71C1C; flex: 1; min-width: 140px; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 800; }
+  .btn-install { background: #F57F17; color: #fff; flex: 1; min-width: 140px; display: none; }
+  
+  button:hover{ opacity: 0.9; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .table-container {
+    max-height: 600px; overflow-y: auto; overflow-x: auto;
+    border: 1px solid #FFCDD2; border-radius: 10px; background: #fff;
+  }
+  table{ width:100%; min-width: 850px; border-collapse:collapse; font-size:13px; }
+  thead{ position:sticky; top:0; z-index:100; }
+  thead th{
+    padding:12px 4px; background:var(--header-bg); color:var(--header-text);
+    font-weight:700; border:1px solid rgba(255,255,255,0.1);
+    text-align:center; font-size: 11px;
+  }
+  tbody tr:nth-child(even) { background: #FFFDE7; }
+  tbody tr:hover { background: #FFECB3; }
+  tbody td{ padding:8px 4px; border:1px solid #FFCDD2; text-align:center; }
+
+  .inp{
+    width:80px; padding:10px 5px; border-radius:8px;
+    border: 2px solid #FFCDD2; text-align:center;
+    font-weight: 800; font-size: 15px; color: #B71C1C; outline: none; background: #fff;
+  }
+  .inp:focus { border-color: #F57F17; }
+  .row-num { font-weight: bold; color: #B71C1C; font-size: 14px; }
+  .result-box {
+    min-width: 95px; padding: 10px 4px; border-radius: 8px;
+    font-weight: 800; letter-spacing: 2px; font-size: 14px;
+    margin: 0 auto; border: 1px solid rgba(0,0,0,0.1);
+    font-family: 'Courier New', monospace;
+  }
+
+  /* KE Colors */
+  .ke-kepala9 { background: var(--ke-kepala-bg); color: var(--ke-kepala-text); border-left: 4px solid var(--ke-kepala-text); }
+  .ke-ctkepala { background: var(--ke-ctkepala-bg); color: var(--ke-ctkepala-text); border-left: 4px solid var(--ke-ctkepala-text); font-size: 16px; letter-spacing: 3px; }
+  .ke-ekor9 { background: var(--ke-ekor-bg); color: var(--ke-ekor-text); border-left: 4px solid var(--ke-ekor-text); }
+  .ke-ctekor { background: var(--ke-ctekor-bg); color: var(--ke-ctekor-text); border-left: 4px solid var(--ke-ctekor-text); font-size: 16px; letter-spacing: 3px; }
+
+  /* NG Colors */
+  .ng-on9 { background: var(--ng-on-bg); color: var(--ng-on-text); border-left: 4px solid var(--ng-on-text); }
+  .ng-on7 { background: var(--ng-on-core-bg); color: var(--ng-on-core-text); border-left: 4px solid var(--ng-on-core-text); font-size: 16px; letter-spacing: 3px; }
+  .ng-selisih-act { background: var(--ng-selisih-bg); color: var(--ng-selisih-text); border-left: 4px solid var(--ng-selisih-text); font-size: 18px; font-weight: 900; }
+  .ng-selisih9 { background: var(--ng-selisih-pred-bg); color: var(--ng-selisih-pred-text); border-left: 4px solid var(--ng-selisih-pred-text); }
+  .ng-selisih7 { background: #FFCDD2; color: #B71C1C; border-left: 4px solid #B71C1C; font-size: 16px; letter-spacing: 3px; }
+
+  /* Shio Colors */
+  .shio-biji { background: var(--shio-on-bg); color: var(--shio-on-text); border-left: 4px solid var(--shio-on-text); }
+  .shio-box {
+    min-width: 110px; padding: 8px 4px; border-radius: 8px;
+    font-weight: 800; margin: 0 auto;
+    border: 1px solid rgba(0,0,0,0.1);
+    font-family: 'Courier New', monospace; line-height: 1.4;
+  }
+  .shio-lemah { background: var(--shio-lemah-bg); color: var(--shio-lemah-text); border-left: 4px solid var(--shio-lemah-text); }
+  .shio-on-box { background: var(--shio-on2-bg); color: var(--shio-on2-text); border-left: 4px solid var(--shio-on2-text); }
+  .shio-emoji { font-size: 18px; display: block; margin-bottom: 2px; }
+  .shio-num { font-size: 16px; letter-spacing: 2px; display: block; }
+  .shio-name { font-size: 10px; letter-spacing: 1px; display: block; opacity: 0.85; font-family: 'Segoe UI', sans-serif; text-transform: uppercase; }
+  .shio-raw { font-size: 9px; display: block; opacity: 0.7; margin-top: 2px; font-family: 'Segoe UI', sans-serif; }
+
+  .action-btn-group { display: flex; gap: 3px; justify-content: center; }
+  .copyBtn{ padding:7px; font-size:10px; background: #B71C1C; color: #FFD600; border-radius: 6px; font-weight: bold; }
+  .delBtn{ padding:7px 9px; font-size:11px; background: #8B0000; color: white; border-radius: 6px; }
+  .hide-action-col { display: none !important; }
+
+  .rumus-form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+  .rumus-field { display: flex; flex-direction: column; gap: 4px; }
+  .rumus-field label { font-size: 12px; font-weight: bold; color: #B71C1C; text-transform: uppercase; }
+  .rumus-inp {
+    width: 100%; padding: 12px; border-radius: 8px;
+    border: 2px solid #FFCDD2; font-size: 15px; font-weight: bold;
+    color: #B71C1C; outline: none; text-align: center; background: #fff;
+  }
+  .rumus-inp:focus { border-color: #F57F17; box-shadow: 0 0 8px rgba(245, 127, 23, 0.3); }
+  .rumus-hint { color: #B71C1C; font-size: 10px; margin-top: 2px; font-weight: 600; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center; font-size: 10px;
+    padding: 8px; background: #FFF8E1; border-radius: 8px; margin-top: 10px; border: 1px solid #FFCDD2;
+  }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.2); }
+  .export-watermark {
+    text-align: center; margin-top: 15px; padding-top: 10px;
+    border-top: 1px dashed #B71C1C; font-size: 11px;
+    color: #B71C1C; font-weight: bold; font-style: italic;
+  }
+
+  /* Shio Reference Grid */
+  .shio-ref-title {
+    text-align: center; margin: 20px 0 10px;
+    font-size: 13px; font-weight: bold;
+    color: var(--header-bg); text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .shio-ref-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 6px; padding: 10px; background: #FFF8E1;
+    border-radius: 10px; border: 1px solid #FFCDD2;
+  }
+  .shio-ref-item {
+    padding: 8px 4px; text-align: center; background: #fff;
+    border-radius: 6px; border: 1px solid #FFCDD2;
+    font-size: 11px; transition: 0.2s;
+  }
+  .shio-ref-item:hover { transform: translateY(-2px); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  .shio-ref-emoji { font-size: 20px; display: block; margin-bottom: 2px; }
+  .shio-ref-num { font-weight: 800; color: var(--header-bg); font-size: 13px; }
+  .shio-ref-name { font-size: 10px; color: #B71C1C; text-transform: uppercase; }
+
+  /* ============ POLTAR RED & GOLD THEME ============ */
+  .pol-wrapper {
+    background:
+      radial-gradient(circle at 50% 10%, rgba(255, 214, 0, 0.12), transparent 50%),
+      linear-gradient(135deg, var(--pol-bg-dark) 0%, #4a0000 100%);
+    padding: 15px;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pol-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 214, 0, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 214, 0, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+  }
+  .pol-box {
+    position: relative;
+    background: var(--pol-bg-panel);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 18px 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 214, 0, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 214, 0, 0.15);
+    z-index: 2;
+  }
+  .pol-title {
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    letter-spacing: 2px;
+    font-size: 20px;
+    margin: 0 0 2px;
+    background: linear-gradient(90deg, #FFF, var(--pol-primary), #FFF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .pol-subtitle {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--pol-primary);
+    opacity: 0.85;
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+  .pol-input-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 12px;
+  }
+  .pol-field-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pol-field-group label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--pol-primary);
+    width: 45px;
+    text-align: right;
+  }
+  .pol-input {
+    flex: 1;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 214, 0, 0.4);
+    border-radius: 6px;
+    font-size: 14px;
+    color: #FFD600;
+    font-family: 'Rajdhani', monospace;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-align: center;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .pol-input::placeholder {
+    color: rgba(255, 214, 0, 0.4);
+    letter-spacing: 0.5px;
+    font-size: 11px;
+    font-weight: 400;
+  }
+  .pol-input:focus {
+    border-color: var(--pol-primary);
+    box-shadow: 0 0 10px var(--pol-glow);
+    background: rgba(40, 0, 0, 0.9);
+  }
+  .pol-twin-controls {
+    display: flex;
+    gap: 6px;
+    margin: 10px 0 8px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 214, 0, 0.2);
+  }
+  .pol-twin-btn {
+    flex: 1;
+    padding: 7px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    background: transparent;
+    color: rgba(255, 214, 0, 0.6);
+  }
+  .pol-twin-btn.active {
+    background: var(--pol-primary);
+    color: #4a0000;
+    font-weight: 900;
+    box-shadow: 0 0 8px var(--pol-glow);
+  }
+  .pol-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--pol-primary-bright);
+    user-select: none;
+    margin-bottom: 12px;
+  }
+  .pol-checkbox-wrapper input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--pol-secondary);
+    cursor: pointer;
+  }
+  .pol-btn-row {
+    display: flex;
+    gap: 8px;
+  }
+  .pol-action-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+  .pol-action-btn:active { transform: scale(0.97); }
+  .pol-proses {
+    background: linear-gradient(135deg, #FFD600, #FF6F00);
+    color: #4a0000;
+    box-shadow: 0 0 10px rgba(255, 214, 0, 0.3);
+  }
+  .pol-proses:hover { opacity: 0.9; }
+  .pol-reset {
+    background: #333;
+    color: #ccc;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .pol-reset:hover { background: #444; color: #fff; }
+  .pol-copy {
+    background: linear-gradient(135deg, #D32F2F, #B71C1C);
+    color: #FFD600;
+    font-weight: 800;
+  }
+  .pol-copy:hover { opacity: 0.9; }
+  .pol-summary {
+    margin-top: 12px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--pol-primary);
+    text-align: center;
+    font-size: 12px;
+    padding: 8px;
+    background: rgba(255, 214, 0, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 214, 0, 0.2);
+  }
+  .pol-hasil {
+    margin-top: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px;
+    border-radius: 8px;
+    min-height: 80px;
+    max-height: 250px;
+    overflow-y: auto;
+    font-size: 14px;
+    font-family: 'Rajdhani', monospace;
+    font-weight: 800;
+    letter-spacing: 1px;
+    border: 1px solid rgba(255, 214, 0, 0.3);
+    line-height: 1.8;
+    word-break: break-all;
+    color: #FFD600;
+  }
+  .pol-hasil::-webkit-scrollbar { width: 6px; }
+  .pol-hasil::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+  .pol-hasil::-webkit-scrollbar-thumb { background: var(--pol-primary); border-radius: 3px; }
+  .pol-num-tag {
+    background: #FFD600;
+    color: #4a0000;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 800;
+    display: inline-block;
+    box-shadow: 0 0 4px rgba(255, 214, 0, 0.5);
+  }
+  .pol-mode-badge {
+    display: inline-block;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    color: #4a0000;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .pol-mode-badge.d2 { background: var(--pol-primary-bright); }
+  .pol-mode-badge.d3 { background: var(--pol-secondary); color: #fff; }
+  .pol-mode-badge.d4 { background: #D32F2F; color: #fff; }
+  .pol-info-text {
+    text-align: center;
+    font-size: 10px;
+    color: rgba(255, 214, 0, 0.5);
+    margin-top: 10px;
+  }
+
+  /* Loading & Modal */
+  #loadingOverlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(60, 0, 0, 0.85); display: none;
+    justify-content: center; align-items: center;
+    z-index: 2000; color: #FFD600; font-weight: bold; font-size: 14px;
+    backdrop-filter: blur(3px);
+  }
+  #loadingOverlay.show { display: flex; }
+  .spinner {
+    width: 30px; height: 30px; border: 3px solid rgba(255,214,0,0.3);
+    border-top-color: #FFD600; border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin-right: 10px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #imageModal {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(40, 0, 0, 0.95); z-index: 3000;
+    justify-content: center; align-items: center; flex-direction: column;
+    padding: 20px; backdrop-filter: blur(4px);
+  }
+  #modalImage {
+    max-width: 100%; max-height: 65vh; border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5); background: #fff; margin-bottom: 15px;
+  }
+  .modal-text { color: #FFD600; margin-bottom: 15px; font-size: 14px; text-align: center; line-height: 1.5; }
+  .btn-close-modal {
+    width: auto; padding: 12px 32px; background: #D32F2F; color: #FFD600;
+    border: 2px solid #FFD600; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer;
+  }
+
+  #gdriveStatus { font-size: 12px; color: #2e7d32; font-weight: bold; margin-top: 8px; display: none; align-items: center; gap: 5px; }
+
+  @media(max-width:720px){
+    thead th { font-size: 9px; padding: 8px 2px; }
+    tbody td { font-size: 10px; padding: 6px 2px; }
+    .inp { width: 65px; font-size: 13px; padding: 8px 2px; }
+    .result-box { min-width: 75px; font-size: 12px; letter-spacing: 1px; }
+    button { font-size: 9px; padding: 6px 4px; }
+    .ke-ctkepala, .ke-ctekor, .ng-on7, .ng-selisih7 { font-size: 14px; letter-spacing: 2px; }
+    table { min-width: 700px; }
+    .main-tab-btn { font-size: 9px; padding: 8px 3px; min-width: 65px; }
+    .shio-ref-grid { grid-template-columns: repeat(3, 1fr); }
+    .shio-box { min-width: 90px; padding: 6px 2px; }
+    .shio-emoji { font-size: 16px; }
+    .shio-num { font-size: 14px; }
+    .shio-name { font-size: 9px; }
+    .pasaran-bar { flex-direction: column; }
+    .btn-add-pasaran { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1 id="mainTitle">MASTER INVEST HOKIDRAW</h1>
+
+  <!-- PASARAN MANAGEMENT BAR -->
+  <div class="pasaran-bar">
+    <select id="pasaranSelect" class="pasaran-select" onchange="gantiPasaran()"></select>
+    <button class="btn-add-pasaran" onclick="tambahPasaran()">➕ Pasaran</button>
+  </div>
+
+  <!-- MAIN TABS -->
+  <div class="main-tabs">
+    <button class="main-tab-btn active" onclick="switchMainTab('mod-ke', this)">🎯 Kep & Ekor</button>
+    <button class="main-tab-btn" onclick="switchMainTab('mod-ng', this)"> Biji & Sel</button>
+    <button class="main-tab-btn" onclick="switchMainTab('mod-shio', this)">🐉 Shio</button>
+    <button class="main-tab-btn" onclick="switchMainTab('mod-pol', this)">🎲 POLTAR</button>
+    <button class="main-tab-btn" onclick="switchMainTab('mod-settings', this)">⚙️ Backup</button>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODUL 1: KEPALA & EKOR -->
+  <!-- ========================================== -->
+  <div id="mod-ke" class="main-content active">
+    <div class="sub-tabs">
+      <button class="sub-tab-btn active" onclick="switchSubTab('ke', 'ke-tab1', this)">📊 Kalkulator</button>
+      <button class="sub-tab-btn" onclick="switchSubTab('ke', 'ke-tab2', this)">⚙️ Rumus</button>
+    </div>
+
+    <div id="ke-tab1" class="sub-content active">
+      <div id="ke-captureArea" style="background: #ffffff; padding: 15px; border-radius: 10px;">
+        <div style="text-align:center; padding-bottom: 10px; border-bottom: 2px solid var(--header-bg); margin-bottom: 15px;">
+          <div style="font-size: 16px; font-weight: 800; letter-spacing: 1px; color: var(--header-bg);">HOKIDRAW: KEPALA & EKOR</div>
+          <div id="ke-exportHeader" style="font-size: 11px; color: #B71C1C; margin-top: 4px; font-weight: bold;">Analisa Master</div>
+        </div>
+        <div class="controls" style="box-shadow: none; border: 1px dashed #FFCDD2; background: #FFFDE7;">
+          <div class="setting-row">
+            <div class="acuan-box">
+              <label>🔑 Angka Acuan Global:</label>
+              <input type="tel" id="ke-multiplierAcuan" class="inp-acuan" value="45673210" placeholder="45673210">
+            </div>
+          </div>
+        </div>
+        <div class="table-container" style="border: 1px solid #FFCDD2;">
+          <table id="ke-mainTable">
+            <thead>
+              <tr>
+                <th style="width:6%;">No</th><th style="width:12%;">Result</th>
+                <th style="width:20%;">Kepala 9D</th><th style="width:16%;">CT Kepala 7D</th>
+                <th style="width:20%;">Ekor 9D</th><th style="width:16%;">CT Ekor 7D</th>
+                <th style="width:10%;" class="action-col-header">Opsi</th>
+              </tr>
+            </thead>
+            <tbody id="ke-tb"></tbody>
+          </table>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><span class="legend-dot" style="background:var(--ke-kepala-bg); border-left:3px solid var(--ke-kepala-text);"></span> Kepala 9D</div>
+          <div class="legend-item"><span class="legend-dot" style="background:var(--ke-ctkepala-bg); border-left:3px solid var(--ke-ctkepala-text);"></span> CT Kepala 7D</div>
+          <div class="legend-item"><span class="legend-dot" style="background:var(--ke-ekor-bg); border-left:3px solid var(--ke-ekor-text);"></span> Ekor 9D</div>
+          <div class="legend-item"><span class="legend-dot" style="background:var(--ke-ctekor-bg); border-left:3px solid var(--ke-ctekor-text);"></span> CT Ekor 7D</div>
+        </div>
+        <div class="export-watermark" id="ke-watermark"></div>
+      </div>
+      <div class="controls" style="margin-top: 15px; background: #FFF8E1;">
+        <div class="btn-row">
+          <button class="btn-add" id="ke-btnAddRow">+ Tambah Baris</button>
+          <button class="btn-copy" id="ke-btnCopyAll">Salin Semua</button>
+          <button class="btn-export" id="ke-btnExportImg">📸 Export</button>
+          <button class="btn-reset" id="ke-btnReset">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="ke-tab2" class="sub-content">
+      <div class="controls" style="background: #FFF8E1;">
+        <h3 style="margin-top:0; color:#B71C1C; font-size:16px;">💾 Rumus Khusus Kepala & Ekor</h3>
+        <div class="rumus-form">
+          <div class="rumus-field">
+            <label>🔵 Rumus Khusus Kepala</label>
+            <input type="text" id="ke-rumusKepala" class="rumus-inp" placeholder="Contoh: *4567, /100, atau √">
+            <div class="rumus-hint">💡 Format: *angka (kali), /angka (bagi), atau √ (akar kuadrat). Kosongkan untuk pakai Acuan Global.</div>
+          </div>
+          <div class="rumus-field">
+            <label>🔴 Rumus Khusus Ekor</label>
+            <input type="text" id="ke-rumusEkor" class="rumus-inp" placeholder="Contoh: *4567, /100, atau √">
+            <div class="rumus-hint">💡 Format: *angka (kali), /angka (bagi), atau √ (akar kuadrat). Kosongkan untuk pakai Acuan Global.</div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-save-rumus" id="ke-btnSaveRumus">Simpan Rumus</button>
+          <button class="btn-reset-rumus" id="ke-btnResetRumus">Reset Rumus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODUL 2: BIJI ON & SELISIH -->
+  <!-- ========================================== -->
+  <div id="mod-ng" class="main-content">
+    <div class="sub-tabs">
+      <button class="sub-tab-btn active" onclick="switchSubTab('ng', 'ng-tab1', this)">📊 Kalkulator</button>
+      <button class="sub-tab-btn" onclick="switchSubTab('ng', 'ng-tab2', this)">️ Rumus</button>
+    </div>
+
+    <div id="ng-tab1" class="sub-content active">
+      <div id="ng-captureArea" style="background: #ffffff; padding: 15px; border-radius: 10px;">
+        <div style="text-align:center; padding-bottom: 10px; border-bottom: 2px solid var(--header-bg); margin-bottom: 15px;">
+          <div style="font-size: 16px; font-weight: 800; letter-spacing: 1px; color: var(--header-bg);">HOKIDRAW: MODE NGAMEN</div>
+          <div id="ng-exportHeader" style="font-size: 11px; color: #B71C1C; margin-top: 4px; font-weight: bold;">Strategi Jaring Lebar 9D & 7D</div>
+        </div>
+        <div class="controls" style="box-shadow: none; border: 1px dashed #FFCDD2; background: #FFFDE7;">
+          <div class="setting-row">
+            <div class="acuan-box">
+              <label>🔑 Angka Acuan Global:</label>
+              <input type="tel" id="ng-multiplierAcuan" class="inp-acuan" value="45673210" placeholder="45673210">
+            </div>
+          </div>
+        </div>
+        <div class="table-container" style="border: 1px solid #FFCDD2;">
+          <table id="ng-mainTable">
+            <thead>
+              <tr>
+                <th style="width:5%;">No</th><th style="width:10%;">Result</th>
+                <th style="width:18%;">BIJI ON 9D</th><th style="width:18%;">BIJI ON 7D</th>
+                <th style="width:8%;">Selisih</th>
+                <th style="width:20%;">Prediksi Selisih 9D</th><th style="width:20%;">Prediksi Selisih 7D</th>
+                <th style="width:8%;" class="action-col-header">Opsi</th>
+              </tr>
+            </thead>
+            <tbody id="ng-tb"></tbody>
+          </table>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><span class="legend-dot" style="background:var(--ng-on-bg); border-left:3px solid var(--ng-on-text);"></span> Biji On 9D</div>
+          <div class="legend-item"><span class="legend-dot" style="background:var(--ng-on-core-bg); border-left:3px solid var(--ng-on-core-text);"></span> Biji On 7D</div>
+          <div class="legend-item"><span class="legend-dot" style="background:var(--ng-selisih-bg); border-left:3px solid var(--ng-selisih-text);"></span> Selisih Aktual</div>
+          <div class="legend-item"><span class="legend-dot" style="background:var(--ng-selisih-pred-bg); border-left:3px solid var(--ng-selisih-pred-text);"></span> Prediksi Selisih</div>
+        </div>
+        <div class="export-watermark" id="ng-watermark"></div>
+      </div>
+      <div class="controls" style="margin-top: 15px; background: #FFF8E1;">
+        <div class="btn-row">
+          <button class="btn-add" id="ng-btnAddRow">+ Tambah Baris</button>
+          <button class="btn-copy" id="ng-btnCopyAll">Salin Semua</button>
+          <button class="btn-export" id="ng-btnExportImg">📸 Export</button>
+          <button class="btn-reset" id="ng-btnReset">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="ng-tab2" class="sub-content">
+      <div class="controls" style="background: #FFF8E1;">
+        <h3 style="margin-top:0; color:#B71C1C; font-size:16px;">💾 Rumus Khusus Ngamen</h3>
+        <div class="rumus-form">
+          <div class="rumus-field">
+            <label>🔵 Rumus Khusus Biji On</label>
+            <input type="text" id="ng-rumusBijiOn" class="rumus-inp" placeholder="Contoh: *4567, /100, atau √">
+            <div class="rumus-hint">💡 Format: *angka (kali), /angka (bagi), atau √ (akar kuadrat). Kosongkan untuk pakai Acuan Global.</div>
+          </div>
+          <div class="rumus-field">
+            <label>🔴 Rumus Khusus Selisih</label>
+            <input type="text" id="ng-rumusSelisih" class="rumus-inp" placeholder="Contoh: *4567, /100, atau √">
+            <div class="rumus-hint">💡 Format: *angka (kali), /angka (bagi), atau √ (akar kuadrat). Kosongkan untuk pakai Acuan Global.</div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-save-rumus" id="ng-btnSaveRumus">Simpan Rumus</button>
+          <button class="btn-reset-rumus" id="ng-btnResetRumus">Reset Rumus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODUL 3: SHIO FINDER -->
+  <!-- ========================================== -->
+  <div id="mod-shio" class="main-content">
+    <div class="sub-tabs">
+      <button class="sub-tab-btn active" onclick="switchSubTab('shio', 'shio-tab1', this)">📊 Shio Finder</button>
+      <button class="sub-tab-btn" onclick="switchSubTab('shio', 'shio-tab2', this)">⚙️ Rumus</button>
+    </div>
+
+    <div id="shio-tab1" class="sub-content active">
+      <div id="shio-captureArea" style="background: #ffffff; padding: 15px; border-radius: 10px;">
+        <div style="text-align:center; padding-bottom: 10px; border-bottom: 2px solid var(--header-bg); margin-bottom: 15px;">
+          <div style="font-size: 16px; font-weight: 800; letter-spacing: 1px; color: var(--header-bg);">🐉 SHIO ON FINDER</div>
+          <div id="shio-exportHeader" style="font-size: 11px; color: #B71C1C; margin-top: 4px; font-weight: bold;">Pencari Shio On & Shio Lemah</div>
+        </div>
+        <div class="controls" style="box-shadow: none; border: 1px dashed #FFCDD2; background: #FFFDE7;">
+          <div class="setting-row">
+            <div class="acuan-box">
+              <label>🔑 Angka Acuan Global:</label>
+              <input type="tel" id="shio-multiplierAcuan" class="inp-acuan" value="45673210" placeholder="45673210">
+            </div>
+          </div>
+        </div>
+        <div class="table-container" style="border: 1px solid #FFCDD2;">
+          <table id="shio-mainTable">
+            <thead>
+              <tr>
+                <th style="width:5%;">No</th>
+                <th style="width:10%;">Result</th>
+                <th style="width:22%;">BIJI ON 9D</th>
+                <th style="width:20%;">🔴 Shio Lemah</th>
+                <th style="width:20%;">🟢 Shio On</th>
+                <th style="width:8%;" class="action-col-header">Opsi</th>
+              </tr>
+            </thead>
+            <tbody id="shio-tb"></tbody>
+          </table>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><span class="legend-dot" style="background:var(--shio-on-bg); border-left:3px solid var(--shio-on-text);"></span> Biji On 9D</div>
+          <div class="legend-item"><span class="legend-dot" style="background:var(--shio-lemah-bg); border-left:3px solid var(--shio-lemah-text);"></span> Shio Lemah (2D Akhir)</div>
+          <div class="legend-item"><span class="legend-dot" style="background:var(--shio-on2-bg); border-left:3px solid var(--shio-on2-text);"></span> Shio On (2D Awal)</div>
+        </div>
+        <div class="shio-ref-title">📖 Referensi 12 Shio (mod 12)</div>
+        <div class="shio-ref-grid" id="shioRefGrid"></div>
+        <div class="export-watermark" id="shio-watermark"></div>
+      </div>
+      <div class="controls" style="margin-top: 15px; background: #FFF8E1;">
+        <div class="btn-row">
+          <button class="btn-add" id="shio-btnAddRow">+ Tambah Baris</button>
+          <button class="btn-copy" id="shio-btnCopyAll">Salin Semua</button>
+          <button class="btn-export" id="shio-btnExportImg">📸 Export</button>
+          <button class="btn-reset" id="shio-btnReset">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="shio-tab2" class="sub-content">
+      <div class="controls" style="background: #FFF8E1;">
+        <h3 style="margin-top:0; color:#B71C1C; font-size:16px;">💾 Rumus Khusus Shio</h3>
+        <div class="rumus-form">
+          <div class="rumus-field">
+            <label>🔢 Rumus Perkalian / Operasi Khusus</label>
+            <input type="text" id="shio-rumusKhusus" class="rumus-inp" placeholder="Contoh: *4567, /100, atau √">
+            <div class="rumus-hint">💡 Format: *angka (kali), /angka (bagi), atau √ (akar kuadrat). Kosongkan untuk pakai Acuan Global.</div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-save-rumus" id="shio-btnSaveRumus">Simpan Rumus</button>
+          <button class="btn-reset-rumus" id="shio-btnResetRumus">Reset Rumus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODUL 4: POLTAR MULTI-D -->
+  <!-- ========================================== -->
+  <div id="mod-pol" class="main-content">
+    <div class="pol-wrapper">
+      <div class="pol-box">
+        <div class="pol-title">POLTAR MULTI-D</div>
+        <div class="pol-subtitle">// RED & GOLD EDITION PERMUTATION //</div>
+
+        <div class="pol-input-stack">
+          <div class="pol-field-group">
+            <label>AS</label>
+            <input id="pol-as" class="pol-input" placeholder="Opsional" maxlength="12">
+          </div>
+          <div class="pol-field-group">
+            <label>KOP</label>
+            <input id="pol-kop" class="pol-input" placeholder="Min. 1 digit" maxlength="12">
+          </div>
+          <div class="pol-field-group">
+            <label>KEP</label>
+            <input id="pol-kep" class="pol-input" placeholder="Min. 1 digit" maxlength="12">
+          </div>
+          <div class="pol-field-group">
+            <label>EKOR</label>
+            <input id="pol-ekor" class="pol-input" placeholder="Min. 1 digit" maxlength="12">
+          </div>
+        </div>
+
+        <div class="pol-twin-controls">
+          <button id="pol-btnTwin" class="pol-twin-btn" onclick="pol_setTwinMode(true)">TWIN (Bebas)</button>
+          <button id="pol-btnNoTwin" class="pol-twin-btn active" onclick="pol_setTwinMode(false)">NO TWIN</button>
+        </div>
+
+        <label class="pol-checkbox-wrapper">
+          <input type="checkbox" id="pol-kebalikan2d">
+          <span>✨ Sertakan Angka Kebalikan (Khusus 2D)</span>
+        </label>
+
+        <div class="pol-btn-row">
+          <button class="pol-action-btn pol-proses" onclick="pol_buat()">PROSES</button>
+          <button class="pol-action-btn pol-reset" onclick="pol_resetData()">RESET</button>
+          <button class="pol-action-btn pol-copy" onclick="pol_copyHasil()">SALIN</button>
+        </div>
+
+        <div class="pol-summary" id="pol-summary">Menunggu input...</div>
+        <div class="pol-hasil" id="pol-hasil"></div>
+        <div class="pol-info-text">Format pembatas (*) tanpa spasi.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODUL 5: SETTINGS, BACKUP & APP -->
+  <!-- ========================================== -->
+  <div id="mod-settings" class="main-content">
+    <div class="controls" style="border-left: 4px solid var(--drive-bg); background: #FFF8E1;">
+      <h3 style="margin-top:0; color:#B71C1C; font-size:16px;">☁️ Sinkronisasi Google Drive</h3>
+      <p style="font-size:12px; color:#B71C1C; margin-bottom:10px;">
+        Simpan dan muat SEMUA data (Kepala Ekor + Ngamen + Shio + POLTAR) untuk pasaran <strong id="settingPasaranLabel">SGP</strong> ke Google Drive.
+      </p>
+      <div id="gdriveAuthSection">
+        <button class="btn-drive" onclick="handleAuthClick()" id="btnGDriveLogin">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#B71C1C"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+          Login Google Drive
+        </button>
+      </div>
+      <div id="gdriveStatus">✅ Terhubung sebagai: <span id="gdriveUserEmail"></span></div>
+      <div class="btn-row" style="margin-top: 15px;">
+        <button class="btn-drive" onclick="saveToDrive()" id="btnSaveToDrive" disabled>⬆️ Simpan Semua</button>
+        <button class="btn-drive" onclick="loadFromDrive()" id="btnLoadFromDrive" disabled style="background:#F57F17; color:#fff;">⬇️ Muat Semua</button>
+      </div>
+    </div>
+
+    <div class="controls" style="border-left: 4px solid #D32F2F; background: #FFF8E1;">
+      <h3 style="margin-top:0; color:#B71C1C; font-size:16px;">📲 Install Aplikasi</h3>
+      <p style="font-size:12px; color:#B71C1C; margin-bottom:10px;">
+        Tambahkan ke Home Screen HP agar bisa dibuka seperti aplikasi native (Full Screen, cepat).
+      </p>
+      <button class="btn-install" id="btnInstallApp" onclick="installApp()">📥 Install ke Home Screen</button>
+      <p id="installHint" style="font-size:11px; color:#B71C1C; margin-top:8px; display:none;">
+        💡 <em>Di iPhone (Safari): Tekan tombol "Share" (kotak dengan panah ke atas) lalu pilih "Add to Home Screen".</em>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <span id="loadingText">Processing...</span>
+</div>
+
+<!-- Modal Preview Gambar -->
+<div id="imageModal">
+  <div class="modal-text">
+    📸 <strong>Tekan lama (hold)</strong> pada gambar di bawah ini<br>
+    lalu pilih <strong>"Simpan Gambar"</strong> atau <strong>"Bagikan"</strong>
+  </div>
+  <img id="modalImage" src="" alt="Preview Hasil" />
+  <button class="btn-close-modal" onclick="closeImageModal()">TUTUP</button>
+</div>
+
+<script>
+// ==========================================
+// 1. KONFIGURASI GLOBAL & PASARAN
+// ==========================================
+const GOOGLE_CLIENT_ID = '686043117622-gng0ueft4johi80dmmt118d0p3faqspm.apps.googleusercontent.com'; 
+const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+let tokenClient;
+let gapiInited = false;
+let gisInited = false;
+
+// State Pasaran
+let currentPasaran = localStorage.getItem('hoki_global_pasaran') || "SGP";
+let daftarPasaran = JSON.parse(localStorage.getItem('hoki_daftar_pasaran')) || ["SGP", "HK", "SYD", "MACAU", "TOTO"];
+
+// Helper Storage per Pasaran
+function hokiGet(key, def) {
+    const val = localStorage.getItem(`hoki_${currentPasaran}_${key}`);
+    return val !== null ? val : def;
+}
+function hokiSet(key, val) {
+    localStorage.setItem(`hoki_${currentPasaran}_${key}`, val);
+}
+
+// ==========================================
+// 2. MESIN RUMUS BARU (Support *, /, √)
+// ==========================================
+function hitungRumus(num, rumusStr, globalAcuan) {
+  if (!rumusStr || rumusStr.trim() === "") {
+    return num * globalAcuan;
+  }
+  let r = rumusStr.trim().toUpperCase();
+  
+  // 1. Akar Kuadrat
+  if (r === '√' || r === 'SQRT' || r === 'AKAR') {
+    return Math.sqrt(num);
+  }
+  
+  // 2. Pembagian
+  if (r.startsWith('/')) {
+    let val = parseFloat(r.substring(1));
+    if (!isNaN(val) && val !== 0) return num / val;
+  } 
+  
+  // 3. Perkalian (eksplisit)
+  if (r.startsWith('*')) {
+    let val = parseFloat(r.substring(1));
+    if (!isNaN(val)) return num * val;
+  }
+  
+  // 4. Default: jika hanya angka, anggap perkalian
+  let val = parseFloat(r);
+  if (!isNaN(val)) {
+    return num * val;
+  }
+  
+  // Fallback ke globalAcuan jika format tidak dikenali
+  return num * globalAcuan;
+}
+
+// ==========================================
+// 3. STATE MANAGEMENT
+// ==========================================
+let ke_rowCount = 3, ke_rowData = [], ke_kMult = "", ke_eMult = "";
+let ng_rowCount = 3, ng_rowData = [], ng_onMult = "", ng_selMult = "";
+let shio_rowCount = 3, shio_rowData = [], shio_mult = "";
+let pol_allowTwin = false, pol_kebalikan = false;
+
+function loadAllState() {
+  const gNum = (k, def) => { const v = hokiGet(k, def); return v && !isNaN(v) ? parseInt(v) : def; };
+  const gJson = (k, def) => { try { const v = hokiGet(k, def); return v ? JSON.parse(v) : def; } catch(e){ return def; } };
+
+  ke_rowCount = gNum('master_ke_count', 3);
+  ke_rowData = gJson('master_ke_data', new Array(ke_rowCount).fill(""));
+  if (ke_rowData.length > ke_rowCount) ke_rowCount = ke_rowData.length;
+  ke_kMult = hokiGet('master_ke_k', "");
+  ke_eMult = hokiGet('master_ke_e', "");
+
+  ng_rowCount = gNum('master_ng_count', 3);
+  ng_rowData = gJson('master_ng_data', new Array(ng_rowCount).fill(""));
+  if (ng_rowData.length > ng_rowCount) ng_rowCount = ng_rowData.length;
+  ng_onMult = hokiGet('master_ng_on', "");
+  ng_selMult = hokiGet('master_ng_sel', "");
+
+  shio_rowCount = gNum('master_shio_count', 3);
+  shio_rowData = gJson('master_shio_data', new Array(shio_rowCount).fill(""));
+  if (shio_rowData.length > shio_rowCount) shio_rowCount = shio_rowData.length;
+  shio_mult = hokiGet('master_shio_mult', "");
+
+  pol_allowTwin = hokiGet('master_pol_twin', 'false') === 'true';
+  pol_kebalikan = hokiGet('master_pol_keb', 'false') === 'true';
+}
+
+function saveAllState() {
+  hokiSet('master_ke_count', ke_rowCount);
+  hokiSet('master_ke_data', JSON.stringify(ke_rowData));
+  hokiSet('master_ke_k', ke_kMult);
+  hokiSet('master_ke_e', ke_eMult);
+
+  hokiSet('master_ng_count', ng_rowCount);
+  hokiSet('master_ng_data', JSON.stringify(ng_rowData));
+  hokiSet('master_ng_on', ng_onMult);
+  hokiSet('master_ng_sel', ng_selMult);
+
+  hokiSet('master_shio_count', shio_rowCount);
+  hokiSet('master_shio_data', JSON.stringify(shio_rowData));
+  hokiSet('master_shio_mult', shio_mult);
+
+  hokiSet('master_pol_twin', pol_allowTwin);
+  hokiSet('master_pol_keb', pol_kebalikan);
+}
+
+// ==========================================
+// 4. MANAJEMEN PASARAN
+// ==========================================
+function initPasaran() {
+  const select = document.getElementById('pasaranSelect');
+  select.innerHTML = '';
+  daftarPasaran.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p;
+    opt.innerText = p;
+    if (p === currentPasaran) opt.selected = true;
+    select.appendChild(opt);
+  });
+  document.getElementById('mainTitle').innerText = `MASTER INVEST HOKIDRAW - ${currentPasaran}`;
+  document.getElementById('settingPasaranLabel').innerText = currentPasaran;
+}
+
+function gantiPasaran() {
+  saveAllState();
+  currentPasaran = document.getElementById('pasaranSelect').value;
+  localStorage.setItem('hoki_global_pasaran', currentPasaran);
+  
+  loadAllState();
+  initPasaran();
+  
+  ke_render(); ng_render(); shio_render();
+  pol_setTwinMode(pol_allowTwin);
+  document.getElementById("pol-kebalikan2d").checked = pol_kebalikan;
+}
+
+function tambahPasaran() {
+  const nama = prompt("Masukkan Nama Pasaran Baru (contoh: CAMBODIA, JEPANG):");
+  if (nama) {
+    const cleanNama = nama.toUpperCase().trim().replace(/\s+/g, '_');
+    if (!daftarPasaran.includes(cleanNama)) {
+      daftarPasaran.push(cleanNama);
+      localStorage.setItem('hoki_daftar_pasaran', JSON.stringify(daftarPasaran));
+      
+      currentPasaran = cleanNama;
+      localStorage.setItem('hoki_global_pasaran', currentPasaran);
+      
+      ke_rowCount = 3; ke_rowData = new Array(3).fill(""); ke_kMult = ""; ke_eMult = "";
+      ng_rowCount = 3; ng_rowData = new Array(3).fill(""); ng_onMult = ""; ng_selMult = "";
+      shio_rowCount = 3; shio_rowData = new Array(3).fill(""); shio_mult = "";
+      
+      saveAllState();
+      initPasaran();
+      ke_render(); ng_render(); shio_render();
+      alert(`✅ Pasaran ${cleanNama} berhasil ditambahkan!`);
+    } else {
+      alert("⚠️ Pasaran sudah ada dalam daftar!");
+    }
+  }
+}
+
+// ==========================================
+// 5. NAVIGASI TAB
+// ==========================================
+function switchMainTab(tabId, btn) {
+  document.querySelectorAll('.main-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.main-tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+function switchSubTab(mod, tabId, btn) {
+  const parent = document.getElementById('mod-' + mod);
+  parent.querySelectorAll('.sub-content').forEach(el => el.classList.remove('active'));
+  parent.querySelectorAll('.sub-tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  if (btn) btn.classList.add('active');
+  
+  if (mod === 'ke' && tabId === 'ke-tab2') {
+    document.getElementById("ke-rumusKepala").value = ke_kMult;
+    document.getElementById("ke-rumusEkor").value = ke_eMult;
+  }
+  if (mod === 'ng' && tabId === 'ng-tab2') {
+    document.getElementById("ng-rumusBijiOn").value = ng_onMult;
+    document.getElementById("ng-rumusSelisih").value = ng_selMult;
+  }
+  if (mod === 'shio' && tabId === 'shio-tab2') {
+    document.getElementById("shio-rumusKhusus").value = shio_mult;
+  }
+}
+
+// ==========================================
+// 6. MODUL: KEPALA & EKOR
+// ==========================================
+function ke_getAcuan() {
+  const val = document.getElementById("ke-multiplierAcuan").value;
+  return (!val || isNaN(val)) ? 45673210 : parseInt(val);
+}
+function ke_generate(num, rumusStr, globalAcuan, type) {
+  let calcVal = hitungRumus(num, rumusStr, globalAcuan);
+  if (!isFinite(calcVal) || isNaN(calcVal)) calcVal = 0;
+  
+  let rawStr = String(calcVal);
+  let unique = [];
+  let start = (type === 'ekor' || type === 'ctekor') ? rawStr.length - 1 : 0;
+  let step = (type === 'ekor' || type === 'ctekor') ? -1 : 1;
+  for (let i = start; (step === 1 ? i < rawStr.length : i >= 0); i += step) {
+    let char = rawStr[i];
+    if (/^\d$/.test(char) && !unique.includes(char)) unique.push(char);
+  }
+  let limit = (type === 'kepala' || type === 'ekor') ? 9 : 7;
+  let fillStart = (type === 'ekor' || type === 'ctekor') ? 9 : 0;
+  let fillStep = (type === 'ekor' || type === 'ctekor') ? -1 : 1;
+  if (unique.length < limit) {
+    for (let i = fillStart; (fillStep === 1 ? i <= 9 : i >= 0); i += fillStep) {
+      if (unique.length >= limit) break;
+      if (!unique.includes(String(i))) unique.push(String(i));
+    }
+  }
+  return unique.slice(0, limit).join('');
+}
+function ke_render() {
+  const tb = document.getElementById("ke-tb"); tb.innerHTML = "";
+  for (let i = 0; i < ke_rowCount; i++) {
+    const val = ke_rowData[i] || "";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="row-num">${i + 1}</td>
+      <td><input id="ke-inp${i}" class="inp" type="tel" maxlength="4" placeholder="0000" value="${val}"></td>
+      <td><div id="ke-k9_${i}" class="result-box ke-kepala9">-</div></td>
+      <td><div id="ke-ck_${i}" class="result-box ke-ctkepala">-</div></td>
+      <td><div id="ke-e9_${i}" class="result-box ke-ekor9">-</div></td>
+      <td><div id="ke-ce_${i}" class="result-box ke-ctekor">-</div></td>
+      <td class="action-col"><div class="action-btn-group">
+        <button class="copyBtn" onclick="ke_copyRow(${i})">Salin</button>
+        <button class="delBtn" onclick="ke_removeRow(${i})">-</button>
+      </div></td>`;
+    tb.appendChild(tr);
+    document.getElementById("ke-inp" + i).addEventListener("input", (e) => {
+      ke_rowData[i] = e.target.value; saveAllState(); ke_calculate(i);
+    });
+    if (val) ke_calculate(i);
+  }
+}
+function ke_calculate(i) {
+  const val = document.getElementById("ke-inp" + i).value;
+  if (!val || isNaN(val)) {
+    ["k9", "ck", "e9", "ce"].forEach(p => document.getElementById(`ke-${p}_${i}`).innerText = "-");
+    return;
+  }
+  const num = parseInt(val);
+  const globalAcuan = ke_getAcuan();
+  
+  const rumusK = ke_kMult && ke_kMult.trim() !== "" ? ke_kMult : String(globalAcuan);
+  const rumusE = ke_eMult && ke_eMult.trim() !== "" ? ke_eMult : String(globalAcuan);
+  
+  document.getElementById(`ke-k9_${i}`).innerText = ke_generate(num, rumusK, globalAcuan, 'kepala');
+  document.getElementById(`ke-ck_${i}`).innerText = ke_generate(num, rumusK, globalAcuan, 'ctkepala');
+  document.getElementById(`ke-e9_${i}`).innerText = ke_generate(num, rumusE, globalAcuan, 'ekor');
+  document.getElementById(`ke-ce_${i}`).innerText = ke_generate(num, rumusE, globalAcuan, 'ctekor');
+}
+function ke_addRow() { ke_rowData.push(""); ke_rowCount++; saveAllState(); ke_render(); }
+function ke_removeRow(i) {
+  if (ke_rowCount <= 1) return alert("Minimal 1 baris!");
+  if (confirm(`Hapus baris ${i + 1}?`)) { ke_rowData.splice(i, 1); ke_rowCount--; saveAllState(); ke_render(); }
+}
+function ke_copyRow(i) {
+  const k9 = document.getElementById(`ke-k9_${i}`).innerText;
+  if (k9 === "-") return alert("Isi result dulu!");
+  const txt = `📊 HOKIDRAW [${currentPasaran}]\nResult: ${document.getElementById(`ke-inp${i}`).value}\n🔵 K9: ${k9}\n🟢 CK7: ${document.getElementById(`ke-ck_${i}`).innerText}\n🟠 E9: ${document.getElementById(`ke-e9_${i}`).innerText}\n🔴 CE7: ${document.getElementById(`ke-ce_${i}`).innerText}`;
+  navigator.clipboard.writeText(txt).then(() => alert("Disalin!"));
+}
+function ke_copyAll() {
+  let out = `🎯 HOKIDRAW: KEPALA & EKOR [${currentPasaran}]\n\n`, has = false, num = 1;
+  for (let i = 0; i < ke_rowCount; i++) {
+    const k9 = document.getElementById(`ke-k9_${i}`).innerText;
+    if (k9 !== "-") {
+      out += `📍 ${num} [${document.getElementById(`ke-inp${i}`).value}]\nK9:${k9} | CK7:${document.getElementById(`ke-ck_${i}`).innerText}\nE9:${document.getElementById(`ke-e9_${i}`).innerText} | CE7:${document.getElementById(`ke-ce_${i}`).innerText}\n\n`;
+      has = true; num++;
+    }
+  }
+  if (!has) return alert("Belum ada data!");
+  navigator.clipboard.writeText(out + "Salam JP! 🔥").then(() => alert("Disalin!"));
+}
+function ke_reset() {
+  if (confirm("Reset semua input Result?")) { ke_rowData = new Array(ke_rowCount).fill(""); saveAllState(); ke_render(); }
+}
+function ke_saveRumus() {
+  ke_kMult = document.getElementById("ke-rumusKepala").value.trim();
+  ke_eMult = document.getElementById("ke-rumusEkor").value.trim();
+  saveAllState();
+  for (let i = 0; i < ke_rowCount; i++) if (document.getElementById(`ke-inp${i}`).value) ke_calculate(i);
+  alert("Rumus disimpan!");
+}
+function ke_resetRumus() {
+  if (confirm("Reset rumus khusus?")) {
+    ke_kMult = ""; ke_eMult = ""; saveAllState();
+    document.getElementById("ke-rumusKepala").value = "";
+    document.getElementById("ke-rumusEkor").value = "";
+    for (let i = 0; i < ke_rowCount; i++) if (document.getElementById(`ke-inp${i}`).value) ke_calculate(i);
+  }
+}
+async function ke_export() {
+  let has = false;
+  for (let i = 0; i < ke_rowCount; i++) if (document.getElementById(`ke-k9_${i}`).innerText !== "-") { has = true; break; }
+  if (!has) return alert("Isi minimal 1 result!");
+  const area = document.getElementById('ke-captureArea');
+  document.getElementById('loadingText').innerText = "Export Kepala Ekor...";
+  document.getElementById('loadingOverlay').classList.add('show');
+  try {
+    const dateStr = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+    document.getElementById('ke-exportHeader').innerText = `Pasaran: ${currentPasaran} | Generated: ${dateStr}`;
+    document.getElementById('ke-watermark').innerText = `MASTER INVEST HOKIDRAW - ${currentPasaran} • ${dateStr}`;
+    document.querySelectorAll('#ke-captureArea .action-col, #ke-captureArea .action-col-header').forEach(el => el.classList.add('hide-action-col'));
+    await new Promise(r => setTimeout(r, 200));
+    const canvas = await html2canvas(area, { backgroundColor: '#ffffff', scale: 2, useCORS: true, logging: false, windowWidth: area.scrollWidth });
+    document.querySelectorAll('#ke-captureArea .action-col, #ke-captureArea .action-col-header').forEach(el => el.classList.remove('hide-action-col'));
+    if (navigator.share && navigator.canShare) {
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], `KE_${currentPasaran}_${Date.now()}.png`, { type: 'image/png' });
+        if (navigator.canShare({ files: [file] })) {
+          try { await navigator.share({ files: [file], title: `HOKIDRAW KE ${currentPasaran}`, text: 'Analisa' }); document.getElementById('loadingOverlay').classList.remove('show'); return; } 
+          catch (err) { if (err.name !== 'AbortError') console.log(err); else { document.getElementById('loadingOverlay').classList.remove('show'); return; } }
+        }
+        showImageModal(canvas.toDataURL('image/png'));
+      }, 'image/png', 1.0);
+    } else { showImageModal(canvas.toDataURL('image/png')); }
+  } catch (err) {
+    document.querySelectorAll('#ke-captureArea .action-col, #ke-captureArea .action-col-header').forEach(el => el.classList.remove('hide-action-col'));
+    document.getElementById('loadingOverlay').classList.remove('show');
+    alert('Gagal: ' + err.message);
+  }
+}
+
+// ==========================================
+// 7. MODUL: BIJI ON & SELISIH
+// ==========================================
+function ng_getAcuan() {
+  const val = document.getElementById("ng-multiplierAcuan").value;
+  return (!val || isNaN(val)) ? 45673210 : parseInt(val);
+}
+function ng_generateOn(num, rumusStr, globalAcuan) {
+  let calcVal = hitungRumus(num, rumusStr, globalAcuan);
+  if (!isFinite(calcVal) || isNaN(calcVal)) calcVal = 0;
+  let rawStr = String(calcVal);
+  let unique = [];
+  for (let char of rawStr) if (/^\d$/.test(char) && !unique.includes(char)) unique.push(char);
+  if (unique.length < 9) for (let i = 0; i <= 9; i++) { if (unique.length >= 9) break; if (!unique.includes(String(i))) unique.push(String(i)); }
+  return { on9: unique.slice(0, 9).join(''), on7: unique.slice(0, 7).join('') };
+}
+function ng_generateSelisih(valStr, rumusStr, globalAcuan) {
+  let padded = valStr.padStart(4, '0');
+  let kep = parseInt(padded[padded.length - 2]);
+  let ekor = parseInt(padded[padded.length - 1]);
+  let actual = Math.abs(kep - ekor);
+  
+  let calcVal = hitungRumus(actual, rumusStr, globalAcuan);
+  if (!isFinite(calcVal) || isNaN(calcVal)) calcVal = 0;
+  let rawStr = String(calcVal);
+  
+  let unique = [];
+  for (let char of rawStr) if (/^\d$/.test(char) && !unique.includes(char)) unique.push(char);
+  if (unique.length < 9) for (let i = 0; i <= 9; i++) { if (unique.length >= 9) break; if (!unique.includes(String(i))) unique.push(String(i)); }
+  return { actual: actual, sel9: unique.slice(0, 9).join(''), sel7: unique.slice(0, 7).join('') };
+}
+function ng_render() {
+  const tb = document.getElementById("ng-tb"); tb.innerHTML = "";
+  for (let i = 0; i < ng_rowCount; i++) {
+    const val = ng_rowData[i] || "";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="row-num">${i + 1}</td>
+      <td><input id="ng-inp${i}" class="inp" type="tel" maxlength="4" placeholder="0000" value="${val}"></td>
+      <td><div id="ng-on9_${i}" class="result-box ng-on9">-</div></td>
+      <td><div id="ng-on7_${i}" class="result-box ng-on7">-</div></td>
+      <td><div id="ng-sAct_${i}" class="result-box ng-selisih-act">-</div></td>
+      <td><div id="ng-s9_${i}" class="result-box ng-selisih9">-</div></td>
+      <td><div id="ng-s7_${i}" class="result-box ng-selisih7">-</div></td>
+      <td class="action-col"><div class="action-btn-group">
+        <button class="copyBtn" onclick="ng_copyRow(${i})">Salin</button>
+        <button class="delBtn" onclick="ng_removeRow(${i})">-</button>
+      </div></td>`;
+    tb.appendChild(tr);
+    document.getElementById("ng-inp" + i).addEventListener("input", (e) => {
+      ng_rowData[i] = e.target.value; saveAllState(); ng_calculate(i);
+    });
+    if (val) ng_calculate(i);
+  }
+}
+function ng_calculate(i) {
+  const val = document.getElementById("ng-inp" + i).value;
+  if (!val || isNaN(val) || val.length < 2) {
+    ["on9", "on7", "sAct", "s9", "s7"].forEach(p => document.getElementById(`ng-${p}_${i}`).innerText = "-");
+    return;
+  }
+  const num = parseInt(val);
+  const globalAcuan = ng_getAcuan();
+  const rumusOn = ng_onMult && ng_onMult.trim() !== "" ? ng_onMult : String(globalAcuan);
+  const rumusSel = ng_selMult && ng_selMult.trim() !== "" ? ng_selMult : String(globalAcuan);
+  
+  const dataOn = ng_generateOn(num, rumusOn, globalAcuan);
+  const dataSel = ng_generateSelisih(val, rumusSel, globalAcuan);
+  
+  document.getElementById(`ng-on9_${i}`).innerText = dataOn.on9;
+  document.getElementById(`ng-on7_${i}`).innerText = dataOn.on7;
+  document.getElementById(`ng-sAct_${i}`).innerText = dataSel.actual;
+  document.getElementById(`ng-s9_${i}`).innerText = dataSel.sel9;
+  document.getElementById(`ng-s7_${i}`).innerText = dataSel.sel7;
+}
+function ng_addRow() { ng_rowData.push(""); ng_rowCount++; saveAllState(); ng_render(); }
+function ng_removeRow(i) {
+  if (ng_rowCount <= 1) return alert("Minimal 1 baris!");
+  if (confirm(`Hapus baris ${i + 1}?`)) { ng_rowData.splice(i, 1); ng_rowCount--; saveAllState(); ng_render(); }
+}
+function ng_copyRow(i) {
+  const on9 = document.getElementById(`ng-on9_${i}`).innerText;
+  if (on9 === "-") return alert("Isi result dulu!");
+  const txt = `📊 HOKIDRAW NGAMEN [${currentPasaran}]\nResult: ${document.getElementById(`ng-inp${i}`).value}\n🔵 On9: ${on9}\n🔵 On7: ${document.getElementById(`ng-on7_${i}`).innerText}\n🔴 Selisih: ${document.getElementById(`ng-sAct_${i}`).innerText}\n🔴 Pred9: ${document.getElementById(`ng-s9_${i}`).innerText}\n🔴 Pred7: ${document.getElementById(`ng-s7_${i}`).innerText}`;
+  navigator.clipboard.writeText(txt).then(() => alert("Disalin!"));
+}
+function ng_copyAll() {
+  let out = `🎯 HOKIDRAW: MODE NGAMEN [${currentPasaran}]\n\n`, has = false, num = 1;
+  for (let i = 0; i < ng_rowCount; i++) {
+    const on9 = document.getElementById(`ng-on9_${i}`).innerText;
+    if (on9 !== "-") {
+      out += `📍 ${num} [${document.getElementById(`ng-inp${i}`).value}]\nOn9:${on9} | On7:${document.getElementById(`ng-on7_${i}`).innerText}\nSel:${document.getElementById(`ng-sAct_${i}`).innerText} | P9:${document.getElementById(`ng-s9_${i}`).innerText} | P7:${document.getElementById(`ng-s7_${i}`).innerText}\n\n`;
+      has = true; num++;
+    }
+  }
+  if (!has) return alert("Belum ada data!");
+  navigator.clipboard.writeText(out + "Salam JP Ngamen! 💰").then(() => alert("Disalin!"));
+}
+function ng_reset() {
+  if (confirm("Reset semua input Result?")) { ng_rowData = new Array(ng_rowCount).fill(""); saveAllState(); ng_render(); }
+}
+function ng_saveRumus() {
+  ng_onMult = document.getElementById("ng-rumusBijiOn").value.trim();
+  ng_selMult = document.getElementById("ng-rumusSelisih").value.trim();
+  saveAllState();
+  for (let i = 0; i < ng_rowCount; i++) if (document.getElementById(`ng-inp${i}`).value) ng_calculate(i);
+  alert("Rumus disimpan!");
+}
+function ng_resetRumus() {
+  if (confirm("Reset rumus khusus?")) {
+    ng_onMult = ""; ng_selMult = ""; saveAllState();
+    document.getElementById("ng-rumusBijiOn").value = "";
+    document.getElementById("ng-rumusSelisih").value = "";
+    for (let i = 0; i < ng_rowCount; i++) if (document.getElementById(`ng-inp${i}`).value) ng_calculate(i);
+  }
+}
+async function ng_export() {
+  let has = false;
+  for (let i = 0; i < ng_rowCount; i++) if (document.getElementById(`ng-on9_${i}`).innerText !== "-") { has = true; break; }
+  if (!has) return alert("Isi minimal 1 result!");
+  const area = document.getElementById('ng-captureArea');
+  document.getElementById('loadingText').innerText = "Export Ngamen...";
+  document.getElementById('loadingOverlay').classList.add('show');
+  try {
+    const dateStr = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+    document.getElementById('ng-exportHeader').innerText = `Pasaran: ${currentPasaran} | Generated: ${dateStr}`;
+    document.getElementById('ng-watermark').innerText = `MASTER INVEST HOKIDRAW - ${currentPasaran} • ${dateStr}`;
+    document.querySelectorAll('#ng-captureArea .action-col, #ng-captureArea .action-col-header').forEach(el => el.classList.add('hide-action-col'));
+    await new Promise(r => setTimeout(r, 200));
+    const canvas = await html2canvas(area, { backgroundColor: '#ffffff', scale: 2, useCORS: true, logging: false, windowWidth: area.scrollWidth });
+    document.querySelectorAll('#ng-captureArea .action-col, #ng-captureArea .action-col-header').forEach(el => el.classList.remove('hide-action-col'));
+    if (navigator.share && navigator.canShare) {
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], `NGAMEN_${currentPasaran}_${Date.now()}.png`, { type: 'image/png' });
+        if (navigator.canShare({ files: [file] })) {
+          try { await navigator.share({ files: [file], title: `HOKIDRAW Ngamen ${currentPasaran}`, text: 'Analisa' }); document.getElementById('loadingOverlay').classList.remove('show'); return; } 
+          catch (err) { if (err.name !== 'AbortError') console.log(err); else { document.getElementById('loadingOverlay').classList.remove('show'); return; } }
+        }
+        showImageModal(canvas.toDataURL('image/png'));
+      }, 'image/png', 1.0);
+    } else { showImageModal(canvas.toDataURL('image/png')); }
+  } catch (err) {
+    document.querySelectorAll('#ng-captureArea .action-col, #ng-captureArea .action-col-header').forEach(el => el.classList.remove('hide-action-col'));
+    document.getElementById('loadingOverlay').classList.remove('show');
+    alert('Gagal: ' + err.message);
+  }
+}
+
+// ==========================================
+// 8. MODUL: SHIO FINDER
+// ==========================================
+const SHIO_DATA = {
+  1:  { nama: 'Tikus',    emoji: '🐀' }, 2:  { nama: 'Kerbau',   emoji: '🐂' },
+  3:  { nama: 'Macan',    emoji: '🐅' }, 4:  { nama: 'Kelinci',  emoji: '🐇' },
+  5:  { nama: 'Naga',     emoji: '🐉' }, 6:  { nama: 'Ular',     emoji: '🐍' },
+  7:  { nama: 'Kuda',     emoji: '🐎' }, 8:  { nama: 'Kambing',  emoji: '🐐' },
+  9:  { nama: 'Monyet',   emoji: '🐒' }, 10: { nama: 'Ayam',     emoji: '🐓' },
+  11: { nama: 'Anjing',   emoji: '🐕' }, 12: { nama: 'Babi',     emoji: '🐖' }
+};
+function shio_convertToShio(twoDigitStr) {
+  const num = parseInt(twoDigitStr);
+  if (isNaN(num)) return null;
+  let shioNum = num % 12;
+  if (shioNum === 0) shioNum = 12;
+  return { nomor: shioNum, nama: SHIO_DATA[shioNum].nama, emoji: SHIO_DATA[shioNum].emoji, raw: twoDigitStr };
+}
+function shio_renderReference() {
+  const grid = document.getElementById('shioRefGrid');
+  let html = '';
+  for (let i = 1; i <= 12; i++) {
+    html += `<div class="shio-ref-item"><span class="shio-ref-emoji">${SHIO_DATA[i].emoji}</span><span class="shio-ref-num">Shio ${i}</span><span class="shio-ref-name">${SHIO_DATA[i].nama}</span></div>`;
+  }
+  grid.innerHTML = html;
+}
+function shio_getAcuan() {
+  const val = document.getElementById("shio-multiplierAcuan").value;
+  return (!val || isNaN(val)) ? 45673210 : parseInt(val);
+}
+function shio_generateBijiOn9(num, rumusStr, globalAcuan) {
+  let calcVal = hitungRumus(num, rumusStr, globalAcuan);
+  if (!isFinite(calcVal) || isNaN(calcVal)) calcVal = 0;
+  let rawStr = String(calcVal);
+  let digits = [];
+  for (let char of rawStr) if (/^\d$/.test(char)) digits.push(char);
+  return digits.slice(0, 9).join('');
+}
+function shio_render() {
+  const tb = document.getElementById("shio-tb"); tb.innerHTML = "";
+  for (let i = 0; i < shio_rowCount; i++) {
+    const val = shio_rowData[i] || "";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="row-num">${i + 1}</td>
+      <td><input id="shio-inp${i}" class="inp" type="tel" maxlength="4" placeholder="0000" value="${val}"></td>
+      <td><div id="shio-biji9_${i}" class="result-box shio-biji">-</div></td>
+      <td><div id="shio-lemah_${i}" class="shio-box shio-lemah">-</div></td>
+      <td><div id="shio-on_${i}" class="shio-box shio-on-box">-</div></td>
+      <td class="action-col"><div class="action-btn-group">
+        <button class="copyBtn" onclick="shio_copyRow(${i})">Salin</button>
+        <button class="delBtn" onclick="shio_removeRow(${i})">-</button>
+      </div></td>`;
+    tb.appendChild(tr);
+    document.getElementById("shio-inp" + i).addEventListener("input", (e) => {
+      shio_rowData[i] = e.target.value; saveAllState(); shio_calculate(i);
+    });
+    if (val) shio_calculate(i);
+  }
+}
+function shio_calculate(i) {
+  const val = document.getElementById("shio-inp" + i).value;
+  const elBiji9 = document.getElementById("shio-biji9_" + i);
+  if (!val || isNaN(val) || val.length < 2) {
+    elBiji9.innerText = "-";
+    document.getElementById(`shio-lemah_${i}`).innerHTML = "-";
+    document.getElementById(`shio-on_${i}`).innerHTML = "-";
+    return;
+  }
+  const num = parseInt(val);
+  const globalAcuan = shio_getAcuan();
+  const rumusShio = shio_mult && shio_mult.trim() !== "" ? shio_mult : String(globalAcuan);
+  
+  const biji9 = shio_generateBijiOn9(num, rumusShio, globalAcuan);
+  elBiji9.innerText = biji9;
+  const twoDigitLast = biji9.length >= 2 ? biji9.slice(-2) : biji9.padStart(2, '0');
+  const shioLemah = shio_convertToShio(twoDigitLast);
+  if (shioLemah) {
+    document.getElementById(`shio-lemah_${i}`).innerHTML = `<span class="shio-emoji">${shioLemah.emoji}</span><span class="shio-num">Shio ${shioLemah.nomor}</span><span class="shio-name">${shioLemah.nama}</span><span class="shio-raw">(${shioLemah.raw} → mod 12)</span>`;
+  }
+  const twoDigitFirst = biji9.length >= 2 ? biji9.slice(0, 2) : biji9.padStart(2, '0');
+  const shioOn = shio_convertToShio(twoDigitFirst);
+  if (shioOn) {
+    document.getElementById(`shio-on_${i}`).innerHTML = `<span class="shio-emoji">${shioOn.emoji}</span><span class="shio-num">Shio ${shioOn.nomor}</span><span class="shio-name">${shioOn.nama}</span><span class="shio-raw">(${shioOn.raw} → mod 12)</span>`;
+  }
+}
+function shio_addRow() { shio_rowData.push(""); shio_rowCount++; saveAllState(); shio_render(); }
+function shio_removeRow(i) {
+  if (shio_rowCount <= 1) return alert("Minimal 1 baris!");
+  if (confirm(`Hapus baris ${i + 1}?`)) { shio_rowData.splice(i, 1); shio_rowCount--; saveAllState(); shio_render(); }
+}
+function shio_copyRow(i) {
+  const biji9 = document.getElementById(`shio-biji9_${i}`).innerText;
+  if (biji9 === "-") return alert("Isi result dulu!");
+  const slEl = document.getElementById(`shio-lemah_${i}`);
+  const soEl = document.getElementById(`shio-on_${i}`);
+  const slNum = slEl.querySelector('.shio-num')?.innerText || '-';
+  const slNama = slEl.querySelector('.shio-name')?.innerText || '-';
+  const soNum = soEl.querySelector('.shio-num')?.innerText || '-';
+  const soNama = soEl.querySelector('.shio-name')?.innerText || '-';
+  const txt = `🐉 HOKIDRAW - SHIO [${currentPasaran}]\nResult: ${document.getElementById(`shio-inp${i}`).value}\n🔢 Biji On 9D: ${biji9}\n🔴 Shio Lemah: ${slNum} (${slNama})\n🟢 Shio On: ${soNum} (${soNama})`;
+  navigator.clipboard.writeText(txt).then(() => alert("Disalin!"));
+}
+function shio_copyAll() {
+  let out = `🐉 HOKIDRAW - SHIO ON FINDER [${currentPasaran}]\n\n`, has = false, num = 1;
+  for (let i = 0; i < shio_rowCount; i++) {
+    const biji9 = document.getElementById(`shio-biji9_${i}`).innerText;
+    if (biji9 !== "-") {
+      const slEl = document.getElementById(`shio-lemah_${i}`);
+      const soEl = document.getElementById(`shio-on_${i}`);
+      const slNum = slEl.querySelector('.shio-num')?.innerText || '-';
+      const slNama = slEl.querySelector('.shio-name')?.innerText || '-';
+      const soNum = soEl.querySelector('.shio-num')?.innerText || '-';
+      const soNama = soEl.querySelector('.shio-name')?.innerText || '-';
+      out += `📍 ${num} [${document.getElementById(`shio-inp${i}`).value}]\n🔢 Biji 9D: ${biji9}\n🔴 Shio Lemah: ${slNum} (${slNama})\n🟢 Shio On: ${soNum} (${soNama})\n\n`;
+      has = true; num++;
+    }
+  }
+  if (!has) return alert("Belum ada data!");
+  navigator.clipboard.writeText(out + "Salam JP Paus! 💰").then(() => alert("Disalin!"));
+}
+function shio_reset() {
+  if (confirm("Reset semua input Result?")) { shio_rowData = new Array(shio_rowCount).fill(""); saveAllState(); shio_render(); }
+}
+function shio_saveRumus() {
+  shio_mult = document.getElementById("shio-rumusKhusus").value.trim();
+  saveAllState();
+  for (let i = 0; i < shio_rowCount; i++) if (document.getElementById(`shio-inp${i}`).value) shio_calculate(i);
+  alert("Rumus disimpan!");
+}
+function shio_resetRumus() {
+  if (confirm("Reset rumus khusus?")) {
+    shio_mult = ""; saveAllState();
+    document.getElementById("shio-rumusKhusus").value = "";
+    for (let i = 0; i < shio_rowCount; i++) if (document.getElementById(`shio-inp${i}`).value) shio_calculate(i);
+  }
+}
+async function shio_export() {
+  let has = false;
+  for (let i = 0; i < shio_rowCount; i++) if (document.getElementById(`shio-biji9_${i}`).innerText !== "-") { has = true; break; }
+  if (!has) return alert("Isi minimal 1 result!");
+  const area = document.getElementById('shio-captureArea');
+  document.getElementById('loadingText').innerText = "Export Shio...";
+  document.getElementById('loadingOverlay').classList.add('show');
+  try {
+    const dateStr = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+    document.getElementById('shio-exportHeader').innerText = `Pasaran: ${currentPasaran} | Generated: ${dateStr}`;
+    document.getElementById('shio-watermark').innerText = `MASTER INVEST HOKIDRAW - ${currentPasaran} • ${dateStr}`;
+    document.querySelectorAll('#shio-captureArea .action-col, #shio-captureArea .action-col-header').forEach(el => el.classList.add('hide-action-col'));
+    await new Promise(r => setTimeout(r, 200));
+    const canvas = await html2canvas(area, { backgroundColor: '#ffffff', scale: 2, useCORS: true, logging: false, windowWidth: area.scrollWidth });
+    document.querySelectorAll('#shio-captureArea .action-col, #shio-captureArea .action-col-header').forEach(el => el.classList.remove('hide-action-col'));
+    if (navigator.share && navigator.canShare) {
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], `SHIO_${currentPasaran}_${Date.now()}.png`, { type: 'image/png' });
+        if (navigator.canShare({ files: [file] })) {
+          try { await navigator.share({ files: [file], title: `HOKIDRAW Shio ${currentPasaran}`, text: 'Analisa' }); document.getElementById('loadingOverlay').classList.remove('show'); return; } 
+          catch (err) { if (err.name !== 'AbortError') console.log(err); else { document.getElementById('loadingOverlay').classList.remove('show'); return; } }
+        }
+        showImageModal(canvas.toDataURL('image/png'));
+      }, 'image/png', 1.0);
+    } else { showImageModal(canvas.toDataURL('image/png')); }
+  } catch (err) {
+    document.querySelectorAll('#shio-captureArea .action-col, #shio-captureArea .action-col-header').forEach(el => el.classList.remove('hide-action-col'));
+    document.getElementById('loadingOverlay').classList.remove('show');
+    alert('Gagal: ' + err.message);
+  }
+}
+
+// ==========================================
+// 9. MODUL: POLTAR MULTI-D
+// ==========================================
+let pol_currentResults = [];
+function pol_setTwinMode(mode) {
+  pol_allowTwin = mode;
+  document.getElementById('pol-btnTwin').classList.toggle('active', mode);
+  document.getElementById('pol-btnNoTwin').classList.toggle('active', !mode);
+  saveAllState();
+}
+function pol_buat() {
+  const fields = [
+    document.getElementById("pol-as").value.trim(),
+    document.getElementById("pol-kop").value.trim(),
+    document.getElementById("pol-kep").value.trim(),
+    document.getElementById("pol-ekor").value.trim()
+  ].filter(f => f.length > 0);
+  if (fields.length < 2) { alert("Isi minimal 2 kolom!"); return; }
+  const includeKebalikan = document.getElementById("pol-kebalikan2d").checked;
+  pol_kebalikan = includeKebalikan;
+  saveAllState();
+  const is2D = fields.length === 2;
+  let results = fields[0].split('');
+  for (let i = 1; i < fields.length; i++) {
+    let nextChars = fields[i].split('');
+    let newResults = [];
+    for (let r of results) {
+      for (let c of nextChars) {
+        if (!pol_allowTwin && r.includes(c)) continue;
+        newResults.push(r + c);
+      }
+    }
+    results = newResults;
+  }
+  let finalSet = new Set();
+  for (let res of results) {
+    finalSet.add(res);
+    if (is2D && includeKebalikan) {
+      let rev = res.split('').reverse().join('');
+      finalSet.add(rev);
+    }
+  }
+  pol_currentResults = Array.from(finalSet);
+  const mode = fields.length === 2 ? "2D" : (fields.length === 3 ? "3D" : "4D");
+  const modeClass = mode === "2D" ? "d2" : (mode === "3D" ? "d3" : "d4");
+  document.getElementById("pol-summary").innerHTML = 
+    `TOTAL : <span style="color:#FFF; font-size:16px;">${pol_currentResults.length}</span> LINE ` +
+    `<span class="pol-mode-badge ${modeClass}">${mode}</span>` +
+    `${!pol_allowTwin ? ' <span style="font-size:9px; opacity:0.7;">(NO TWIN)</span>' : ''}`;
+  if (pol_currentResults.length > 0) {
+    document.getElementById("pol-hasil").innerHTML = pol_currentResults.map(item => `<span class="pol-num-tag">${item}</span>`).join('*');
+  } else {
+    document.getElementById("pol-hasil").innerHTML = '<div style="width:100%; text-align:center; opacity:0.5; font-weight:normal; font-size:12px;">Tidak ada hasil (Cek opsi No Twin).</div>';
+  }
+}
+function pol_resetData() {
+  document.getElementById("pol-as").value = "";
+  document.getElementById("pol-kop").value = "";
+  document.getElementById("pol-kep").value = "";
+  document.getElementById("pol-ekor").value = "";
+  pol_setTwinMode(false);
+  document.getElementById("pol-kebalikan2d").checked = false;
+  document.getElementById("pol-hasil").innerHTML = "";
+  document.getElementById("pol-summary").innerHTML = "Menunggu input...";
+  pol_currentResults = [];
+}
+function pol_copyHasil() {
+  if (pol_currentResults.length === 0) { alert("Belum ada hasil!"); return; }
+  const textToCopy = pol_currentResults.join("*");
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    alert(`✅ Berhasil menyalin ${pol_currentResults.length} line!`);
+  }).catch(() => {
+    let ta = document.createElement("textarea");
+    ta.value = textToCopy;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    alert(`✅ Berhasil menyalin ${pol_currentResults.length} line!`);
+  });
+}
+["pol-as", "pol-kop", "pol-kep", "pol-ekor"].forEach(id => {
+  let el = document.getElementById(id);
+  el.addEventListener("input", e => {
+    e.target.value = e.target.value.replace(/\D/g, "").slice(0, 12);
+  });
+});
+
+// ==========================================
+// 10. GOOGLE DRIVE INTEGRATION
+// ==========================================
+function gapiLoaded() { gapi.load('client', initializeGapiClient); }
+async function initializeGapiClient() {
+  await gapi.client.init({ discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"] });
+  gapiInited = true; maybeEnableButtons();
+}
+function gisLoaded() {
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID, scope: SCOPES, callback: ''
+  });
+  gisInited = true; maybeEnableButtons();
+}
+function maybeEnableButtons() {
+  if (gapiInited && gisInited) document.getElementById("btnGDriveLogin").disabled = false;
+}
+function handleAuthClick() {
+  if (GOOGLE_CLIENT_ID.includes('GANTI_DENGAN')) {
+    return alert("⚠️ Client ID belum diatur di kode!");
+  }
+  tokenClient.callback = async (resp) => {
+    if (resp.error !== undefined) throw (resp);
+    document.getElementById('gdriveAuthSection').style.display = 'none';
+    document.getElementById('gdriveStatus').style.display = 'flex';
+    document.getElementById('gdriveUserEmail').innerText = "Google Account"; 
+    document.getElementById('btnSaveToDrive').disabled = false;
+    document.getElementById('btnLoadFromDrive').disabled = false;
+  };
+  if (gapi.client.getToken() === null) tokenClient.requestAccessToken({prompt: 'consent'});
+  else tokenClient.requestAccessToken({prompt: ''});
+}
+async function saveToDrive() {
+  document.getElementById('loadingText').innerText = "Menyimpan ke Google Drive...";
+  document.getElementById('loadingOverlay').classList.add('show');
+  try {
+    const BACKUP_FILE_NAME = `master_hokidraw_${currentPasaran}_backup.json`;
+    const dataToSave = {
+      version: "Master 2.0",
+      pasaran: currentPasaran,
+      timestamp: new Date().toISOString(),
+      ke: { rowCount: ke_rowCount, rowData: ke_rowData, kMult: ke_kMult, eMult: ke_eMult },
+      ng: { rowCount: ng_rowCount, rowData: ng_rowData, onMult: ng_onMult, selMult: ng_selMult },
+      shio: { rowCount: shio_rowCount, rowData: shio_rowData, mult: shio_mult },
+      pol: { allowTwin: pol_allowTwin, kebalikan: pol_kebalikan }
+    };
+    const blob = new Blob([JSON.stringify(dataToSave, null, 2)], { type: 'application/json' });
+    const response = await gapi.client.drive.files.list({ q: `name='${BACKUP_FILE_NAME}' and trashed=false`, fields: 'files(id)', spaces: 'drive' });
+    const files = response.result.files;
+    if (files && files.length > 0) {
+      await gapi.client.request({ path: `/upload/drive/v3/files/${files[0].id}`, method: 'PATCH', params: { uploadType: 'media' }, body: blob });
+    } else {
+      const form = new FormData();
+      form.append('metadata', new Blob([JSON.stringify({ name: BACKUP_FILE_NAME, mimeType: 'application/json' })], { type: 'application/json' }));
+      form.append('file', blob);
+      await gapi.client.request({ path: 'https://www.googleapis.com/upload/drive/v3/files', method: 'POST', params: { uploadType: 'multipart' }, body: form });
+    }
+    alert(`✅ Semua data pasaran ${currentPasaran} berhasil disimpan ke Google Drive!`);
+  } catch (err) {
+    alert("❌ Gagal menyimpan: " + err.message);
+  } finally {
+    document.getElementById('loadingOverlay').classList.remove('show');
+  }
+}
+async function loadFromDrive() {
+  if(!confirm(`Muat dari Drive akan menimpa data pasaran ${currentPasaran} saat ini. Lanjutkan?`)) return;
+  document.getElementById('loadingText').innerText = "Memuat dari Google Drive...";
+  document.getElementById('loadingOverlay').classList.add('show');
+  try {
+    const BACKUP_FILE_NAME = `master_hokidraw_${currentPasaran}_backup.json`;
+    const response = await gapi.client.drive.files.list({ q: `name='${BACKUP_FILE_NAME}' and trashed=false`, fields: 'files(id)', spaces: 'drive' });
+    const files = response.result.files;
+    if (files && files.length > 0) {
+      const res = await gapi.client.drive.files.get({ fileId: files[0].id, alt: 'media' });
+      const data = res.body;
+      if (data.ke) {
+        ke_rowCount = data.ke.rowCount || 3; ke_rowData = data.ke.rowData || [];
+        ke_kMult = data.ke.kMult || ""; ke_eMult = data.ke.eMult || "";
+      }
+      if (data.ng) {
+        ng_rowCount = data.ng.rowCount || 3; ng_rowData = data.ng.rowData || [];
+        ng_onMult = data.ng.onMult || ""; ng_selMult = data.ng.selMult || "";
+      }
+      if (data.shio) {
+        shio_rowCount = data.shio.rowCount || 3; shio_rowData = data.shio.rowData || [];
+        shio_mult = data.shio.mult || "";
+      }
+      if (data.pol) {
+        pol_allowTwin = data.pol.allowTwin || false;
+        pol_kebalikan = data.pol.kebalikan || false;
+      }
+      saveAllState();
+      ke_render(); ng_render(); shio_render();
+      pol_setTwinMode(pol_allowTwin);
+      document.getElementById("pol-kebalikan2d").checked = pol_kebalikan;
+      alert(`✅ Semua data pasaran ${currentPasaran} berhasil dimuat dari Google Drive!`);
+    } else {
+      alert("⚠️ Tidak ditemukan file backup untuk pasaran ini di Google Drive.");
+    }
+  } catch (err) {
+    alert("❌ Gagal memuat: " + err.message);
+  } finally {
+    document.getElementById('loadingOverlay').classList.remove('show');
+  }
+}
+
+// ==========================================
+// 11. PWA / INSTALL APP
+// ==========================================
+let deferredPrompt;
+const manifest = {
+  "name": "Master Invest HOKIDRAW",
+  "short_name": "HOKIDRAW",
+  "start_url": window.location.href,
+  "display": "standalone",
+  "background_color": "#FFFDE7",
+  "theme_color": "#B71C1C",
+  "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png", "sizes": "192x192", "type": "image/png" }]
+};
+const blobManifest = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+const link = document.createElement('link');
+link.rel = 'manifest';
+link.href = URL.createObjectURL(blobManifest);
+document.head.appendChild(link);
+
+if ('serviceWorker' in navigator) {
+  const swCode = `self.addEventListener('install', e => e.waitUntil(self.skipWaiting())); self.addEventListener('activate', e => e.waitUntil(self.clients.claim())); self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));`;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], {type: 'application/javascript'}))).catch(()=>{});
+}
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('btnInstallApp').style.display = 'block';
+});
+const isIos = () => /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+if (window.matchMedia('(display-mode: standalone)').matches || isIos()) {
+  document.getElementById('btnInstallApp').style.display = 'none';
+  if(isIos()) document.getElementById('installHint').style.display = 'block';
+}
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      document.getElementById('btnInstallApp').style.display = 'none';
+    });
+  }
+}
+function showImageModal(dataUrl) {
+  document.getElementById('modalImage').src = dataUrl;
+  document.getElementById('imageModal').style.display = 'flex';
+  document.getElementById('loadingOverlay').classList.remove('show');
+}
+function closeImageModal() {
+  document.getElementById('imageModal').style.display = 'none';
+  document.getElementById('modalImage').src = '';
+}
+
+// ==========================================
+// 12. INISIALISASI
+// ==========================================
+initPasaran();
+loadAllState();
+ke_render();
+ng_render();
+shio_renderReference();
+shio_render();
+pol_setTwinMode(pol_allowTwin);
+document.getElementById("pol-kebalikan2d").checked = pol_kebalikan;
+
+document.getElementById("ke-btnAddRow").addEventListener("click", ke_addRow);
+document.getElementById("ke-btnReset").addEventListener("click", ke_reset);
+document.getElementById("ke-btnCopyAll").addEventListener("click", ke_copyAll);
+document.getElementById("ke-btnExportImg").addEventListener("click", ke_export);
+document.getElementById("ke-multiplierAcuan").addEventListener("input", () => { for(let i=0; i<ke_rowCount; i++) if(document.getElementById(`ke-inp${i}`).value) ke_calculate(i); });
+document.getElementById("ke-btnSaveRumus").addEventListener("click", ke_saveRumus);
+document.getElementById("ke-btnResetRumus").addEventListener("click", ke_resetRumus);
+
+document.getElementById("ng-btnAddRow").addEventListener("click", ng_addRow);
+document.getElementById("ng-btnReset").addEventListener("click", ng_reset);
+document.getElementById("ng-btnCopyAll").addEventListener("click", ng_copyAll);
+document.getElementById("ng-btnExportImg").addEventListener("click", ng_export);
+document.getElementById("ng-multiplierAcuan").addEventListener("input", () => { for(let i=0; i<ng_rowCount; i++) if(document.getElementById(`ng-inp${i}`).value) ng_calculate(i); });
+document.getElementById("ng-btnSaveRumus").addEventListener("click", ng_saveRumus);
+document.getElementById("ng-btnResetRumus").addEventListener("click", ng_resetRumus);
+
+document.getElementById("shio-btnAddRow").addEventListener("click", shio_addRow);
+document.getElementById("shio-btnReset").addEventListener("click", shio_reset);
+document.getElementById("shio-btnCopyAll").addEventListener("click", shio_copyAll);
+document.getElementById("shio-btnExportImg").addEventListener("click", shio_export);
+document.getElementById("shio-multiplierAcuan").addEventListener("input", () => { for(let i=0; i<shio_rowCount; i++) if(document.getElementById(`shio-inp${i}`).value) shio_calculate(i); });
+document.getElementById("shio-btnSaveRumus").addEventListener("click", shio_saveRumus);
+document.getElementById("shio-btnResetRumus").addEventListener("click", shio_resetRumus);
+
+window.onload = () => { gapiLoaded(); gisLoaded(); };
+</script>
+</body>
+</html>
