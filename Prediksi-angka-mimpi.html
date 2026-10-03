@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+<title>Dream Interpreter · Premium Mystical Edition</title>
+<style>
+  :root{
+    --bg:#05020d; --bg2:#0b0418; --bg3:#12062a;
+    --fg:#f5f3ff; --card:rgba(20,7,40,0.75);
+    --muted:#8b7ba8;
+    --gold:#fbbf24; --gold2:#f59e0b;
+    --gold-dim:rgba(251,191,36,0.18);
+    --purple:#7c3aed; --purple-dim:rgba(124,58,237,0.25);
+    --emerald:#10b981; --emerald-dim:rgba(16,185,129,0.2);
+    --rose:#f472b6;
+    --accent:#a78bfa;
+    --border:rgba(124,58,237,0.35);
+    --shadow-gold: 0 0 25px rgba(251,191,36,0.3);
+    --shadow-purple: 0 0 30px rgba(124,58,237,0.4);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0}
+  body{
+    font-family:"Segoe UI", Constantia, serif;
+    color:var(--fg); padding:16px; padding-bottom: 100px;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(124,58,237,0.35) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 20%, rgba(16,185,129,0.15) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 100%, rgba(251,191,36,0.10) 0%, transparent 55%),
+      linear-gradient(180deg, #05020d 0%, #0a0318 40%, #05020d 100%);
+    background-attachment: fixed;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before{
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, rgba(251,191,36,0.9), transparent),
+      radial-gradient(1px 1px at 27% 62%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1.5px 1.5px at 48% 25%, rgba(167,139,250,0.9), transparent),
+      radial-gradient(1px 1px at 68% 78%, rgba(16,185,129,0.85), transparent),
+      radial-gradient(1px 1px at 82% 42%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1.5px 1.5px at 92% 12%, rgba(251,191,36,0.85), transparent),
+      radial-gradient(1px 1px at 35% 88%, rgba(167,139,250,0.7), transparent),
+      radial-gradient(1px 1px at 8% 52%, rgba(255,255,255,0.5), transparent);
+    animation: twinkleBg 6s ease-in-out infinite;
+  }
+  @keyframes twinkleBg{
+    0%,100%{opacity:.7; filter:brightness(1)}
+    50%{opacity:1; filter:brightness(1.4)}
+  }
+  body > *{position:relative; z-index:1;}
+
+  .header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:20px; border-bottom:1px solid var(--border);
+    padding-bottom:15px; position:relative;
+  }
+  .header::after{
+    content:''; position:absolute; bottom:-1px; left:0; width:50%; height:1px;
+    background: linear-gradient(90deg, var(--gold), var(--purple), transparent);
+  }
+  h1{
+    font-size:22px;margin:0; font-weight:400;
+    background: linear-gradient(90deg, var(--gold), var(--accent), var(--emerald), var(--gold));
+    background-size: 300% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase; letter-spacing:3px;
+    font-family: 'Times New Roman', serif;
+    text-shadow: 0 0 30px rgba(167,139,250,0.5);
+    animation: gradientShift 8s ease infinite;
+  }
+  @keyframes gradientShift{
+    0%,100%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+  }
+  .subtitle{
+    font-size:11px; color:var(--accent); margin-top:4px; 
+    font-style:italic; letter-spacing:1.5px;
+    text-shadow: 0 0 10px rgba(167,139,250,0.6);
+  }
+  .crystal{
+    font-size:28px; 
+    filter: drop-shadow(0 0 14px var(--purple)) drop-shadow(0 0 25px var(--gold));
+    animation: floatCrystal 4s ease-in-out infinite;
+  }
+  @keyframes floatCrystal{
+    0%,100%{transform:translateY(0) rotate(0deg); filter:drop-shadow(0 0 12px var(--purple)) drop-shadow(0 0 20px var(--gold))}
+    50%{transform:translateY(-4px) rotate(10deg); filter:drop-shadow(0 0 20px var(--gold)) drop-shadow(0 0 35px var(--emerald))}
+  }
+
+  textarea.input, input.text-input{
+    width:100%; padding:12px; border-radius:8px;
+    border:1px solid var(--border);
+    background: rgba(10,3,24,0.9); color:var(--gold);
+    font-family: 'Courier New', monospace; font-size:14px; 
+    outline:none; transition: all .2s;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
+  }
+  textarea.input{height:130px; resize:none; margin-bottom:15px;}
+  input.text-input{margin-bottom:15px;}
+
+  textarea.input:focus, input.text-input:focus, select:focus{
+    border-color:var(--emerald);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 0 0 3px rgba(16,185,129,0.2), 0 0 20px rgba(16,185,129,0.3);
+    color:#a7f3d0;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(78%) sepia(90%) saturate(2000%) hue-rotate(340deg) brightness(105%) contrast(105%);
+    cursor: pointer;
+  }
+
+  label{
+    font-size:10px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:1.5px; margin-bottom:6px; display:block; font-weight:600;
+  }
+
+  select {
+    width: 100%; padding: 11px 12px; margin-bottom: 12px;
+    background: rgba(10,3,24,0.9); color: var(--fg);
+    border: 1px solid var(--border); border-radius: 6px;
+    outline: none; font-weight: 600; font-family: inherit;
+  }
+
+  button{
+    border:none; padding:14px; border-radius:8px; cursor:pointer;
+    font-weight:700; font-size:13px; letter-spacing:1px;
+    transition: transform .1s, box-shadow .2s, filter .2s;
+    text-transform:uppercase; color:#000; width: 100%;
+    margin-bottom: 10px; font-family: inherit;
+    position: relative; overflow: hidden;
+  }
+  button:active{transform:scale(0.97);}
+
+  #scanBtn{
+    background: linear-gradient(135deg, var(--gold), var(--gold2), #b45309, var(--purple));
+    background-size: 200% 200%;
+    animation: btnShift 5s ease infinite;
+    box-shadow: 0 8px 30px rgba(251,191,36,0.4), 0 0 40px rgba(124,58,237,0.3);
+    color: #1a0a00;
+    font-size: 14px;
+  }
+  @keyframes btnShift{
+    0%,100%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+  }
+  #scanBtn::before{
+    content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer{ 0%{left:-100%} 100%{left:100%} }
+
+  .secondary-btn{
+    background: rgba(20,7,40,0.85); color:var(--muted);
+    border:1px solid var(--border);
+    font-size: 11px; padding: 11px;
+  }
+  .secondary-btn:hover{color:#fff; border-color: var(--emerald); background: rgba(16,185,129,0.15);}
+
+  .btn-row{display: flex; gap: 8px;}
+  .btn-row button{flex:1}
+
+  .btn-danger{color:#fb7185 !important; border-color: rgba(251,113,133,0.4) !important;}
+  .btn-danger:hover{background: rgba(244,63,94,0.15) !important; color:#fff !important;}
+  .btn-gold{color:var(--gold) !important; border-color: var(--gold-dim) !important;}
+  .btn-gold:hover{background: var(--gold-dim) !important; color:#fff !important; box-shadow: 0 0 20px rgba(251,191,36,0.3);}
+
+  .section-title{
+    display:flex; align-items:center; gap:10px;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--accent); margin: 25px 0 12px; font-weight:700;
+  }
+  .section-title::before, .section-title::after{
+    content:''; flex:1; height:1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+
+  .analysis-grid {
+    display: grid; gap: 12px; margin-top: 5px;
+    grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+  }
+
+  .dream-card {
+    background: linear-gradient(135deg, rgba(20,7,40,0.85), rgba(10,3,24,0.9));
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    padding: 14px; border-radius: 10px; position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 1px 0 rgba(167,139,250,0.1);
+    transition: transform .25s, box-shadow .25s, border-color .25s;
+    overflow: hidden;
+  }
+  .dream-card:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7), var(--shadow-purple);
+    border-color: var(--emerald);
+  }
+  .dream-card::before {
+    content:''; position:absolute; top:0; left:0; width:4px; height:100%;
+    background: linear-gradient(180deg, var(--gold), var(--purple), var(--emerald));
+    border-radius: 10px 0 0 10px;
+  }
+  .dream-card.highlight{
+    border-color: var(--gold);
+    box-shadow: 0 0 25px rgba(251,191,36,0.45), 0 0 60px rgba(251,191,36,0.15), 0 4px 15px rgba(0,0,0,0.5);
+    background: linear-gradient(135deg, rgba(40,15,20,0.9), rgba(20,7,40,0.9));
+  }
+  .dream-card.highlight::before{
+    background: linear-gradient(180deg, #fef3c7, var(--gold), #b45309);
+    box-shadow: 0 0 20px var(--gold);
+    width: 5px;
+  }
+  .dream-card.highlight::after{
+    content:'⭐'; position:absolute; top:10px; right:12px;
+    font-size: 16px; filter: drop-shadow(0 0 8px var(--gold));
+    animation: twinkle 2s ease-in-out infinite;
+  }
+  @keyframes twinkle{0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.15)}}
+
+  .dc-header { display:flex; justify-content:space-between; margin-bottom: 8px; align-items: center; gap: 8px;}
+  .dc-title {
+    font-size: 10px; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 1.2px; font-weight:700;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  }
+  .dc-date-badge{
+    background: rgba(124,58,237,0.25);
+    border: 1px solid var(--border);
+    padding: 2px 7px; border-radius: 10px;
+    font-size: 9px; color: var(--gold); letter-spacing: 0.5px;
+    font-family: 'Courier New', monospace;
+  }
+  .dc-result {
+    font-size: 22px; font-weight:bold;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, var(--gold), #fde68a, var(--gold));
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent;
+    text-shadow: 0 0 20px rgba(251,191,36,0.6);
+    flex-shrink: 0;
+  }
+
+  .dc-meaning {
+    font-size: 14px; color: var(--emerald); font-style: italic;
+    margin-bottom: 10px; border-bottom: 1px dashed var(--border);
+    padding-bottom: 8px;
+    text-shadow: 0 0 10px rgba(16,185,129,0.3);
+  }
+
+  .dc-numbers { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag {
+    font-size: 10.5px; padding: 4px 8px;
+    background: rgba(10,3,24,0.9);
+    border: 1px solid var(--border);
+    color: var(--muted); border-radius: 4px;
+    font-family: 'Courier New', monospace;
+  }
+  .tag b { color: var(--fg); }
+  .tag.gold{border-color:var(--gold); color: var(--gold); box-shadow: 0 0 10px rgba(251,191,36,0.2);}
+  .tag.gold b{color:#fef3c7}
+
+  .premium-box{
+    background: linear-gradient(135deg, rgba(20,7,40,0.95), rgba(10,3,24,0.95));
+    border: 1px solid var(--gold);
+    border-radius: 12px; padding: 18px 16px;
+    box-shadow: 0 0 40px rgba(251,191,36,0.15), inset 0 0 40px rgba(124,58,237,0.08);
+    position: relative; overflow: hidden;
+    margin-top: 16px;
+  }
+  .premium-box::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .premium-box::after{
+    content:''; position:absolute; bottom:-50%; left:-50%; width:200%; height:200%;
+    background: radial-gradient(circle, rgba(251,191,36,0.04) 0%, transparent 60%);
+    pointer-events:none;
+    animation: rotateAura 20s linear infinite;
+  }
+  @keyframes rotateAura{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  .premium-box.accent{
+    border-color: var(--purple);
+    box-shadow: 0 0 40px rgba(124,58,237,0.3), inset 0 0 40px rgba(124,58,237,0.08);
+  }
+  .premium-box.accent::before{
+    background: linear-gradient(90deg, transparent, var(--purple), transparent);
+  }
+  .premium-box.emerald{
+    border-color: var(--emerald);
+    box-shadow: 0 0 40px rgba(16,185,129,0.25), inset 0 0 40px rgba(16,185,129,0.08);
+  }
+  .premium-box.emerald::before{
+    background: linear-gradient(90deg, transparent, var(--emerald), transparent);
+  }
+  .premium-box.rose{
+    border-color: #fb7185;
+    box-shadow: 0 0 40px rgba(251,113,133,0.25), inset 0 0 40px rgba(251,113,133,0.08);
+  }
+  .premium-box.rose::before{
+    background: linear-gradient(90deg, transparent, #fb7185, transparent);
+  }
+  .premium-box.cyan{
+    border-color: #06b6d4;
+    box-shadow: 0 0 40px rgba(6,182,212,0.25), inset 0 0 40px rgba(6,182,212,0.08);
+  }
+  .premium-box.cyan::before{
+    background: linear-gradient(90deg, transparent, #06b6d4, transparent);
+  }
+
+  .box-title {
+    color: var(--gold); font-size: 11px; text-transform: uppercase;
+    letter-spacing: 3px; margin-bottom: 12px; text-align: center;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(251,191,36,0.5);
+  }
+  .box-title.accent{color: var(--accent); text-shadow: 0 0 10px rgba(167,139,250,0.5);}
+  .box-title.emerald{color: var(--emerald); text-shadow: 0 0 10px rgba(16,185,129,0.5);}
+  .box-title.rose{color: #fb7185; text-shadow: 0 0 10px rgba(251,113,133,0.5);}
+  .box-title.cyan{color: #06b6d4; text-shadow: 0 0 10px rgba(6,182,212,0.5);}
+
+  .box-content {
+    font-family: 'Courier New', monospace;
+    font-size: 15px; line-height: 1.7;
+    color: var(--accent); word-break: break-all;
+    text-align: center; letter-spacing: 1px;
+  }
+  .box-content.bbfs{
+    font-size: 34px; letter-spacing: 10px; font-weight: 900;
+    background: linear-gradient(135deg, var(--gold), #fde68a, var(--gold), var(--emerald), var(--gold));
+    background-size: 300% 100%;
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent;
+    padding: 6px 0;
+    font-family: 'Courier New', monospace;
+    animation: gradientShift 6s ease infinite;
+    filter: drop-shadow(0 0 20px rgba(251,191,36,0.5));
+  }
+  .box-content.cb{
+    font-size: 30px; letter-spacing: 8px; font-weight: 900;
+    color: var(--emerald);
+    text-shadow: 0 0 18px rgba(16,185,129,0.7), 0 0 40px rgba(16,185,129,0.4);
+    padding: 6px 0;
+  }
+  .box-content.lema{
+    font-size: 28px; letter-spacing: 8px; font-weight: 900;
+    color: #fb7185;
+    text-shadow: 0 0 18px rgba(251,113,133,0.7), 0 0 40px rgba(251,113,133,0.4);
+    padding: 6px 0;
+  }
+  .box-detail{
+    font-size: 10px; color: var(--muted); margin-top: 8px;
+    text-align: center; letter-spacing: 0.5px; line-height: 1.6;
+  }
+
+  .shio-grid{
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(85px,1fr));
+    gap: 8px; margin-top: 8px;
+  }
+  .shio-item{
+    background: rgba(10,3,24,0.9);
+    border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px 4px; text-align: center;
+    transition: all .2s;
+  }
+  .shio-item.top{
+    border-color: var(--gold);
+    background: linear-gradient(135deg, rgba(251,191,36,0.18), rgba(16,185,129,0.08));
+    box-shadow: 0 0 15px rgba(251,191,36,0.35);
+    transform: scale(1.05);
+  }
+  .shio-emoji{font-size: 20px; line-height: 1; }
+  .shio-name{font-size: 10px; color: var(--fg); margin-top: 3px; font-weight:600;}
+  .shio-count{font-size: 10px; color: var(--gold); font-family: monospace; margin-top:2px;}
+
+  .pola-row{
+    display: flex; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px dashed var(--border);
+    font-family: 'Courier New', monospace;
+    align-items: center;
+  }
+  .pola-row:last-child{border-bottom:none;}
+  .pola-label{
+    font-size: 10px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    font-family: 'Segoe UI', sans-serif; font-weight: 700;
+  }
+  .pola-value{
+    font-size: 16px; font-weight: 900; color: var(--gold);
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(251,191,36,0.4);
+  }
+  .pola-value.accent{color: var(--emerald); text-shadow: 0 0 12px rgba(16,185,129,0.5);}
+  .pola-value.mati{color: #fb7185; text-shadow: 0 0 12px rgba(251,113,133,0.5);}
+
+  .pola-pairs{
+    font-family:'Courier New', monospace; font-size: 13px;
+    color: var(--fg); line-height: 1.9; text-align: center;
+    padding: 8px 0; letter-spacing: 1px;
+    word-break: break-word;
+  }
+  .pola-pairs b{color: var(--gold);}
+
+  /* 4D PAIRS GRID */
+  .fourd-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    padding: 6px 0;
+  }
+  .fourd-tag {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 5px 9px;
+    background: rgba(10,3,24,0.9);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--fg);
+    letter-spacing: 1.5px;
+    transition: all .2s;
+  }
+  .fourd-tag:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 12px rgba(251,191,36,0.35);
+  }
+  .fourd-tag.hot {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, rgba(251,191,36,0.18), rgba(124,58,237,0.1));
+    color: var(--gold);
+    box-shadow: 0 0 12px rgba(251,191,36,0.3);
+  }
+  .fourd-tag.cold {
+    border-color: rgba(251,113,133,0.5);
+    color: #fb7185;
+    background: rgba(40,5,15,0.7);
+  }
+  .fourd-tag.cyan {
+    border-color: rgba(6,182,212,0.5);
+    color: #67e8f9;
+    background: rgba(3,20,30,0.8);
+  }
+
+  .pasaran-badge{
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(16,185,129,0.2));
+    border: 1px solid var(--purple);
+    border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+    color: var(--accent); letter-spacing: 2px;
+    text-transform: uppercase;
+    box-shadow: 0 0 20px rgba(124,58,237,0.4);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .pasaran-badge::before{
+    content:'📛';
+    filter: drop-shadow(0 0 6px var(--gold));
+  }
+
+  .range-info{
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin: 10px auto;
+    padding: 8px 14px;
+    background: rgba(10,3,24,0.85);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    font-size: 11px; color: var(--gold);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
+    max-width: fit-content;
+    box-shadow: inset 0 0 20px rgba(124,58,237,0.1);
+    flex-wrap: wrap;
+    text-align: center;
+  }
+  .range-info b{color: var(--emerald);}
+
+  #toast{
+    position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(20px);
+    background: linear-gradient(135deg, var(--gold), var(--purple));
+    color:#fff; padding:12px 26px; border-radius:50px;
+    font-size:13px; font-weight:800; opacity:0; pointer-events:none;
+    transition: all .3s cubic-bezier(.34,1.56,.64,1);
+    box-shadow:0 10px 40px rgba(124,58,237,0.6), 0 0 60px rgba(251,191,36,0.3); z-index: 999;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    max-width: 90vw; text-align: center;
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background: transparent}
+  ::-webkit-scrollbar-thumb{background: var(--border); border-radius: 3px}
+  ::-webkit-scrollbar-thumb:hover{background: var(--purple)}
+
+  @media (max-width: 480px){
+    h1{font-size: 18px; letter-spacing: 2px;}
+    .crystal{font-size: 22px;}
+    .box-content.bbfs{font-size: 26px; letter-spacing: 6px;}
+    .box-content.cb{font-size: 24px; letter-spacing: 6px;}
+    .box-content.lema{font-size: 22px; letter-spacing: 6px;}
+    .fourd-tag{font-size: 12px; padding: 4px 7px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <h1>Tafsir Line</h1>
+    <div class="subtitle">✦ Analisa Mimpi · Mystical Premium Edition ✦</div>
+  </div>
+  <div class="crystal">🔮</div>
+</div>
+
+<!-- NAMA PASARAN -->
+<label>📛 Nama Pasaran</label>
+<input type="text" id="pasaranInput" class="text-input" 
+       placeholder="Contoh: SINGAPORE, HONGKONG, SYDNEY..." 
+       value="SINGAPORE" maxlength="30" />
+
+<!-- DATE & FILTER -->
+<div style="display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap;">
+  <div style="flex:1; min-width: 140px;">
+    <label>📅 Tanggal Result Terbaru (R1)</label>
+    <input type="date" id="tanggalInput" class="text-input" style="margin-bottom:10px; color: var(--gold); font-family: 'Courier New', monospace;" />
+  </div>
+  <div style="flex:1; min-width: 140px;">
+    <label>🎯 Filter Rentang Waktu</label>
+    <select id="filterRange" style="margin-bottom:10px;">
+      <option value="all">📚 Semua Data</option>
+      <option value="7">📅 7 Hari Terakhir</option>
+      <option value="14">📅 14 Hari Terakhir</option>
+      <option value="30" selected>📅 30 Hari Terakhir</option>
+      <option value="custom">🎯 Custom Range</option>
+    </select>
+  </div>
+</div>
+
+<!-- 🔮 KEDALAMAN ANALISA (BARU) -->
+<div>
+  <label>🔮 Kedalaman Analisa (Berapa Result Dianalisa)</label>
+  <select id="analysisDepth">
+    <option value="12" selected>⭐ 12 Result Terakhir (Rekomendasi · Paling Akurat)</option>
+    <option value="15">📊 15 Result Terakhir</option>
+    <option value="20">📊 20 Result Terakhir</option>
+    <option value="30">📊 30 Result Terakhir (Full)</option>
+    <option value="0">∞ Semua Dalam Rentang Filter</option>
+  </select>
+</div>
+
+<!-- CUSTOM RANGE BOX -->
+<div id="customRangeBox" style="display:none; gap:10px; align-items:flex-start; flex-wrap:wrap; margin-bottom: 12px; padding: 12px; background: rgba(10,3,24,0.5); border: 1px dashed var(--border); border-radius: 8px;">
+  <div style="flex:1; min-width: 130px;">
+    <label>Dari Tanggal</label>
+    <input type="date" id="dateFrom" class="text-input" style="margin-bottom:0; color: var(--emerald); font-family: 'Courier New', monospace;" />
+  </div>
+  <div style="flex:1; min-width: 130px;">
+    <label>Sampai Tanggal</label>
+    <input type="date" id="dateTo" class="text-input" style="margin-bottom:0; color: var(--emerald); font-family: 'Courier New', monospace;" />
+  </div>
+</div>
+
+<!-- POSISI RESULT -->
+<div>
+    <label>Posisi Result Terbaru?</label>
+    <select id="sortOrder">
+        <option value="top">Paling Atas (Baris 1)</option>
+        <option value="bottom">Paling Bawah (Baris Akhir)</option>
+    </select>
+</div>
+
+<label>Input Result · Rekomendasi 30 Result (Buffer Data)</label>
+<textarea id="inputArea" class="input" placeholder="Masukkan history result di sini... (pisah dengan enter/spasi/koma)&#10;Rekomendasi: isi 30 result terakhir sebagai buffer"></textarea>
+
+<button id="scanBtn">✨ BUKA TABIR MIMPI</button>
+
+<div class="btn-row">
+  <button class="secondary-btn btn-gold" id="copyBtn">📋 SALIN</button>
+  <button class="secondary-btn btn-gold" id="jsonBtn">📥 JSON</button>
+  <button class="secondary-btn btn-gold" id="csvBtn">📊 CSV</button>
+</div>
+<button class="secondary-btn btn-danger" id="resetBtn" style="margin-top:5px">🗑 RESET SEMUA</button>
+
+<!-- RESULT -->
+<div id="resultArea" style="display:none">
+  
+  <div class="section-title" id="sectionTitle">📜 Analisa Result</div>
+  <div style="text-align:center; margin-bottom: 10px;">
+    <span class="pasaran-badge" id="pasaranBadge">SINGAPORE</span>
+  </div>
+  <div class="range-info" id="rangeInfo">-</div>
+  
+  <div class="analysis-grid" id="cardsArea" style="margin-top: 15px;"></div>
+
+  <div class="premium-box">
+    <div class="box-title">💰 Line Invest Gabungan</div>
+    <div class="box-content" id="finalInvest">-</div>
+    <div class="box-detail" id="lineCount">0 Line</div>
+  </div>
+
+  <div class="premium-box accent">
+    <div class="box-title accent">🎯 BBFS 8 DIGIT · TOP FREKUENSI</div>
+    <div class="box-content bbfs" id="bbfsResult">-</div>
+    <div class="box-detail" id="bbfsDetail">Analisa frekuensi digit...</div>
+  </div>
+
+  <div class="premium-box emerald">
+    <div class="box-title emerald">💰 COLOK BEBAS · 4 DIGIT TERKUAT</div>
+    <div class="box-content cb" id="cbResult">-</div>
+    <div class="box-detail" id="cbDetail">Top 4 digit tunggal paling sering muncul</div>
+  </div>
+
+  <div class="premium-box accent">
+    <div class="box-title accent">🐉 SHIO · TALLY RESULT</div>
+    <div class="shio-grid" id="shioGrid"></div>
+    <div class="box-detail" id="shioDetail" style="margin-top:12px"></div>
+  </div>
+
+  <div class="premium-box">
+    <div class="box-title">⚔️ POLA TARUNG</div>
+    <div class="pola-row">
+      <span class="pola-label">Angka Main (AM)</span>
+      <span class="pola-value" id="amVal">-</span>
+    </div>
+    <div class="pola-row">
+      <span class="pola-label">Angka Ikut (AI)</span>
+      <span class="pola-value accent" id="aiVal">-</span>
+    </div>
+    <div class="pola-row">
+      <span class="pola-label">Angka Lemah / Mati</span>
+      <span class="pola-value mati" id="matiVal">-</span>
+    </div>
+    <div class="pola-row" style="flex-direction:column; align-items:stretch;">
+      <span class="pola-label" style="margin-bottom:6px; text-align:center;">2D BB (Bolak Balik · Top 4 AM)</span>
+      <div class="pola-pairs" id="bb2d">-</div>
+    </div>
+    <div class="pola-row" style="flex-direction:column; align-items:stretch;">
+      <span class="pola-label" style="margin-bottom:6px; text-align:center;">3D BB (Bolak Balik · Top 5)</span>
+      <div class="pola-pairs" id="bb3d">-</div>
+    </div>
+  </div>
+
+  <!-- 🎲 4D BB DARI AM -->
+  <div class="premium-box">
+    <div class="box-title">🎲 4D BB · DARI ANGKA MAIN (AM)</div>
+    <div class="fourd-grid" id="fourdAM"></div>
+    <div class="box-detail" id="fourdAMDetail">Semua permutasi dari 4 digit AM</div>
+  </div>
+
+  <!-- 🎲 4D BB DARI AI -->
+  <div class="premium-box cyan">
+    <div class="box-title cyan">🎲 4D BB · DARI ANGKA IKUT (AI)</div>
+    <div class="fourd-grid" id="fourdAI"></div>
+    <div class="box-detail" id="fourdAIDetail">Semua permutasi dari 4 digit AI</div>
+  </div>
+
+  <!-- 💀 4D LEMAH -->
+  <div class="premium-box rose">
+    <div class="box-title rose">💀 4D LEMAH · DARI ANGKA MATI</div>
+    <div class="fourd-grid" id="fourdLemah"></div>
+    <div class="box-detail" id="fourdLemahDetail">Kombinasi dari 4 digit paling jarang muncul</div>
+  </div>
+
+  <!-- 🎰 4D MIX AM+AI -->
+  <div class="premium-box emerald">
+    <div class="box-title emerald">🎰 4D MIX · AM + AI (Top 12)</div>
+    <div class="fourd-grid" id="fourdMix"></div>
+    <div class="box-detail" id="fourdMixDetail">Kombinasi 2 digit dari AM + 2 digit dari AI</div>
+  </div>
+
+</div>
+
+<div id="toast">✓ Disalin!</div>
+
+<script>
+// ================= DATABASE =================
+const DATA_MIMPI = {
+  '00':['Penyair','97'],'01':['Setan','05'],'02':['Sarjana','04'],'03':['Orang Mati','07'],
+  '04':['Kwan Im','02'],'05':['Kepala Rampok','01'],'06':['Dewi Bulan','09'],'07':['Pelayan','03'],
+  '08':['Maling Kecil','00'],'09':['Jendral','06'],'10':['Kelenteng','22'],'11':['Menteri Serakah','15'],
+  '12':['Penasehat Perang','16'],'13':['Penjaga Pintu','17'],'14':['Potong Babi','18'],'15':['Hakim','11'],
+  '16':['Sakit Gudig','12'],'17':['Pemadat','13'],'18':['Kas Uang','14'],'19':['Kupu-kupu','27'],
+  '20':['Istri Sejati','24'],'21':['Pelacur','26'],'22':['Peti Mati','10'],'23':['Setan Gantung','30'],
+  '24':['Sumber Air','20'],'25':['Menantu Raja','32'],'26':['Raja','21'],'27':['Wanita Cantik','19'],
+  '28':['Pemotong Kayu','29'],'29':['Pendeta Sakti','28'],'30':['Nelayan','23'],'31':['Anggota Kelamin','26'],
+  '32':['Ahli Nujum','05'],'33':['Pengemis','09'],'34':['Orang Buta','07'],'35':['Wanita','25'],
+  '36':['Pendeta Wanita','13'],'37':['Orang Bongkok','09'],'38':['Putri Raja','00'],'39':['Kekasih','00'],
+  '40':['Penolong','03'],'41':['Pahlawan','06'],'42':['Jejaka Tua','18'],'43':['Janda Muda','00'],
+  '44':['Berandal','00'],'45':['Pengembara','00'],'46':['Nenek Moyang','00'],'47':['Banci','00'],
+  '48':['Si Ceroboh','00'],'49':['Drakula','00'],'50':['Orang Eskimo','00'],'51':['Ahli Filsafat','00'],
+  '52':['Raja Laut','00'],'53':['Penjual Silat','00'],'54':['Raja Kera','00'],'55':['Pertapa','00'],
+  '56':['Budak','00'],'57':['Anak Sakti','00'],'58':['Penari','00'],'59':['Putra Raja','00'],
+  '60':['Kepala Polisi','00'],'61':['Pedagang','00'],'62':['Pagoda','00'],'63':['Pendekar Wanita','00'],
+  '64':['Dewa Uang','00'],'65':['Raja Setan','00'],'66':['Dewa Bumi','00'],'67':['Penjual Daging','00'],
+  '68':['Pembuat Pedang','00'],'69':['Pencari Jejak','00'],'70':['Panglima','00'],'71':['Pemburu','00'],
+  '72':['Dewa Langit','00'],'73':['Tuan Tanah','00'],'74':['Bajak Laut','00'],'75':['Suami Istri','00'],
+  '76':['Jendral Wanita','00'],'77':['Walikota','00'],'78':['Orang Kaya','00'],'79':['Jendral Serakah','00'],
+  '80':['Kepala Desa','00'],'81':['Penipu','00'],'82':['Gembala Sapi','00'],'83':['Ibu Suri','00'],
+  '84':['Budha','00'],'85':['Penyihir','00'],'86':['Pencabut Nyawa','00'],'87':['Orang Gila','00'],
+  '88':['Dewi Mega','00'],'89':['Pemabuk','00'],'90':['Tawanan','00'],'91':['Siluman Air','00'],
+  '92':['Putri Kipas','00'],'93':['Penjilat','00'],'94':['Kwan Kong','00'],'95':['Petani','00'],
+  '96':['Prajurit','00'],'97':['Raksasa','00'],'98':['Penjaga Malam','00'],'99':['Hidung Belang','00']
+};
+
+const TAYSEN_MAP = {
+  '00':'97','01':'05','02':'16','03':'32','04':'52','05':'01','06':'20','07':'76','08':'17','09':'33',
+  '10':'22','11':'15','12':'69','13':'14','14':'58','15':'11','16':'02','17':'08','18':'88','19':'27',
+  '20':'06','21':'93','22':'10','23':'30','24':'07','25':'35','26':'31','27':'19','28':'98','29':'83',
+  '30':'23','31':'26','32':'03','33':'09','34':'48','35':'25','36':'86','37':'38','38':'37','39':'44',
+  '40':'42','41':'49','42':'40','43':'71','44':'39','45':'47','46':'73','47':'45','48':'34','49':'41',
+  '50':'87','51':'55','52':'04','53':'82','54':'62','55':'51','56':'70','57':'81','58':'14','59':'83',
+  '60':'68','61':'84','62':'54','63':'64','64':'63','65':'90','66':'69','67':'58','68':'60','69':'12',
+  '70':'56','71':'43','72':'71','73':'80','74':'57','75':'85','76':'07','77':'69','78':'79','79':'78',
+  '80':'73','81':'57','82':'53','83':'59','84':'61','85':'75','86':'36','87':'50','88':'18','89':'94',
+  '90':'93','91':'99','92':'95','93':'21','94':'89','95':'92','96':'98','97':'00','98':'96','99':'91'
+};
+
+const MISTIK_LAMA = {0:1,1:0,2:5,3:8,4:7,5:2,6:9,7:4,8:3,9:6};
+const MISTIK_BARU = {0:8,1:7,2:6,3:9,4:5,5:4,6:2,7:1,8:0,9:3};
+const INDEX = {0:5,1:6,2:7,3:8,4:9,5:0,6:1,7:2,8:3,9:4};
+
+const SHIO_LIST = [
+  {name:'Tikus',  emoji:'🐀'},{name:'Kerbau', emoji:'🐂'},
+  {name:'Macan',  emoji:'🐯'},{name:'Kelinci',emoji:'🐰'},
+  {name:'Naga',   emoji:'🐲'},{name:'Ular',   emoji:'🐍'},
+  {name:'Kuda',   emoji:'🐴'},{name:'Kambing',emoji:'🐐'},
+  {name:'Monyet', emoji:'🐵'},{name:'Ayam',   emoji:'🐔'},
+  {name:'Anjing', emoji:'🐶'},{name:'Babi',   emoji:'🐷'}
+];
+
+function getShio(ekor2d){ return SHIO_LIST[parseInt(ekor2d) % 12]; }
+
+function getMistik(numStr){
+  let n1 = parseInt(numStr[0]);
+  let n2 = parseInt(numStr[1]);
+  return {
+    ml: `${MISTIK_LAMA[n1]}${MISTIK_LAMA[n2]}`,
+    mb: `${MISTIK_BARU[n1]}${MISTIK_BARU[n2]}`,
+    idx:`${INDEX[n1]}${INDEX[n2]}`
+  };
+}
+
+// ================= UTIL PERMUTASI 4D =================
+function permute4(digits) {
+  const result = new Set();
+  const arr = [...digits].slice(0, 4);
+  if(arr.length < 4) return [];
+  function rec(cur, rem) {
+    if(cur.length === 4){ result.add(cur.join('')); return; }
+    for(let i = 0; i < rem.length; i++){
+      const next = [...rem];
+      const picked = next.splice(i, 1)[0];
+      rec([...cur, picked], next);
+    }
+  }
+  rec([], arr);
+  return [...result].sort();
+}
+
+// ================= DOM =================
+const inputArea      = document.getElementById('inputArea');
+const pasaranInput   = document.getElementById('pasaranInput');
+const tanggalInput   = document.getElementById('tanggalInput');
+const filterRange    = document.getElementById('filterRange');
+const analysisDepth  = document.getElementById('analysisDepth');
+const customRangeBox = document.getElementById('customRangeBox');
+const dateFromInp    = document.getElementById('dateFrom');
+const dateToInp      = document.getElementById('dateTo');
+const cardsArea      = document.getElementById('cardsArea');
+const resultArea     = document.getElementById('resultArea');
+const toast          = document.getElementById('toast');
+const sortOrder      = document.getElementById('sortOrder');
+
+const MAX_HISTORY = 90;
+const BBFS_DIGITS = 8;
+const CB_DIGITS   = 4;
+
+// ================= INIT DATE =================
+(function initDates(){
+  const today = new Date();
+  const iso = today.toISOString().split('T')[0];
+  tanggalInput.value = iso;
+  const from = new Date(today);
+  from.setDate(from.getDate() - 6);
+  dateFromInp.value = from.toISOString().split('T')[0];
+  dateToInp.value = iso;
+})();
+
+filterRange.addEventListener('change', () => {
+  if(filterRange.value === 'custom'){
+    customRangeBox.style.display = 'flex';
+    if(!dateToInp.value) dateToInp.value = tanggalInput.value;
+  } else {
+    customRangeBox.style.display = 'none';
+  }
+});
+
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>toast.classList.remove('show'), 2400);
+}
+
+function fmtDateShort(d){ return d.toLocaleDateString('id-ID', {day:'2-digit', month:'short'}); }
+function fmtDateFull(d){ return d.toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'}); }
+
+let LAST_RESULT = null;
+
+// ================= SCAN =================
+document.getElementById('scanBtn').addEventListener('click', () => {
+  const txt = inputArea.value;
+  const pasaran = (pasaranInput.value.trim() || 'TANPA PASARAN').toUpperCase();
+
+  if(!tanggalInput.value){ showToast("⚠️ Isi tanggal result terbaru dulu!"); return; }
+  const tanggalTerbaru = new Date(tanggalInput.value + 'T00:00:00');
+  if(isNaN(tanggalTerbaru.getTime())){ showToast("⚠️ Tanggal tidak valid!"); return; }
+
+  const filterVal = filterRange.value;
+  let dateFrom = null;
+  let dateTo = new Date(tanggalTerbaru);
+  let filterLabel = "";
+
+  if(filterVal === 'all'){
+    dateFrom = null; filterLabel = "Semua Data";
+  } else if(filterVal === 'custom'){
+    if(!dateFromInp.value || !dateToInp.value){ showToast("⚠️ Isi tanggal custom dulu!"); return; }
+    dateFrom = new Date(dateFromInp.value + 'T00:00:00');
+    dateTo   = new Date(dateToInp.value   + 'T00:00:00');
+    if(isNaN(dateFrom.getTime()) || isNaN(dateTo.getTime())){ showToast("⚠️ Tanggal custom tidak valid!"); return; }
+    if(dateFrom > dateTo){ showToast("⚠️ Tanggal 'Dari' harus ≤ 'Sampai'!"); return; }
+    filterLabel = "Custom Range";
+  } else {
+    const days = parseInt(filterVal);
+    dateFrom = new Date(tanggalTerbaru);
+    dateFrom.setDate(dateFrom.getDate() - (days - 1));
+    filterLabel = `${days} Hari Terakhir`;
+  }
+
+  let lines = txt.split(/[\r\n\s,]+/)
+                 .map(t=>t.trim().replace(/\D/g,''))
+                 .filter(t=>t.length>=2);
+
+  if(lines.length < 2){ showToast("⚠️ Data kurang bosq! Minimal 2 hasil."); return; }
+  if(sortOrder.value === 'bottom') lines.reverse();
+
+  // Assign date + filter
+  const items = [];
+  lines.slice(0, MAX_HISTORY).forEach((res, i) => {
+    const d = new Date(tanggalTerbaru);
+    d.setDate(d.getDate() - i);
+    if(dateFrom && d < dateFrom) return;
+    if(d > dateTo) return;
+    items.push({res, idx: i, date: d});
+  });
+
+  if(items.length < 2){ showToast("⚠️ Data dalam rentang filter < 2!"); return; }
+
+  // 🔮 KEDALAMAN ANALISA
+  const depth = parseInt(analysisDepth.value);
+  const itemsAnalyzed = (depth === 0) ? items : items.slice(0, Math.min(depth, items.length));
+
+  if(itemsAnalyzed.length < 2){ showToast("⚠️ Data untuk dianalisa < 2!"); return; }
+
+  cardsArea.innerHTML = "";
+  document.getElementById('pasaranBadge').textContent = pasaran;
+
+  const firstDate = itemsAnalyzed[itemsAnalyzed.length-1].date;
+  const lastDate  = itemsAnalyzed[0].date;
+  const depthLabel = depth === 0 ? `Semua (${itemsAnalyzed.length})` : `${itemsAnalyzed.length} Terakhir`;
+  document.getElementById('rangeInfo').innerHTML = 
+    `📅 <b>${fmtDateFull(firstDate)}</b> → <b>${fmtDateFull(lastDate)}</b> · ${itemsAnalyzed.length} result · <i>${filterLabel} · ${depthLabel}</i>`;
+
+  document.getElementById('sectionTitle').textContent = `📜 Analisa ${itemsAnalyzed.length} Result · ${pasaran}`;
+
+  // ==== AKUMULASI ====
+  const allNumbers = [];
+  const digitFreq = {};
+  const shioFreq  = {};
+  const rowsForExport = [];
+
+  const processResult = (item) => {
+    const fullRes = item.res;
+    const i = item.idx;
+    const dateObj = item.date;
+    const ekor2d = fullRes.substring(fullRes.length-2);
+    const info   = DATA_MIMPI[ekor2d] || ['Misterius','00'];
+    const nama   = info[0];
+    const taysen = TAYSEN_MAP[ekor2d] || info[1];
+    const mistik = getMistik(ekor2d);
+    const shio   = getShio(ekor2d);
+
+    [ekor2d, taysen, mistik.ml, mistik.idx].forEach(n => {
+      allNumbers.push(n);
+      digitFreq[n[0]] = (digitFreq[n[0]]||0)+1;
+      digitFreq[n[1]] = (digitFreq[n[1]]||0)+1;
+    });
+
+    shioFreq[shio.name] = (shioFreq[shio.name]||0)+1;
+
+    const dateISO = dateObj.toISOString().split('T')[0];
+    rowsForExport.push({
+      urutan: i+1, tanggal: dateISO, pasaran,
+      result: fullRes, ekor2d, nama_mimpi: nama,
+      taysen, mistik_lama: mistik.ml, mistik_baru: mistik.mb,
+      index: mistik.idx, shio: shio.name
+    });
+
+    const isSpecial = (i === 6 || i === 11);
+    const dateStr = fmtDateShort(dateObj);
+
+    const card = document.createElement('div');
+    card.className = 'dream-card' + (isSpecial ? ' highlight' : '');
+    card.innerHTML = `
+      <div class="dc-header">
+        <span class="dc-title">
+          R${i+1} 
+          <span class="dc-date-badge">📅 ${dateStr}</span>
+          ${isSpecial?' · ⭐ SPECIAL':''}
+        </span>
+        <span class="dc-result">${ekor2d}</span>
+      </div>
+      <div class="dc-meaning">"${nama}" ${shio.emoji} ${shio.name}</div>
+      <div style="font-size:10px; color:var(--muted); margin-bottom:6px; letter-spacing:1px;">PELUANG GARIS TAKDIR:</div>
+      <div class="dc-numbers">
+        <span class="tag gold">Main: <b>${ekor2d}</b></span>
+        <span class="tag">Taysen: <b>${taysen}</b></span>
+        <span class="tag">Mistik: <b>${mistik.ml}</b></span>
+        <span class="tag">Index: <b>${mistik.idx}</b></span>
+      </div>
+    `;
+    cardsArea.appendChild(card);
+  };
+
+  itemsAnalyzed.forEach(processResult);
+
+  // INVEST LINE
+  const uniqueLines = [...new Set(allNumbers)].sort((a,b)=>parseInt(a)-parseInt(b));
+  document.getElementById('finalInvest').textContent = uniqueLines.join('*');
+  document.getElementById('lineCount').textContent = `${uniqueLines.length} Line dari ${itemsAnalyzed.length} result`;
+
+  // DIGIT FREQ
+  const sortedDigits = Object.entries(digitFreq)
+    .sort((a,b) => (b[1]-a[1]) || (parseInt(a[0])-parseInt(b[0])));
+  const allDigitsSorted = sortedDigits.map(([d])=>d);
+
+  // BBFS
+  const top8 = allDigitsSorted.slice(0, BBFS_DIGITS).sort();
+  document.getElementById('bbfsResult').textContent = top8.join(' ');
+  document.getElementById('bbfsDetail').innerHTML =
+    `<b style="color:var(--gold)">Frekuensi:</b> ` +
+    sortedDigits.map(([d,c])=>`${d}<span style="color:var(--muted)">(${c})</span>`).join(' · ');
+
+  // COLOK BEBAS
+  const cbDigits = allDigitsSorted.slice(0, CB_DIGITS);
+  document.getElementById('cbResult').textContent = cbDigits.join(' ');
+  document.getElementById('cbDetail').innerHTML =
+    `Top 4 digit: ` +
+    cbDigits.map(d => `<b style="color:var(--emerald)">${d}</b><span style="color:var(--muted)">(${digitFreq[d]}x)</span>`).join(' · ');
+
+  // SHIO
+  const sortedShio = Object.entries(shioFreq).sort((a,b)=>b[1]-a[1]);
+  const maxShioCount = sortedShio[0]?.[1] || 1;
+  const shioGrid = document.getElementById('shioGrid');
+  shioGrid.innerHTML = '';
+  sortedShio.forEach(([name,count]) => {
+    const shio = SHIO_LIST.find(s=>s.name===name);
+    const div = document.createElement('div');
+    div.className = 'shio-item' + (count === maxShioCount ? ' top' : '');
+    div.innerHTML = `<div class="shio-emoji">${shio.emoji}</div><div class="shio-name">${name}</div><div class="shio-count">${count}x</div>`;
+    shioGrid.appendChild(div);
+  });
+  document.getElementById('shioDetail').innerHTML =
+    `<b style="color:var(--gold)">Top Shio:</b> ${sortedShio.slice(0,3).map(([n,c])=>`${n} (${c}x)`).join(' · ')}`;
+
+  // POLA TARUNG
+  const am   = allDigitsSorted.slice(0,4);
+  const ai   = allDigitsSorted.slice(4,8);
+  const mati = allDigitsSorted.slice(-2);
+
+  document.getElementById('amVal').textContent   = am.join(' ');
+  document.getElementById('aiVal').textContent   = ai.join(' ');
+  document.getElementById('matiVal').textContent = mati.join(' ');
+
+  const bb2dPairs = [];
+  for(let i=0;i<am.length;i++)
+    for(let j=i+1;j<am.length;j++)
+      bb2dPairs.push(`${am[i]}${am[j]}`);
+  document.getElementById('bb2d').innerHTML = bb2dPairs.map(p=>`<b>${p}</b>`).join(' · ');
+
+  const top5 = allDigitsSorted.slice(0,5);
+  const bb3dTriples = [];
+  for(let i=0;i<top5.length;i++)
+    for(let j=i+1;j<top5.length;j++)
+      for(let k=j+1;k<top5.length;k++)
+        bb3dTriples.push(`${top5[i]}${top5[j]}${top5[k]}`);
+  document.getElementById('bb3d').innerHTML = bb3dTriples.map(t=>`<b>${t}</b>`).join(' · ');
+
+  // ==== 4D BB DARI AM ====
+  const fourdAM = permute4(am);
+  const fourdAMContainer = document.getElementById('fourdAM');
+  fourdAMContainer.innerHTML = '';
+  if(fourdAM.length === 0){
+    fourdAMContainer.innerHTML = '<span style="color:var(--muted); font-size:11px;">AM tidak cukup digit</span>';
+  } else {
+    fourdAM.forEach((combo, i) => {
+      const tag = document.createElement('div');
+      tag.className = 'fourd-tag' + (i < 6 ? ' hot' : '');
+      tag.textContent = combo;
+      fourdAMContainer.appendChild(tag);
+    });
+  }
+  document.getElementById('fourdAMDetail').textContent = 
+    `${fourdAM.length} kombinasi dari digit AM (${am.join(' ')}) · ⭐ top 6 di-highlight`;
+
+  // ==== 4D BB DARI AI ====
+  const fourdAI = permute4(ai);
+  const fourdAIContainer = document.getElementById('fourdAI');
+  fourdAIContainer.innerHTML = '';
+  if(fourdAI.length === 0){
+    fourdAIContainer.innerHTML = '<span style="color:var(--muted); font-size:11px;">AI tidak cukup digit</span>';
+  } else {
+    fourdAI.forEach((combo, i) => {
+      const tag = document.createElement('div');
+      tag.className = 'fourd-tag cyan' + (i < 6 ? ' hot' : '');
+      tag.textContent = combo;
+      fourdAIContainer.appendChild(tag);
+    });
+  }
+  document.getElementById('fourdAIDetail').textContent = 
+    `${fourdAI.length} kombinasi dari digit AI (${ai.join(' ')}) · ⭐ top 6 di-highlight`;
+
+  // ==== 4D LEMAH (dari 4 digit paling jarang) ====
+  const weakestDigits = allDigitsSorted.slice(-4).sort();
+  const fourdLemah = permute4(weakestDigits);
+  const fourdLemahContainer = document.getElementById('fourdLemah');
+  fourdLemahContainer.innerHTML = '';
+  if(fourdLemah.length === 0){
+    fourdLemahContainer.innerHTML = '<span style="color:var(--muted); font-size:11px;">Digit tidak cukup</span>';
+  } else {
+    fourdLemah.forEach(combo => {
+      const tag = document.createElement('div');
+      tag.className = 'fourd-tag cold';
+      tag.textContent = combo;
+      fourdLemahContainer.appendChild(tag);
+    });
+  }
+  document.getElementById('fourdLemahDetail').innerHTML = 
+    `Dari 4 digit terlemah <b style="color:#fb7185">(${weakestDigits.join(' ')})</b> · ${fourdLemah.length} kombinasi`;
+
+  // ==== 4D MIX AM+AI (2 dari AM + 2 dari AI) ====
+  const mixCombos = new Set();
+  const amPairs = [];
+  for(let i=0;i<am.length;i++)
+    for(let j=i+1;j<am.length;j++)
+      amPairs.push([am[i], am[j]]);
+  const aiPairs = [];
+  for(let i=0;i<ai.length;i++)
+    for(let j=i+1;j<ai.length;j++)
+      aiPairs.push([ai[i], ai[j]]);
+  // combine: 2 AM + 2 AI = 4 digit
+  amPairs.forEach(ap => {
+    aiPairs.forEach(aip => {
+      const digits = [...ap, ...aip];
+      const perms = permute4(digits);
+      perms.forEach(p => mixCombos.add(p));
+    });
+  });
+  const fourdMixArr = [...mixCombos].sort().slice(0, 12);
+  const fourdMixContainer = document.getElementById('fourdMix');
+  fourdMixContainer.innerHTML = '';
+  fourdMixArr.forEach((combo, i) => {
+    const tag = document.createElement('div');
+    tag.className = 'fourd-tag' + (i < 4 ? ' hot' : '');
+    tag.textContent = combo;
+    fourdMixContainer.appendChild(tag);
+  });
+  document.getElementById('fourdMixDetail').innerHTML = 
+    `Top 12 dari ${mixCombos.size} kombinasi AM(${am.join('')}) + AI(${ai.join('')}) · ⭐ top 4 di-highlight`;
+
+  // SAVE STATE
+  LAST_RESULT = {
+    pasaran,
+    filter: {
+      mode: filterVal, label: filterLabel,
+      depth: depth === 0 ? 'all' : depth,
+      date_from: dateFrom ? dateFrom.toISOString().split('T')[0] : null,
+      date_to: dateTo.toISOString().split('T')[0],
+      tanggal_terbaru: tanggalInput.value
+    },
+    generated_at: new Date().toISOString(),
+    input_count: itemsAnalyzed.length,
+    invest_line: uniqueLines.join('*'),
+    invest_line_count: uniqueLines.length,
+    bbfs_8digit: top8.join(''),
+    bbfs_detail: sortedDigits.map(([d,c])=>({digit:d, freq:c})),
+    colok_bebas: cbDigits,
+    shio_top: sortedShio.slice(0,3).map(([n,c])=>({name:n,count:c})),
+    shio_all: shioFreq,
+    pola_tarung: { am, ai, mati, bb2d: bb2dPairs, bb3d: bb3dTriples },
+    fourd: {
+      dari_am: fourdAM,
+      dari_ai: fourdAI,
+      dari_lemah: fourdLemah,
+      mix_am_ai: fourdMixArr
+    },
+    results: rowsForExport
+  };
+
+  resultArea.style.display = 'block';
+  resultArea.scrollIntoView({behavior:'smooth'});
+});
+
+// COPY
+document.getElementById('copyBtn').addEventListener('click', () => {
+  if(!LAST_RESULT){ showToast("Belum ada hasil bosq!"); return; }
+  const r = LAST_RESULT;
+
+  const periode = r.filter.date_from ? `${r.filter.date_from} → ${r.filter.date_to}` : `s/d ${r.filter.date_to}`;
+  const depthStr = r.filter.depth === 'all' ? 'Semua' : `${r.filter.depth} terakhir`;
+
+  const text =
+`╔══════════════════════════════════╗
+║  🔮 TAFSIR LINE · MYSTICAL EDITION ║
+╚══════════════════════════════════╝
+
+📛 PASARAN : ${r.pasaran}
+📅 Periode  : ${periode}
+🎯 Filter   : ${r.filter.label}
+🔮 Analisa  : ${depthStr} (${r.input_count} result)
+🕐 Update   : ${new Date(r.generated_at).toLocaleString('id-ID')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 INVEST LINE (${r.invest_line_count} Line):
+${r.invest_line}
+
+🎯 BBFS 8 DIGIT:
+${r.bbfs_8digit.split('').join(' ')}
+
+💰 COLOK BEBAS:
+${r.colok_bebas.join(' ')}
+
+🐉 TOP SHIO:
+${r.shio_top.map(s=>`${s.name} (${s.count}x)`).join(' · ')}
+
+⚔️ POLA TARUNG:
+  AM   : ${r.pola_tarung.am.join(' ')}
+  AI   : ${r.pola_tarung.ai.join(' ')}
+  LEMAH: ${r.pola_tarung.mati.join(' ')}
+  
+  2D BB: ${r.pola_tarung.bb2d.join(' · ')}
+  3D BB: ${r.pola_tarung.bb3d.join(' · ')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎲 4D BB DARI AM (${r.fourd.dari_am.length}):
+${r.fourd.dari_am.join(' · ')}
+
+🎲 4D BB DARI AI (${r.fourd.dari_ai.length}):
+${r.fourd.dari_ai.join(' · ')}
+
+💀 4D LEMAH (${r.fourd.dari_lemah.length}):
+${r.fourd.dari_lemah.join(' · ')}
+
+🎰 4D MIX AM+AI (Top 12):
+${r.fourd.mix_am_ai.join(' · ')}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔮 Salam Hoki, Bosq! 🔮`;
+
+  navigator.clipboard.writeText(text)
+    .then(()=>showToast("✓ Disalin · " + r.pasaran))
+    .catch(()=>showToast("⚠️ Gagal menyalin"));
+});
+
+// JSON
+document.getElementById('jsonBtn').addEventListener('click', () => {
+  if(!LAST_RESULT){ showToast("Belum ada hasil bosq!"); return; }
+  const blob = new Blob([JSON.stringify(LAST_RESULT,null,2)], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `tafsir-${LAST_RESULT.pasaran}-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("✓ JSON terunduh · " + LAST_RESULT.pasaran);
+});
+
+// CSV
+document.getElementById('csvBtn').addEventListener('click', () => {
+  if(!LAST_RESULT){ showToast("Belum ada hasil bosq!"); return; }
+  const r = LAST_RESULT;
+
+  const header = ['Urutan','Tanggal','Pasaran','Result','Ekor2D','Nama Mimpi','Taysen','Mistik Lama','Mistik Baru','Index','Shio'];
+  const lines  = [header.join(',')];
+  r.results.forEach(row => {
+    lines.push([
+      row.urutan, row.tanggal, row.pasaran, row.result, row.ekor2d, `"${row.nama_mimpi}"`,
+      row.taysen, row.mistik_lama, row.mistik_baru, row.index, row.shio
+    ].join(','));
+  });
+
+  lines.push('');
+  lines.push(`"PASARAN",,"${r.pasaran}"`);
+  lines.push(`"FILTER",,"${r.filter.label}"`);
+  lines.push(`"KEDALAMAN",,"${r.filter.depth === 'all' ? 'Semua' : r.filter.depth + ' terakhir'}"`);
+  lines.push(`"PERIODE",,"${r.filter.date_from || '-'} → ${r.filter.date_to}"`);
+  lines.push(`"GENERATED",,"${new Date(r.generated_at).toLocaleString('id-ID')}"`);
+  lines.push('');
+  lines.push(`"INVEST LINE",,"${r.invest_line}"`);
+  lines.push(`"BBFS 8 DIGIT",,"${r.bbfs_8digit}"`);
+  lines.push(`"COLOK BEBAS",,"${r.colok_bebas.join(' ')}"`);
+  lines.push(`"AM",,"${r.pola_tarung.am.join(' ')}"`);
+  lines.push(`"AI",,"${r.pola_tarung.ai.join(' ')}"`);
+  lines.push(`"LEMAH",,"${r.pola_tarung.mati.join(' ')}"`);
+  lines.push('');
+  lines.push(`"4D BB DARI AM",,"${r.fourd.dari_am.join(' ')}"`);
+  lines.push(`"4D BB DARI AI",,"${r.fourd.dari_ai.join(' ')}"`);
+  lines.push(`"4D LEMAH",,"${r.fourd.dari_lemah.join(' ')}"`);
+  lines.push(`"4D MIX AM+AI",,"${r.fourd.mix_am_ai.join(' ')}"`);
+
+  const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `tafsir-${r.pasaran}-${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("✓ CSV terunduh · " + r.pasaran);
+});
+
+// RESET
+document.getElementById('resetBtn').addEventListener('click', () => {
+  inputArea.value = "";
+  resultArea.style.display = 'none';
+  LAST_RESULT = null;
+  showToast("✓ Reset berhasil");
+});
+</script>
+</body>
+</html>
